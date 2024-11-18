@@ -1,0 +1,13 @@
+[project]
+name = "landmark_tools"
+version = "0.0.1"
+authors = [
+  { name="Cecilia Mauceri", email="cecilia.r.mauceri@jpl.nasa.gov" },
+]
+description = "DEM Landmark format utilities"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]

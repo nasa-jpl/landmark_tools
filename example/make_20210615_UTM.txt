@@ -1,0 +1,17 @@
+input:
+  filename: output/earth/USGS_13_n45w108_20210615_UTM.raw
+  width_px: 9275 
+  height_px: 12701 
+  bit_depth: 32
+  upper_left_x_projection_unit: 259426.934 
+  upper_left_y_projection_unit: 4987393.152
+  pixel_resolution_projection_unit : 8.947446663191677
+  latitude_standard_parallel : 0
+  longitude_natural_origin : -105
+output:
+  filename: output/earth/USGS_13_n45w108_20210615_UTM.lmk
+  width_px: 1000
+  height_px: 1000
+  pixel_resolution_meters: 10
+  center_latitude: 44.5000000
+  center_longitude: -107.5000000

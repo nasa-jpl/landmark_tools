@@ -1,0 +1,15 @@
+input:
+  filename: output/earth/USGS_13_n45w108_20211122_EQRECT.raw
+  width_px: 10812 
+  height_px: 10812 
+  bit_depth: 32
+  upper_left_x_projection_unit: -108.0005590 
+  upper_left_y_projection_unit: 45.0005589 
+  pixel_resolution_projection_unit : 0.000092592464126
+output:
+  filename: output/earth/USGS_13_n45w108_20211122_EQRECT.lmk
+  width_px: 1000
+  height_px: 1000
+  pixel_resolution_meters: 10
+  center_latitude: 44.5000000
+  center_longitude: -107.5000000

@@ -1,0 +1,9 @@
+[submodule "submodules/librply"]
+	path = submodules/librply
+	url = https://github.com/lkiesow/librply.git
+[submodule "submodules/stb"]
+	path = submodules/stb
+	url = https://github.com/nothings/stb.git
+[submodule "submodules/libyaml"]
+	path = submodules/libyaml
+	url = https://github.com/yaml/libyaml.git

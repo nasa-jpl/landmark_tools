@@ -1,0 +1,17 @@
+input : 
+  filename : output/moon/Haworth_final_adj_5mpp_surf.raw 
+  width_px : 5960
+  height_px : 5960
+  bit_depth : 32
+  upper_left_x_projection_unit : -52900.000
+  upper_left_y_projection_unit : 105400.000
+  pixel_resolution_projection_unit : 5
+  latitude_standard_parallel : -90.0
+  longitude_natural_origin : 0.0
+output :
+  filename : output/moon/Haworth_final_adj_5mpp_surf_10km.lmk
+  width_px : 1000
+  height_px : 1000
+  pixel_resolution_meters : 10
+  center_latitude : -86.8
+  center_longitude : 338.0

@@ -1,0 +1,9 @@
+output/moon/Lunar_LROnac_Haworth_sfs-dem_1m_v3.raw          //input filename 
+11660 12060 32                            //dem size, bit depth 
+-40120.000 95320.000 1                  //upper left corner x, y, pixel size
+-90.0 0.0                               //Latitude of standard parallel, Longitude of origin
+output/moon/Lunar_LROnac_Haworth_sfs-dem_1m_v3_10km.lmk  //output filename
+10000 10000                               //output DEM size col rows in m
+10                                      //output DEM resolution  in m
+-86.8 338.0                  //lat long degree center of landmark map
+1737400                                 // Lunar radius in m

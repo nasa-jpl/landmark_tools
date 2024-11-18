@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: landmark_tools
+Version: 0.0.1
+Summary: DEM Landmark format utilities
+Author-email: Cecilia Mauceri <cecilia.r.mauceri@jpl.nasa.gov>
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+
+# Landmark Tools Python Utils
+
+This python package includes utilitys to read and write landmark file format and visualize correlation results from the landmark_comparison executable. 
+
+Install the package for use in other projects by executing `pip install -e .` in this directory

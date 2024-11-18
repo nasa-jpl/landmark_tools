@@ -1,0 +1,8 @@
+feature_match: 
+  correlation_window_size: 35
+  search_window_size: 71
+  min_correlation: 0.3
+forstner_feature_detector:
+  forstner_feature_window_size: 9
+  min_dist_feature: 5.0
+  num_features: 600

@@ -1,0 +1,15 @@
+input:
+  filename: gold_standard_data/equal_rectangular_WY.raw
+  width_px: 1311 
+  height_px: 938 
+  bit_depth: 32
+  upper_left_x_projection_unit: -107.5081027 
+  upper_left_y_projection_unit: 44.5936521 
+  pixel_resolution_projection_unit : 0.000098783643545
+output:
+  filename: output/equal_rectangular_WY.lmk
+  width_px: 500
+  height_px: 500
+  pixel_resolution_meters: 10
+  center_latitude: 44.55
+  center_longitude: -107.44

@@ -1,0 +1,17 @@
+input:
+  filename: gold_standard_data/UTM_WY.raw
+  width_px: 1118
+  height_px: 1118 
+  bit_depth: 32
+  upper_left_x_projection_unit: 300920.718 
+  upper_left_y_projection_unit: 4940572.392
+  pixel_resolution_projection_unit : 8.944543828264759
+  latitude_standard_parallel : 0
+  longitude_natural_origin : -105
+output:
+  filename: output/UTM_WY.lmk
+  width_px: 500
+  height_px: 500
+  pixel_resolution_meters: 10
+  center_latitude: 44.55
+  center_longitude: -107.44    

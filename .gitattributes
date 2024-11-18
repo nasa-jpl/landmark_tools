@@ -1,0 +1,4 @@
+*.lmk filter=lfs diff=lfs merge=lfs -text
+*.ply filter=lfs diff=lfs merge=lfs -text
+*.raw filter=lfs diff=lfs merge=lfs -text
+tests/unit_test_data/final_3d_points.txt filter=lfs diff=lfs merge=lfs -text
