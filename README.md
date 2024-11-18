@@ -35,7 +35,7 @@ We recommend using the [High-Resolution LOLA Topography for Lunar South Pole Sit
 
 - [Install](INSTALL.md)
 - [Run](RUN.md)
-- [Demo Jupyter Notebook](https://github.jpl.nasa.gov/lunamaps/landmark_tools/blob/main/example/MoonDemo.ipynb)
+- [Demo Jupyter Notebook](example/MoonDemo.ipynb)
 
 ## Support
 
