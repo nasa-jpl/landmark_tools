@@ -338,8 +338,16 @@ bool Write_LMK_PLY_Facet_Window(const char *filename, LMK *lmk, int32_t x0, int3
 {
     int32_t min_i = y0-r/2;
     int32_t max_i = y0+r/2;
+    if (r % 2 == 1)
+    {
+        max_i++;
+    }
     int32_t min_j = x0-c/2;
     int32_t max_j = x0+c/2;
+    if (c % 2 == 1)
+    {
+        max_j++;
+    }
     if(min_i<0) min_i = 0;
     if(min_j<0) min_j = 0;
     if(max_i>lmk->num_rows) max_i = lmk->num_rows;
