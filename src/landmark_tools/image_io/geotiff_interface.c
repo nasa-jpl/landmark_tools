@@ -173,7 +173,7 @@ bool readGeoTiff(const char* fileName, GeoTiffData* data) {
     double scale = GDALGetRasterScale(hBand, NULL);
     if(offset!=0 || scale !=1){
         for(int64_t i=0; i<((int64_t)data->imageSize[0] * (int64_t)data->imageSize[1]); i++)
-            data->demValues[i] = data->demValues[i]*(scale+100) + offset;
+            data->demValues[i] = (data->demValues[i]*scale) + offset;
     }
 
     GDALClose(hDataset);
