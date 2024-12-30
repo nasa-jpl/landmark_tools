@@ -31,6 +31,34 @@
 #include "landmark_tools/utils/parse_args.h"                 // for m_getarg
 #include "landmark_tools/map_projection/stereographic_projection.h"
 
+int is_little_endian() {
+    uint16_t x = 1;
+    return *((uint8_t *)&x);
+}
+
+#if defined(MAC_OS)
+
+#include <arpa/inet.h>   // for htonl, ntohl, htons, ntohs
+
+#include <libkern/OSByteOrder.h>
+#define letohll(x) OSSwapLittleToHostInt64(x)
+
+#endif
+
+#if defined(LINUX_OS)
+
+#include <endian.h>
+#define letohll(x) le64toh(x)
+
+#endif
+
+#ifdef WINDOWS_OS
+
+#include <winsock2.h>
+#define letohll(x) (is_little_endian() ? (x) : _byteswap_uint64(x))
+
+#endif
+
 void show_usage_and_exit()
 {
     printf("Make a PLY point cloud from file. \n");
@@ -96,10 +124,50 @@ int32_t main(int32_t argc, char **argv)
     
     if(filetype == PLY_ASCII){
         read_success =  readinpoints_xyzid_ascci(infile, &pts_stereographic, &num_pts);
-    }else if(filetype == PLY_LITTLE_ENDIAN || filetype == PLY_BIG_ENDIAN){
-        printf("Filetype %.256s not yet supported\n", filetype_str);
-        if(pts_stereographic!=NULL) free(pts_stereographic);
-        return EXIT_FAILURE;
+    }else if(filetype == PLY_BIG_ENDIAN || filetype == PLY_LITTLE_ENDIAN){
+        FILE *fp = fopen(infile, 'rb');
+        if(fp == NULL)
+        {
+            printf("Cannot open file %.256s to read\n", infile);
+            return false;
+        }
+        
+        // Count points
+        uint64_t raw;
+        while (fread(&raw, sizeof(uint64_t), 1, fp) == 1) {
+            num_pts ++;
+        }
+        num_pts = num_pts/4;
+        pts_stereographic = malloc(num_pts * 3 * sizeof(double));
+        if(pts_stereographic == NULL){
+            printf("Failure to allocate memory\n");
+            return EXIT_FAILURE;
+        }
+        
+        rewind(fp);
+        
+        // Read points
+        size_t i = 0;
+        size_t point_index = 0;
+        while (fread(&raw, sizeof(uint64_t), 1, fp) == 1) {
+            if(point_index<num_pts){
+                printf("To many points %ld > %ld\n", point_index, num_pts);
+                if(pts_stereographic!=NULL) free(pts_stereographic);
+                return EXIT_FAILURE;
+            }
+            
+            if(i%4!=3){
+                
+                if(filetype == PLY_BIG_ENDIAN){
+                    raw = ntohl(raw);  // Convert network to host byte order
+                }else if(filetype == PLY_LITTLE_ENDIAN){
+                    raw = letohll(raw); // Convert little endian to host byte order
+                }
+                memcpy(&(pts_stereographic[point_index]), &raw, sizeof(double));
+                point_index ++;
+            }
+            i++;
+        }
     }
     
     if(!read_success){
