@@ -231,6 +231,54 @@ bool readinpoints_ascii(char * plyname, double **pts, uint8_t **bv, size_t *num_
     return true;
 }
 
+bool readinpoints_xyzid_ascci(char * plyname, double **pts, size_t *num_pts)
+{
+    FILE *fp = fopen(plyname, "r");
+    if(fp == NULL)
+    {
+        return false;
+    }
+    
+    //Count the number of lines so that we know how much memory to allocate
+    size_t buf_size = 128;
+    char buf[buf_size];
+    memset(&buf, 0, buf_size);
+    
+    int32_t line_count;
+    while (fgets(buf, buf_size, fp) != NULL) {
+        line_count++;
+    }
+    
+    double *pts_array = malloc(line_count * 3 * sizeof(double));
+    if(pts_array == NULL){
+        printf("Failure to allocate memory\n");
+        if(pts_array!=NULL) free(pts_array);
+        return false;
+    }
+    
+    *pts = pts_array;
+    
+    rewind(fp);
+    
+    // Read each line
+    *num_pts = 0;
+    for(int32_t i = 0; i< line_count; i++){
+        if(fgets(buf, buf_size, fp)){
+            double id = 0;
+            if(sscanf(buf, "%lf %lf %lf %lf", &pts_array[*num_pts*3], &pts_array[*num_pts*3+1], &pts_array[*num_pts*3+2] , &id) == 4){
+                 *num_pts += 1;
+            }else{
+                printf("Failure to scan point values from line %.256s\n", buf);
+                printf("Ignoring line and continuing\n");
+            }
+        }
+    }
+
+    fclose(fp);
+    
+    return true;
+}
+
 
 enum PointFileType strToPointFileType(char *str){
     enum PointFileType filetype = POINT;
@@ -496,6 +544,31 @@ bool Write_LMK_PLY_Points(const char *filename, LMK *lmk, enum e_ply_storage_mod
     // Write point values
     if(!writePoints(lmk, oply, frame)){
         return false;
+    }
+    
+    if (!ply_close(oply)) return false;
+    return true;
+}
+
+bool Write_PLY_Points(const char *filename, double* points, size_t num_points, enum e_ply_storage_mode_ filetype)
+{
+    p_ply oply = ply_create(filename, filetype, NULL, 0, NULL);
+    if (!oply) return false;
+    
+    p_ply_element element = NULL;
+    
+    if (!ply_add_element(oply, "vertex", num_points)) return false;
+    if (!ply_add_scalar_property(oply, "x", PLY_FLOAT)) return false;
+    if (!ply_add_scalar_property(oply, "y", PLY_FLOAT)) return false;
+    if (!ply_add_scalar_property(oply, "z", PLY_FLOAT)) return false;
+    if (!ply_write_header(oply)) return false;
+    
+    // Write point values
+    for(int32_t i = 0; i <num_points; i++)
+    {
+        if (!ply_write(oply, points[i*3])) return false;
+        if (!ply_write(oply, points[i*3 + 1])) return false;
+        if (!ply_write(oply, points[i*3 + 2])) return false;
     }
     
     if (!ply_close(oply)) return false;

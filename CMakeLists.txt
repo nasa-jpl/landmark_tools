@@ -147,6 +147,15 @@ submodules/librply/src/lib/rply.c
 )
 add_dependencies(point_2_landmark link_public_headers)
 
+add_executable(XYZID_2_point
+src/main/XYZID_2_point_main.c
+${common_sources}
+src/landmark_tools/landmark_util/point_cloud2grid.c
+src/landmark_tools/map_projection/stereographic_projection.c
+submodules/librply/src/lib/rply.c
+)
+add_dependencies(XYZID_2_point link_public_headers)
+
 add_executable(landmark_2_point
 src/main/landmark_2_point_main.c
 ${common_sources}
@@ -191,6 +200,7 @@ endif()
 target_link_libraries( landmark_comparison ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
 target_link_libraries( landmark_registration ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
 target_link_libraries( point_2_landmark ${GSL_LIBRARIES} m)
+target_link_libraries( XYZID_2_point ${GSL_LIBRARIES} m)
 target_link_libraries( landmark_2_point ${GSL_LIBRARIES} m)
 target_link_libraries( distort_landmark ${GSL_LIBRARIES} m)
 target_link_libraries( edit_landmark  ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)

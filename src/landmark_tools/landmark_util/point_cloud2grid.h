@@ -50,6 +50,7 @@ enum PointFrame{WORLD, LOCAL, RASTER};
  \param[in] bv array of point intensities for each point in `pts`
  \param[in] num_pts number of points in pts
  \param[in,out] lmk should have complete header at the time of input
+ \param[in] frame coordinate frame of input point cloud
  */
 bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFrame frame);
 
@@ -72,6 +73,15 @@ bool readinply(char * plyname, double **pts, uint8_t **bv, size_t *num_pts);
  * \return false if failed to open file
  */
 bool readinpoints_ascii(char * plyname, double **pts, uint8_t **bv, size_t *num_pts);
+
+/** \brief Open an ascii file containing one point on every line in the form: `X Y Z ID`
+ * \param[in] plyname filename
+ * \param[out] pts coordinate array
+ * \param[out] num_pts number of points in file
+ * \return true if success
+ * \return false if failed to open file
+ */
+bool readinpoints_xyzid_ascci(char * plyname, double **pts, size_t *num_pts);
 
 /**
  \brief TODO
@@ -115,6 +125,8 @@ enum PointFrame strToFrame(char *frame_str);
  * \param[in] y0 center row coordinate of landmark
  * \param[in] c number of cols
  * \param[in] r number of rows
+ * \param[in] e_ply_storage_mode_ flag to encode ply as ascii or binary
+ * \param[in] frame coordinate frame for output point cloud
  * \return true on success
  * \return false if fopen cannot open file for writing
  */
@@ -125,6 +137,8 @@ bool Write_LMK_PLY_Facet_Window(const char *filename, LMK *lmk, int32_t x0, int3
  * \brief Write entire landmark to a ply facet
  * \param[in] filename filename for ply facet
  * \param[in] lmk landmark structure
+ * \param[in] e_ply_storage_mode_ flag to encode ply as ascii or binary
+ * \param[in] frame coordinate frame for output point cloud
  * \return true on success
  * \return false if fopen cannot open file for writing
  */
@@ -134,10 +148,23 @@ bool Write_LMK_PLY_Facet(const char *filename, LMK *lmk, enum e_ply_storage_mode
  * \brief Write landmark into a point cloud ply file format
  * \param[in] filename filename for ply facet
  * \param[in] lmk landmark structure
+ * \param[in] e_ply_storage_mode_ flag to encode ply as ascii or binary
+ * \param[in] frame coordinate frame for output point cloud
  * \return true on success
  * \return false if fopen cannot open file for writing
  */
 bool Write_LMK_PLY_Points(const char *filename, LMK *lmk, enum e_ply_storage_mode_ filetype, enum PointFrame frame);
+
+/**
+ * \brief Write a pointcloud into a ply file format
+ * \param[in] filename filename for ply facet
+ * \param[in] pts coordinate array
+ * \param[in] num_pts number of points in file
+ * \param[in] e_ply_storage_mode_ flag to encode ply as ascii or binary
+ * \return true on success
+ * \return false if fopen cannot open file for writing
+ */
+bool Write_PLY_Points(const char *filename, double* points, size_t num_points, enum e_ply_storage_mode_ filetype);
 
 #ifdef __cplusplus
 }
