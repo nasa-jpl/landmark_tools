@@ -125,11 +125,11 @@ int32_t main(int32_t argc, char **argv)
     if(filetype == PLY_ASCII){
         read_success =  readinpoints_xyzid_ascci(infile, &pts_stereographic, &num_pts);
     }else if(filetype == PLY_BIG_ENDIAN || filetype == PLY_LITTLE_ENDIAN){
-        FILE *fp = fopen(infile, 'rb');
+        FILE *fp = fopen(infile, "rb");
         if(fp == NULL)
         {
             printf("Cannot open file %.256s to read\n", infile);
-            return false;
+            return EXIT_FAILURE;
         }
         
         // Count points
@@ -150,8 +150,8 @@ int32_t main(int32_t argc, char **argv)
         size_t i = 0;
         size_t point_index = 0;
         while (fread(&raw, sizeof(uint64_t), 1, fp) == 1) {
-            if(point_index<num_pts){
-                printf("To many points %ld > %ld\n", point_index, num_pts);
+            if(point_index > num_pts*3){
+                printf("To many points %ld > %ld\n", point_index, num_pts*3);
                 if(pts_stereographic!=NULL) free(pts_stereographic);
                 return EXIT_FAILURE;
             }
@@ -167,6 +167,10 @@ int32_t main(int32_t argc, char **argv)
                 point_index ++;
             }
             i++;
+        }
+        
+        if(point_index == num_pts*3){
+            read_success = true;
         }
     }
     

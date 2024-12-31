@@ -303,7 +303,7 @@ enum e_ply_storage_mode_ strToPlyFileType(char *str){
         }else if(strncmp(str, "PLY_BIG_ENDIAN", strlen(str))==0){
             filetype = PLY_BIG_ENDIAN;
         }else if(strncmp(str, "PLY_LITTLE_ENDIAN", strlen(str))==0){
-            filetype = PLY_BIG_ENDIAN;
+            filetype = PLY_LITTLE_ENDIAN;
         }else{
             printf("Value of str must be \"PLY_BIG_ENDIAN\" or \"PLY_LITTLE_ENDIAN\" or \"PLY_ASCII\"\n");
             filetype = PLY_DEFAULT;
