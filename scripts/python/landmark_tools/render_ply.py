@@ -30,7 +30,7 @@ def configure_scene(
     ply_file: str,
     width: int = 1000,
     height: int = 1000,
-    resolution: int = 10,
+    resolution: float = 10,
     save_blend_file: bool = False
 ):
     """Configure the scene for rendering a ply file. 
@@ -39,7 +39,7 @@ def configure_scene(
         ply_file (str): Path to the ply file.
         width (int, optional): Width of the render file in pixels. Defaults to 1000.
         height (int, optional): Height of the render file in pixels. Defaults to 1000.
-        res (int, optional): Resolution of the render file. Defaults to 10.
+        res (float, optional): Resolution of the render file. Defaults to 10.
         save_blend_file (bool, optional): Save a new blend file for additional renders. Defaults to False.
     """
     # Remove default cube
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     parser.add_argument("output", type=str, help="path to output file of rendered image")
     parser.add_argument("-height", type=int, required=True, help="height of output image in pixels. ")
     parser.add_argument("-width", type=int, required=True, help="width of output image in pixels")
-    parser.add_argument("-resolution", type=int, required=True, help="resolution in meters/pixel of output image")
+    parser.add_argument("-resolution", type=float, required=True, help="resolution in meters/pixel of output image")
     parser.add_argument(
         "--save-blend-file",
         action="store_true",
