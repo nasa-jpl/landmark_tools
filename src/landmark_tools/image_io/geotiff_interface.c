@@ -128,13 +128,25 @@ bool readGeoTiff(const char* fileName, GeoTiffData* data) {
             return false;
         }
     } else if (dataType == GDT_Float64){
-        if (GDALRasterIO(hBand, GF_Read, 0, 0, data->imageSize[0], data->imageSize[1], data->demValues,
+        double *demValues_float64 = (double *) malloc(sizeof(double) * data->imageSize[0] * data->imageSize[1]);
+        if(demValues_float64 == NULL){
+            fprintf(stderr, "Failure to allocate memory.\n");
+            GDALClose(hDataset);
+            return false;
+        }
+        
+        if (GDALRasterIO(hBand, GF_Read, 0, 0, data->imageSize[0], data->imageSize[1], demValues_float64,
                             data->imageSize[0], data->imageSize[1], GDT_Float64, 0, 0) != CE_None) {
             fprintf(stderr, "Failed to read raster data.\n");
             GDALClose(hDataset);
             CPLFree(data->demValues);
             return false;
         }
+        
+        for(int64_t i=0; i<((int64_t)data->imageSize[0] * (int64_t)data->imageSize[1]); i++)
+            data->demValues[i] = (float)demValues_float64[i]; // Lose precision
+        
+        free(demValues_float64);
     }else if(dataType == GDT_Int16){
         int16_t *demValues_int16 = (int16_t *) malloc(sizeof(int16_t) * data->imageSize[0] * data->imageSize[1]);
         if(demValues_int16 == NULL){
