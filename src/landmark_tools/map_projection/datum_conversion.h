@@ -29,7 +29,7 @@
 /**
  \brief Supported projections
 */
-enum Projection {UTM, STEREO, EQUIDISTANT_CYLINDRICAL, GEOGRAPHIC, Projection_UNDEFINED};
+enum Projection {UTM, STEREO, EQUIDISTANT_CYLINDRICAL, GEOGRAPHIC, ORTHOGRAPHIC, Projection_UNDEFINED};
 
 /**
  \brief Planetary bodies with defined ellipsoids

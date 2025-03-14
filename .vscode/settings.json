@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "math_constants.h": "c",
+        "orthographic_projection.h": "c",
+        "stereographic_projection.h": "c",
+        "cstdlib": "c"
+    }
+}

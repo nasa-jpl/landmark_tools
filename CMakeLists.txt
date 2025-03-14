@@ -93,6 +93,7 @@ src/landmark_tools/landmark_util/create_landmark.c
 src/landmark_tools/map_projection/equidistant_cylindrical_projection.c
 src/landmark_tools/map_projection/lambert.c
 src/landmark_tools/map_projection/stereographic_projection.c
+src/landmark_tools/map_projection/orthographic_projection.c
 src/landmark_tools/map_projection/utm.c
 src/landmark_tools/utils/two_level_yaml_parser.c
 submodules/librply/src/lib/rply.c
@@ -107,6 +108,7 @@ src/landmark_tools/landmark_util/create_landmark.c
 src/landmark_tools/map_projection/equidistant_cylindrical_projection.c
 src/landmark_tools/map_projection/lambert.c
 src/landmark_tools/map_projection/stereographic_projection.c
+src/landmark_tools/map_projection/orthographic_projection.c
 src/landmark_tools/map_projection/utm.c
 src/landmark_tools/utils/two_level_yaml_parser.c
 submodules/librply/src/lib/rply.c
