@@ -45,7 +45,8 @@
 #define STEP_SIZE 4
 #define MIN_N_FEATURES 20
 // TODO Hrand's code uses a FEATURE_WINDOW of 5
-#define FEATURE_WINDOW 7 
+#define FEATURE_WINDOW 7
+#define REPROJECTION_THRESHOLD 5.0
 
 typedef struct {
     float* deltax;
@@ -282,14 +283,6 @@ int32_t main (int32_t argc, char **argv)
     write_channel_seperated_image("lmk_base.srm.png", lmk_base.srm, lmk_base.num_cols, lmk_base.num_rows, 1);
     write_channel_seperated_image("lmk_child.srm.png", lmk_child.srm, lmk_child.num_cols, lmk_child.num_rows, 1);
 
-    //int window_size = 7;
-    //int window_size = 15;
-    //SimpleScaleNormalizeUInt8Image(lmk_base.srm, lmk_base.srm, lmk_base.num_cols, lmk_base.num_rows, window_size);
-    //SimpleScaleNormalizeUInt8Image(lmk_child.srm, lmk_child.srm, lmk_child.num_cols, lmk_child.num_rows, window_size);
-
-    //write_channel_seperated_image("lmk_base.srm.norm.png", lmk_base.srm, lmk_base.num_cols, lmk_base.num_rows, 1);
-    //write_channel_seperated_image("lmk_child.srm.norm.png", lmk_child.srm, lmk_child.num_cols, lmk_child.num_rows, 1);
-
     CORR_STRUCT corr_struct;
     allocate_corr(&corr_struct, lmk_child.num_pixels);
     success &= MatchFeatures_local_distortion(
@@ -458,8 +451,7 @@ bool MatchFeatures_local_distortion(
                         double mag_reprojection = sqrt(reprojection_err[0] * reprojection_err[0] + reprojection_err[1] * reprojection_err[1]);
                         
                         //If the feature is a homography inlier, calculate the delta between the feature points
-                        //TODO Hrand's version mag_reprojection<50
-                        if (mag_reprojection < 5)
+                        if (mag_reprojection < REPROJECTION_THRESHOLD)
                         {
                             double p_child[3], p_base[3], p_delta_map[3], p_delta_world[3];
                             LMK_Col_Row2World(lmk_child,  pts_child_patch[feature_index*2], pts_child_patch[feature_index*2+1], p_child);
