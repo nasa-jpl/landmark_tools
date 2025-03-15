@@ -26,6 +26,7 @@
 #include "landmark_tools/map_projection/utm.h"                    // for latlong2utm
 #include "landmark_tools/map_projection/stereographic_projection.h"  // for LatLong2StereographicProjection
 #include "landmark_tools/utils/two_level_yaml_parser.h"
+#include "landmark_tools/map_projection/orthographic_projection.h"
 
 #define ELEVATION_TOLERANCE 0.01
 
@@ -151,6 +152,10 @@ bool ProjectLatLong(enum Projection proj, LMK* lmk, GeoTiffData* geotiff_info, d
 //    }else if(proj==LAMBERT){
 //        if(lg < 0 ) lg = 360+lg;
 //        latlong2lambert_sphere(lambert, lat, lg, lmk->reference_body_radius_meters, &x, &y);
+    }else if(proj==ORTHOGRAPHIC){
+        orthographic_map_projection( lat, lon,
+                                    geotiff_info->natOrigin[0], geotiff_info->natOrigin[1],
+                                    lmk->BODY , x, y);
     }else{
         return false;
     }

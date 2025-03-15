@@ -67,6 +67,11 @@ bool readGeoTiff(const char* fileName, GeoTiffData* data) {
                 data->projection = EQUIDISTANT_CYLINDRICAL;
                 //            }else if(strncmp(pszProjectionType, "Lambert_Conformal_Conic_2SP", 28)==0){
                 //                data->projection = LAMBERT;
+            }else if(strncmp(pszProjectionType, "Orthographic", 12)==0){
+                printf("Orthographic Projection Detected\n");
+                data->projection = ORTHOGRAPHIC;
+                //            }else if(strncmp(pszProjectionType, "Lambert_Conformal_Conic_2SP", 28)==0){
+                //                data->projection = LAMBERT;
             }else{
                 fprintf(stderr, "Projection type %.50s is not supported", pszProjectionType);
                 OSRDestroySpatialReference(hSRS);
@@ -117,6 +122,14 @@ bool readGeoTiff(const char* fileName, GeoTiffData* data) {
     if(dataType == GDT_Float32){
         if (GDALRasterIO(hBand, GF_Read, 0, 0, data->imageSize[0], data->imageSize[1], data->demValues,
                          data->imageSize[0], data->imageSize[1], GDT_Float32, 0, 0) != CE_None) {
+            fprintf(stderr, "Failed to read raster data.\n");
+            GDALClose(hDataset);
+            CPLFree(data->demValues);
+            return false;
+        }
+    } else if (dataType == GDT_Float64){
+        if (GDALRasterIO(hBand, GF_Read, 0, 0, data->imageSize[0], data->imageSize[1], data->demValues,
+                            data->imageSize[0], data->imageSize[1], GDT_Float64, 0, 0) != CE_None) {
             fprintf(stderr, "Failed to read raster data.\n");
             GDALClose(hDataset);
             CPLFree(data->demValues);

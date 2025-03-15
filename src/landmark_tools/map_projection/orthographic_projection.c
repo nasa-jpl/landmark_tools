@@ -16,15 +16,15 @@
 
 #include <math.h>
 
+#include "landmark_tools/map_projection/datum_conversion.h"
 #include "landmark_tools/math/math_constants.h"
 #include "landmark_tools/map_projection/orthographic_projection.h"
 
-
-
-
-
-void orthographic_map_projection(double lat, double lg, double lat0, double lg0, double R, double *x, double *y)
+void orthographic_map_projection(double lat, double lg, double lat0, double lg0, enum Planet body, double *x, double *y)
 {
+    //TODO is there a way to use the other ellipse parameters?
+    double R = ellipsoids[body].a;
+
     *x = R*cos(lat*DEG2RAD)*sin((lg-lg0)*DEG2RAD);
     *y = R*(cos(lat0*DEG2RAD)*sin(lat*DEG2RAD)-sin(lat0*DEG2RAD)*cos(lat*DEG2RAD)*cos((lg-lg0)*DEG2RAD));
 }

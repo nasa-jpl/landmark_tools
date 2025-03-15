@@ -29,6 +29,8 @@
 
 #include <stdint.h>
 
+#include "landmark_tools/map_projection/datum_conversion.h"  // for Planet
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -44,7 +46,7 @@ extern "C" {
  \param[out] x 
  \param[out] y 
 */
-void orthographic_map_projection(double lat, double lg, double lat0, double lg0, double R, double *x, double*y);
+void orthographic_map_projection(double lat, double lg, double lat0, double lg0, enum Planet body, double *x, double*y);
 
 /**
  \brief Project orthographic coordinates (x,y) to latitude and longitude
