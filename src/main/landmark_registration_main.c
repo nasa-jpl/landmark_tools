@@ -251,7 +251,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
     }
     
 #ifdef DEBUG
-    write_channel_seperated_image("matched_point.png", tmpimg, lmk_base.num_cols, lmk_base.num_rows, 1);
+    write_channel_separated_image("matched_point.png", tmpimg, lmk_base.num_cols, lmk_base.num_rows, 1);
 #endif
     
     //Calculate a homography from the feature pairs
@@ -318,7 +318,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
 
 #ifdef DEBUG
     printf("# of RANSAC inliers %d\n", j);
-    write_channel_seperated_image("RANSAC_inlier.png", tmpimg, lmk_base.num_cols, lmk_base.num_rows, 1);
+    write_channel_separated_image("RANSAC_inlier.png", tmpimg, lmk_base.num_cols, lmk_base.num_rows, 1);
 #endif
     
     // [THP 2024-09-24] Check that inlier count is non zero, otherwise later call to Point_Clouds_rot_T_RANSAC will segfault
@@ -410,7 +410,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
             }
         }
     }
-    write_channel_seperated_image("warped_srm.png", tmpimg, lmk_base.num_cols, lmk_base.num_rows, 1);
+    write_channel_separated_image("warped_srm.png", tmpimg, lmk_base.num_cols, lmk_base.num_rows, 1);
     sprintf(buf, "warped_ele_float_%ldby%ld.raw", lmk_base.num_cols, lmk_base.num_rows);
     FILE *fp = fopen(buf, "wb");
     fwrite(tmpele, sizeof(float), lmk_base.num_cols*lmk_base.num_rows, fp);

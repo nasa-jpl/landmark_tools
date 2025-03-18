@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 /**
- \brief Turn a channel seperated image array into an interleaved image array
+ \brief Turn a channel separated image array into an interleaved image array
  
  \param[in] planar 
  \param[in] width 
@@ -40,28 +40,28 @@ void interleave_rgb(unsigned char *planar, size_t width, size_t height,
                     unsigned char *interleaved);
 
 /**
- \brief Turn a channel interleaved image array into a channel seperated image array 
+ \brief Turn a channel interleaved image array into a channel separated image array 
  
  \param[in] interleaved 
  \param[in] width 
  \param[in] height 
  \param[out] planar 
 */
-void channel_seperated_rgb(unsigned char *interleaved, size_t width, size_t height,
+void channel_separated_rgb(unsigned char *interleaved, size_t width, size_t height,
                            unsigned char *planar);
 
 /**
- \brief Read an image from `filename` into a channel seperated array
+ \brief Read an image from `filename` into a channel separated array
  
  \param[in] filename 
  \param[in] icols 
  \param[in] irows 
  \return uint8_t* array 
 */
-uint8_t* load_channel_seperated_image(const char* filename, int32_t *icols, int32_t *irows);
+uint8_t* load_channel_separated_image(const char* filename, int32_t *icols, int32_t *irows);
 
 /**
- \brief Write a channel seperated image to `filename`
+ \brief Write a channel separated image to `filename`
  
  \param[in] filename 
  \param[in] img 
@@ -71,6 +71,6 @@ uint8_t* load_channel_seperated_image(const char* filename, int32_t *icols, int3
  \return true on success  
  \return false on IO error
 */
-bool write_channel_seperated_image(const char* filename, uint8_t *img, int32_t cols, int32_t rows, int32_t channels);
+bool write_channel_separated_image(const char* filename, uint8_t *img, int32_t cols, int32_t rows, int32_t channels);
 
 #endif /* image_utils_h */

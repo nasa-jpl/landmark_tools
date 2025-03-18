@@ -167,7 +167,7 @@ int32_t main(int32_t argc, char** argv)
         int32_t icols, irows;
         uint8_t *srm_img;
         if(srm_file_name != NULL)
-            srm_img = load_channel_seperated_image(srm_file_name, &icols, &irows);
+            srm_img = load_channel_separated_image(srm_file_name, &icols, &irows);
         else{
             //check if the size matches with ele
             if((int)info_ele.imageSize[0] != info_srm.imageSize[0] || (int)info_ele.imageSize[1] != info_srm.imageSize[1] || info_ele.projection != info_srm.projection){
@@ -201,7 +201,7 @@ int32_t main(int32_t argc, char** argv)
             }
             
 #ifdef DEBUG
-            write_channel_seperated_image("srm.png", srm_img, icols, irows, 1);
+            write_channel_separated_image("srm.png", srm_img, icols, irows, 1);
 #endif
         }
         
@@ -221,7 +221,7 @@ int32_t main(int32_t argc, char** argv)
         for(size_t i=0; i<irows*icols; i++){
             ele_img[i] = (uint8_t) (255*(info_ele.demValues[i] - min)/(max-min));
         }
-        write_channel_seperated_image("ele.png", ele_img, icols, irows, 1);
+        write_channel_separated_image("ele.png", ele_img, icols, irows, 1);
 #endif
         
         if (srm_img == NULL) {
@@ -230,7 +230,7 @@ int32_t main(int32_t argc, char** argv)
         }
         
         ok = CreateLandmark(&info_ele, srm_img, icols, irows, anchor_latitude_degrees, anchor_longitude_degrees, info_ele.projection, &lmk, set_anchor_point_ele);
-        write_channel_seperated_image("lmk.srm.png", lmk.srm, lmk.num_cols, lmk.num_rows, 1);
+        write_channel_separated_image("lmk.srm.png", lmk.srm, lmk.num_cols, lmk.num_rows, 1);
         
         if(srm_img) free(srm_img);
     }

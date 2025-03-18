@@ -34,7 +34,7 @@ void interleave_rgb(unsigned char *planar, size_t width, size_t height,
     
 }
 
-void channel_seperated_rgb(unsigned char *interleaved, size_t width, size_t height,
+void channel_separated_rgb(unsigned char *interleaved, size_t width, size_t height,
                       unsigned char *planar){
     for (int32_t i = 0, j = 0; i < width * height * 3; i += 3, j++) {
             planar[j]   = interleaved[i];    // Red component
@@ -43,7 +43,7 @@ void channel_seperated_rgb(unsigned char *interleaved, size_t width, size_t heig
         }
 }
 
-uint8_t* load_channel_seperated_image(const char* filename, int32_t *icols, int32_t *irows){
+uint8_t* load_channel_separated_image(const char* filename, int32_t *icols, int32_t *irows){
     int32_t ichannels;
     uint8_t *img_interleaved = stbi_load(filename, icols, irows, &ichannels, STBI_default);
     if (img_interleaved == NULL) {
@@ -60,7 +60,7 @@ uint8_t* load_channel_seperated_image(const char* filename, int32_t *icols, int3
             stbi_image_free(img_interleaved);
             return NULL;
         }
-        channel_seperated_rgb(img_interleaved, *icols, *irows,
+        channel_separated_rgb(img_interleaved, *icols, *irows,
                               img);
         stbi_image_free(img_interleaved);
     }else if(ichannels == 1){
@@ -74,14 +74,14 @@ uint8_t* load_channel_seperated_image(const char* filename, int32_t *icols, int3
     return img;
 }
 
-bool write_channel_seperated_image(const char* filename, uint8_t *img, int32_t cols, int32_t rows, int32_t channels){
+bool write_channel_separated_image(const char* filename, uint8_t *img, int32_t cols, int32_t rows, int32_t channels){
     uint8_t *tmpImgInterleaved;
     
     if(channels == 3){
         tmpImgInterleaved = (uint8_t *)malloc(sizeof(uint8_t)*cols*rows*channels);
         if (tmpImgInterleaved == NULL)
         {
-            printf("write_channel_seperated_image() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+            printf("write_channel_separated_image() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
             return false;
         }
         
@@ -90,7 +90,7 @@ bool write_channel_seperated_image(const char* filename, uint8_t *img, int32_t c
     }else if(channels == 1){
         tmpImgInterleaved = img;
     }else{
-        printf("write_channel_seperated_image() not supported for %d channels: %.256s, %d\n", channels, __FILE__, __LINE__);
+        printf("write_channel_separated_image() not supported for %d channels: %.256s, %d\n", channels, __FILE__, __LINE__);
         return false;
     }
 
