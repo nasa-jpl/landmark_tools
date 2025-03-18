@@ -45,6 +45,7 @@ endif()
 
 include(CMakeLinkHeaders.cmake)
 add_custom_target(link_public_headers)
+message(STATUS "Adding subdirectories relative to ${CMAKE_CURRENT_SOURCE_DIR}")
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/img)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/math)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools)
