@@ -1,5 +1,5 @@
 function(add_public_headers)
-    file(RELATIVE_PATH relative_path ${landmark_tools_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    file(RELATIVE_PATH relative_path ${landmark_tools_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
 
     set(include_dir ${landmark_tools_SOURCE_DIR}/include/${relative_path})
     
