@@ -1,5 +1,10 @@
 function(add_public_headers)
-file(RELATIVE_PATH relative_path ${CMAKE_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
+
+if(NOT DEFINED landmark_tools_SOURCE_DIR)
+    set(landmark_tools_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+endif()
+
+file(RELATIVE_PATH relative_path ${landmark_tools_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
 message(STATUS "relative_path ${relative_path}")
 
 add_custom_command(
