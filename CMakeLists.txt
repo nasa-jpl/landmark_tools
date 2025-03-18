@@ -225,9 +225,9 @@ endif()
 ## Build landmark_tools Library
 
 file(GLOB_RECURSE library_sources
- "src/landmark_tools/*.c"
- "src/math/*.c"
- "src/img/*.c")
+ "${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools/*.c"
+ "${CMAKE_CURRENT_SOURCE_DIR}/src/math/*.c"
+ "${CMAKE_CURRENT_SOURCE_DIR}/src/img/*.c")
 
 ## Shared library
 
