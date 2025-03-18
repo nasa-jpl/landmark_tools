@@ -14,7 +14,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 
 # Add local CMake modules
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 
 find_package(GSL REQUIRED)
 message(STATUS "GSL_FOUND: ${GSL_FOUND}")
@@ -45,12 +45,12 @@ endif()
 
 include(CMakeLinkHeaders.cmake)
 add_custom_target(link_public_headers)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/img)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/math)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/landmark_tools)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/img)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/math)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools)
 
 include_directories(
-${CMAKE_SOURCE_DIR}/include
+${CMAKE_CURRENT_SOURCE_DIR}/include
 submodules/
 submodules/librply/src/lib/
 ${GSL_INCLUDE_DIRS}
@@ -238,7 +238,7 @@ submodules/librply/src/lib/rply.c
 )
 
 target_include_directories(lib_landmark_tools PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     submodules/
     ${PNG_INCLUDE_DIRS})
 
