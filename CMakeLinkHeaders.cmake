@@ -1,36 +1,35 @@
 function(add_public_headers)
+    file(RELATIVE_PATH relative_path ${landmark_tools_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
-if(NOT DEFINED landmark_tools_SOURCE_DIR)
-    set(landmark_tools_SOURCE_DIR ${CMAKE_SOURCE_DIR})
-endif()
+    set(include_dir ${landmark_tools_SOURCE_DIR}/include/${relative_path})
+    
+    # Ensure the include directory is explicitly created
+    file(MAKE_DIRECTORY ${include_dir})
 
-file(RELATIVE_PATH relative_path ${landmark_tools_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
-message(STATUS "relative_path ${relative_path}")
+    # Debug: Print which directories are being created
+    message(STATUS "Creating include directory: ${include_dir}")
 
-add_custom_command(
-OUTPUT ${landmark_tools_SOURCE_DIR}/include/${relative_path}
-COMMAND mkdir -p ${landmark_tools_SOURCE_DIR}/include/${relative_path}
-)
+    foreach(header ${ARGV})
+        file(RELATIVE_PATH temp ${include_dir} ${CMAKE_CURRENT_SOURCE_DIR}/${header})
+        add_custom_command(
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${header}
+            OUTPUT ${include_dir}/${header}
+            COMMAND ln -sf ${temp} ${include_dir}
+            COMMENT "Symlinking ${header} to ${include_dir}"
+        )
+    endforeach(header)
 
-foreach(header ${ARGV})
-file(RELATIVE_PATH
-temp ${landmark_tools_SOURCE_DIR}/include/${relative_path}
-${CMAKE_CURRENT_SOURCE_DIR}/${header})
-add_custom_command(
-DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${header}
-OUTPUT ${landmark_tools_SOURCE_DIR}/include/${relative_path}/${header}
-COMMAND ln -sf
-ARGS ${temp} ${landmark_tools_SOURCE_DIR}/include/${relative_path}
-)
-endforeach(header)
+    string(REPLACE "/" "_" target_name ${relative_path})
+    if(NOT target_name)
+        set(target_name "root")
+    endif()
+    set(target_name ${CMAKE_CURRENT_SOURCE_DIR}_${target_name}_link_public_headers)
+    string(REPLACE "/" "_" target_name ${target_name})  # Make it CMake-safe
 
-string(REPLACE "/" "_" target_name ${relative_path})
-set(target_name ${target_name}_link_public_headers)
-message(STATUS "target_name ${target_name}")
-add_custom_target(
-${target_name}
-DEPENDS ${ARGV}
-${landmark_tools_SOURCE_DIR}/include/${relative_path}
-)
-add_dependencies(link_public_headers ${target_name})
-endfunction(add_public_headers)
+    add_custom_target(
+        ${target_name}
+        DEPENDS ${ARGV} ${include_dir}
+    )
+
+    add_dependencies(link_public_headers ${target_name})
+endfunction()
