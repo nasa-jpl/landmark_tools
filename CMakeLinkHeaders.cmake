@@ -10,12 +10,14 @@ function(add_public_headers)
     message(STATUS "Creating include directory: ${include_dir}")
 
     foreach(header ${ARGV})
-        file(RELATIVE_PATH temp ${include_dir} ${CMAKE_CURRENT_SOURCE_DIR}/${header})
+        set(source ${CMAKE_CURRENT_SOURCE_DIR}/${header})
+        set(target ${include_dir}/${header})
+        message(STATUS "Linking ${source} to ${target}")
         add_custom_command(
-            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${header}
-            OUTPUT ${include_dir}/${header}
-            COMMAND ln -sf ${temp} ${include_dir}
-            COMMENT "Symlinking ${header} to ${include_dir}"
+            DEPENDS ${source}
+            OUTPUT ${target}
+            COMMAND ln -sf ${source} ${target}
+            COMMENT "Symlinking ${source} to ${target}"
         )
     endforeach(header)
 
