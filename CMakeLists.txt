@@ -52,8 +52,8 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools)
 
 include_directories(
 ${CMAKE_CURRENT_SOURCE_DIR}/include
-submodules/
-submodules/librply/src/lib/
+${CMAKE_CURRENT_SOURCE_DIR}/submodules/
+${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/
 ${GSL_INCLUDE_DIRS}
 ${PNG_INCLUDE_DIRS})
 
@@ -235,12 +235,12 @@ file(GLOB_RECURSE library_sources
 add_library(lib_landmark_tools
 SHARED
 ${library_sources}
-submodules/librply/src/lib/rply.c
+${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/rply.c
 )
 
 target_include_directories(lib_landmark_tools PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    submodules/
+    ${CMAKE_CURRENT_SOURCE_DIR}/submodules/
     ${PNG_INCLUDE_DIRS})
 
 target_link_libraries(lib_landmark_tools PUBLIC GDAL::GDAL ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
