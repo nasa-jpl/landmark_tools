@@ -31,8 +31,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Render a batch of different sun angles with blender")
     parser.add_argument("file", type=str, help="plyfile defining a DEM mesh in a local reference frame OR a blend file from a previous run")
     parser.add_argument("angle_csv", type=str, help="CSV file containing one line per desired sun angle. Line format is <timestamp, elevation_in_degrees, azimuth_in_degrees>")
-    parser.add_argument("-height", type=int, required=True, help="height of output file in pixels")
-    parser.add_argument("-width", type=int, required=True, help="width of output file in pixels")
+    parser.add_argument("-height", type=int, required=True, help="height of output image in pixels. ")
+    parser.add_argument("-width", type=int, required=True, help="width of output image in pixels")
+    parser.add_argument("-resolution", type=float, required=True, help="resolution in meters/pixel of output image")
     parser.add_argument(
         "--save-blend-file",
         action="store_true",
@@ -45,6 +46,7 @@ if __name__ == "__main__":
             args.file,
             width=args.width,
             height=args.height,
+            resolution=args.resolution,
             save_blend_file=args.save_blend_file
         )
     elif(args.file.endswith("blend")):
