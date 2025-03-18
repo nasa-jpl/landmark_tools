@@ -1,5 +1,7 @@
 function(add_public_headers)
-file(RELATIVE_PATH relative_path ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
+file(RELATIVE_PATH relative_path ${CMAKE_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
+message(STATUS "relative_path ${relative_path}")
+
 add_custom_command(
 OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}
 COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}
@@ -19,6 +21,7 @@ endforeach(header)
 
 string(REPLACE "/" "_" target_name ${relative_path})
 set(target_name ${target_name}_link_public_headers)
+message(STATUS "target_name ${target_name}")
 add_custom_target(
 ${target_name}
 DEPENDS ${ARGV}
