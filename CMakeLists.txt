@@ -239,7 +239,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/rply.c
 )
 
 target_include_directories(lib_landmark_tools PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/submodules/
     ${PNG_INCLUDE_DIRS})
 
