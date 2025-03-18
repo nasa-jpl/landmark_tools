@@ -8,19 +8,19 @@ file(RELATIVE_PATH relative_path ${landmark_tools_SOURCE_DIR}/src ${CMAKE_CURREN
 message(STATUS "relative_path ${relative_path}")
 
 add_custom_command(
-OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}
-COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}
+OUTPUT ${landmark_tools_SOURCE_DIR}/include/${relative_path}
+COMMAND mkdir -p ${landmark_tools_SOURCE_DIR}/include/${relative_path}
 )
 
 foreach(header ${ARGV})
 file(RELATIVE_PATH
-temp ${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}
+temp ${landmark_tools_SOURCE_DIR}/include/${relative_path}
 ${CMAKE_CURRENT_SOURCE_DIR}/${header})
 add_custom_command(
 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${header}
-OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}/${header}
+OUTPUT ${landmark_tools_SOURCE_DIR}/include/${relative_path}/${header}
 COMMAND ln -sf
-ARGS ${temp} ${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}
+ARGS ${temp} ${landmark_tools_SOURCE_DIR}/include/${relative_path}
 )
 endforeach(header)
 
@@ -30,7 +30,7 @@ message(STATUS "target_name ${target_name}")
 add_custom_target(
 ${target_name}
 DEPENDS ${ARGV}
-${CMAKE_CURRENT_SOURCE_DIR}/include/${relative_path}
+${landmark_tools_SOURCE_DIR}/include/${relative_path}
 )
 add_dependencies(link_public_headers ${target_name})
 endfunction(add_public_headers)
