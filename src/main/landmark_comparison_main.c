@@ -35,7 +35,7 @@
 #include "landmark_tools/landmark_util/landmark.h"          // for free_lmk
 #include "landmark_tools/landmark_util/estimate_homography.h"
 #include "landmark_tools/utils/parse_args.h"                // for m_getarg
-#include "math/mat3.h"                                 // for mult331
+#include "math/mat3/mat3.h"                                 // for mult331
 
 /*-----------------------------------------------------------*/
 /*----------------------- Variables -------------------------*/

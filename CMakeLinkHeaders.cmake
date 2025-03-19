@@ -12,6 +12,10 @@ function(add_public_headers)
     foreach(header ${ARGV})
         set(source ${CMAKE_CURRENT_SOURCE_DIR}/${header})
         set(target ${include_dir}/${header})
+
+        get_filename_component(sub_dir ${target} DIRECTORY)
+        file(MAKE_DIRECTORY ${sub_dir})
+        
         message(STATUS "Linking ${source} to ${target}")
         add_custom_command(
             DEPENDS ${source}

@@ -24,7 +24,7 @@
 
 #include "landmark_tools/math/math_constants.h"  // for PI
 #include "landmark_tools/math/math_utils.h"
-#include "math/mat3.h"                      // for mult333, zero33, copy33
+#include "math/mat3/mat3.h"                      // for mult333, zero33, copy33
 
 int32_t skew(double v[3], double sk[3][3])
 {

@@ -23,8 +23,8 @@
 #include "landmark_tools/feature_tracking/parameters.h"
 #include "landmark_tools/math/homography_util.h"
 
-#include "img/imgutils.h"
-#include "math/mat3.h"
+#include "img/utils/imgutils.h"
+#include "math/mat3/mat3.h"
 
 int32_t MatchFeaturesOnly(Parameters parameters, uint8_t *img1, uint8_t *mask1, size_t cols1, size_t rows1,
                           uint8_t *img2, uint8_t *mask2, size_t cols2, size_t rows2,

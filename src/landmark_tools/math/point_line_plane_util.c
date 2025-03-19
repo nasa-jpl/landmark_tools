@@ -25,7 +25,7 @@
 #include "landmark_tools/math/point_line_plane_util.h"
 #include "landmark_tools/math/double_matrix.h"
 #include "landmark_tools/math/math_utils.h"
-#include "math/mat3.h"
+#include "math/mat3/mat3.h"
 
 double Point2PlaneDist(double P[3], double plane[4])
 {

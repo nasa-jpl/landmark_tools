@@ -22,7 +22,7 @@
 #include "landmark_tools/math/homography_util.h"
 #include "landmark_tools/math/double_matrix.h"                   // for Line...
 #include "landmark_tools/math/math_utils.h"                      // for prt3
-#include "math/mat3.h"                                      // for mult331
+#include "math/mat3/mat3.h"                                      // for mult331
 
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_eigen.h>

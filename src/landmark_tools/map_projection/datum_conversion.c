@@ -20,7 +20,7 @@
 
 #include "landmark_tools/map_projection/datum_conversion.h"
 #include "landmark_tools/math/math_constants.h"  // for DEG2RAD, RAD2DEG
-#include "math/mat3.h"                      // for copy3, sub3, unit3
+#include "math/mat3/mat3.h"                      // for copy3, sub3, unit3
 
 
 void LatLongHeight_to_ECEF_sphere(double latitude_degrees, double longitude_degrees, double elevation_meters, double p[3], double radius_meters)

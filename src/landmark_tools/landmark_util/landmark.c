@@ -25,7 +25,7 @@
 #include "landmark_tools/math/math_utils.h"
 #include "landmark_tools/math/point_line_plane_util.h"  // for normalpoint2plane, PointRayInters...
 #include "landmark_tools/utils/endian_read_write.h"
-#include "math/mat3.h"                                         // for dot3
+#include "math/mat3/mat3.h"                                         // for dot3
 
 #define INTERSECTION_MAX_ITERATIONS 100
 

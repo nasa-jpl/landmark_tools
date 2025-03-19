@@ -232,21 +232,36 @@ file(GLOB_RECURSE library_sources
 
 ## Shared library
 
-add_library(lib_landmark_tools
+add_library(landmark_tools
 SHARED
 ${library_sources}
 ${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/rply.c
 )
 
-target_include_directories(lib_landmark_tools PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/
-    ${CMAKE_CURRENT_SOURCE_DIR}/submodules/
+target_include_directories(landmark_tools PUBLIC
     ${PNG_INCLUDE_DIRS})
 
-target_link_libraries(lib_landmark_tools PUBLIC GDAL::GDAL ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
+target_include_directories(landmark_tools INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # During build
+    $<INSTALL_INTERFACE:include>  # During installation
+)
 
-install(TARGETS lib_landmark_tools
+if(GDAL_FOUND)
+    target_link_libraries( landmark_tools PUBLIC GDAL::GDAL ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
+else()
+    target_link_libraries( landmark_tools PUBLIC ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
+endif()
+
+install(TARGETS landmark_tools EXPORT LandmarkTools
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin
         PUBLIC_HEADER DESTINATION include)
+
+install(EXPORT LandmarkTools
+    FILE LandmarkToolsConfig.cmake
+    NAMESPACE LandmarkTools::
+    DESTINATION lib/cmake/LandmarkTools
+)
+
+install(DIRECTORY include/ DESTINATION include)

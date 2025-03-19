@@ -39,7 +39,7 @@
 #include "landmark_tools/math/math_utils.h"
 #include "landmark_tools/math/point_line_plane_util.h"  // for Point_Clouds_rot_T_RANSAC, normal...
 #include "landmark_tools/utils/parse_args.h"
-#include "math/mat3.h"                   // for mult331, mult333, sub3, zero3, copy3
+#include "math/mat3/mat3.h"                   // for mult331, mult333, sub3, zero3, copy3
 
 /*-----------------------------------------------------------*/
 /*----------------------- Variables -------------------------*/
