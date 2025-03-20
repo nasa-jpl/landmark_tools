@@ -23,7 +23,7 @@
 #include "landmark_tools/landmark_util/landmark.h"    // for Write_LMK_PLY_Facet_Window
 #include "landmark_tools/landmark_util/point_cloud2grid.h"
 #include "rply.h"
-#include "math/mat3.h"
+#include "math/mat3/mat3.h"
 
 static int32_t vertex_index = 0;
 static double *pts_array = 0;

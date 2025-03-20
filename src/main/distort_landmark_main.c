@@ -30,7 +30,7 @@
 #include "landmark_tools/landmark_util/landmark.h"  // for free_lmk, Crop_In...
 #include "landmark_tools/math/math_constants.h"
 #include "landmark_tools/utils/parse_args.h"        // for m_getarg, CFO_STRING
-#include "math/mat3.h"
+#include "math/mat3/mat3.h"
 
 void  show_usage_and_exit()
 {

@@ -78,7 +78,7 @@ int32_t main (int32_t argc, char **argv)
     }
     
     int32_t icols, irows;
-    uint8_t *srm_img = load_channel_seperated_image(srmfile, &icols, &irows);
+    uint8_t *srm_img = load_channel_separated_image(srmfile, &icols, &irows);
     
     if (srm_img == NULL) {
         printf("Failure to load surface reflectance map from %.256s\n", srmfile);

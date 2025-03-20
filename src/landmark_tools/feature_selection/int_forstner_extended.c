@@ -20,7 +20,7 @@
 #include <stdbool.h>
 #include <float.h>
 
-#include "img/imgutils.h"  // for FAILURE, int_forstner, SUCCESS
+#include "img/utils/imgutils.h"  // for FAILURE, int_forstner, SUCCESS
 #include "landmark_tools/feature_selection/int_forstner_extended.h"
 
 int32_t int_forstner_nbest_even_distribution(uint8_t *image, int32_t xdim, int32_t ydim, int32_t x0, int32_t y0,

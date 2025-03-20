@@ -248,7 +248,7 @@ int32_t main(int32_t argc, char** argv)
         for(size_t i=0; i<geotiff_info.imageSize[0]*geotiff_info.imageSize[1]; i++){
             ele_img[i] = (uint8_t) (255*(geotiff_info.demValues[i] - min)/(max-min));
         }
-        write_channel_seperated_image("ele.png", ele_img, geotiff_info.imageSize[0], geotiff_info.imageSize[1], 1);
+        write_channel_separated_image("ele.png", ele_img, geotiff_info.imageSize[0], geotiff_info.imageSize[1], 1);
 #endif
         
         #else
@@ -264,7 +264,7 @@ int32_t main(int32_t argc, char** argv)
     }else{
         //Load the surface reflectance map
         int32_t icols, irows;
-        uint8_t *srm_img = load_channel_seperated_image(srm_file_name, &icols, &irows);
+        uint8_t *srm_img = load_channel_separated_image(srm_file_name, &icols, &irows);
         
         if (srm_img == NULL) {
             printf("Failure to load surface reflectance map from %.256s\n", srm_file_name);
