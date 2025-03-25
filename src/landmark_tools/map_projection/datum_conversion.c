@@ -101,53 +101,80 @@ void ECEF_to_LatLongHeight(double p[3], double *latitude_degrees, double *longit
 
 void localmap2ECEF_rot_sphere(double lat, double lg, double elv, double rot_l_b[3][3], double radius)
 {
-   double p1[3], p2[3];
-   double dp_lat[3];
-   double dp_long[3];
-   double dx[3], dy[3], dz[3];
-   
-	
-   LatLongHeight_to_ECEF_sphere(lat+0.001, lg, elv, p1, radius);
-   LatLongHeight_to_ECEF_sphere(lat-0.001, lg, elv, p2, radius);
-   sub3(p1, p2, dp_lat);
+    double p1[3] = {0};
+    double p2[3] = {0};
+    double dp_lat[3]= {0};
+    double dp_long[3]= {0};
+    double dx[3] = {0};
+    double dy[3] = {0};
+    double dz[3] = {0};
 
-   LatLongHeight_to_ECEF_sphere(lat, lg+0.001, elv, p1, radius);
-   LatLongHeight_to_ECEF_sphere(lat, lg-0.001, elv, p2, radius);
-   sub3(p1, p2, dp_long);
-
-   unit3(dp_lat, dy);
-
-   unit3(dp_long, dx);
-   cross3(dx, dy, dz);
-   copy3(dx, rot_l_b[0]);
-   copy3(dy, rot_l_b[1]);
-   copy3(dz, rot_l_b[2]);
+    if(lat == -90 || lat == 90){
+        dx[1] = 1;
+        if(lat == 90){
+            dz[2] = 1;
+        }else{
+            dz[2] = -1;
+        }
+        
+        cross3(dz, dx, dy);
+    }else{
+        LatLongHeight_to_ECEF_sphere(lat+0.001, lg, elv, p1, radius);
+        LatLongHeight_to_ECEF_sphere(lat-0.001, lg, elv, p2, radius);
+        sub3(p1, p2, dp_lat);
+        
+        LatLongHeight_to_ECEF_sphere(lat, lg+0.001, elv, p1, radius);
+        LatLongHeight_to_ECEF_sphere(lat, lg-0.001, elv, p2, radius);
+        sub3(p1, p2, dp_long);
+        
+        unit3(dp_lat, dy);
+        
+        unit3(dp_long, dx);
+        cross3(dx, dy, dz);
+    }
+    
+    copy3(dx, rot_l_b[0]);
+    copy3(dy, rot_l_b[1]);
+    copy3(dz, rot_l_b[2]);
 }
 
 
 void localmap2ECEF_rot(double lat, double lg, double elv, double rot_l_b[3][3], enum Planet body)
 {
-   double p1[3], p2[3];
-   double dp_lat[3];
-   double dp_long[3];
-   double dx[3], dy[3], dz[3];
-   
+    double p1[3] = {0};
+    double p2[3] = {0};
+    double dp_lat[3]= {0};
+    double dp_long[3]= {0};
+    double dx[3] = {0};
+    double dy[3] = {0};
+    double dz[3] = {0};
 
-   LatLongHeight_to_ECEF(lat+0.001, lg, elv, p1, body);
-   LatLongHeight_to_ECEF(lat-0.001, lg, elv, p2, body);
-   sub3(p1, p2, dp_lat);
-
-   LatLongHeight_to_ECEF(lat, lg+0.001, elv, p1, body);
-   LatLongHeight_to_ECEF(lat, lg-0.001, elv, p2, body);
-   sub3(p1, p2, dp_long);
-
-   unit3(dp_lat, dy);
-
-   unit3(dp_long, dx);
-   cross3(dx, dy, dz);
-   copy3(dx, rot_l_b[0]);
-   copy3(dy, rot_l_b[1]);
-   copy3(dz, rot_l_b[2]);
+    if(lat == -90 || lat == 90){
+        dx[1] = 1;
+        if(lat == 90){
+            dz[2] = 1;
+        }else{
+            dz[2] = -1;
+        }
+        
+        cross3(dz, dx, dy);
+    }else{
+        LatLongHeight_to_ECEF(lat+0.001, lg, elv, p1, body);
+        LatLongHeight_to_ECEF(lat-0.001, lg, elv, p2, body);
+        sub3(p1, p2, dp_lat);
+        
+        LatLongHeight_to_ECEF(lat, lg+0.001, elv, p1, body);
+        LatLongHeight_to_ECEF(lat, lg-0.001, elv, p2, body);
+        sub3(p1, p2, dp_long);
+        
+        unit3(dp_lat, dy);
+        
+        unit3(dp_long, dx);
+        cross3(dx, dy, dz);
+    }
+    copy3(dx, rot_l_b[0]);
+    copy3(dy, rot_l_b[1]);
+    copy3(dz, rot_l_b[2]);
 }
 
 enum Planet strToPlanet(char *str){

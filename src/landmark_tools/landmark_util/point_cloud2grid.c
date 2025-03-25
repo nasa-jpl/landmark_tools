@@ -189,7 +189,7 @@ bool readinpoints_ascii(char * plyname, double **pts, uint8_t **bv, size_t *num_
     }
     
     //Count the number of lines so that we know how much memory to allocate
-    size_t buf_size = 128;
+    int buf_size = 128;
     char buf[buf_size];
     memset(&buf, 0, buf_size);
     
@@ -216,7 +216,7 @@ bool readinpoints_ascii(char * plyname, double **pts, uint8_t **bv, size_t *num_
     *num_pts = 0;
     for(int32_t i = 0; i< line_count; i++){
         if(fgets(buf, buf_size, fp)){
-            // Note that bv_array is type uint8_t but the value should be formated as ld. 
+            // Note that bv_array is type uint8_t but the value should be formated as int64_t.
             if(sscanf(buf, "%lf %lf %lf %ld", &pts_array[*num_pts*3], &pts_array[*num_pts*3+1], &pts_array[*num_pts*3+2] , &bv_array[*num_pts]) == 4){
                  *num_pts += 1;
             }else{

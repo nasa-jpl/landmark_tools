@@ -411,7 +411,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
         }
     }
     write_channel_separated_image("warped_srm.png", tmpimg, lmk_base.num_cols, lmk_base.num_rows, 1);
-    sprintf(buf, "warped_ele_float_%ldby%ld.raw", lmk_base.num_cols, lmk_base.num_rows);
+    sprintf(buf, "warped_ele_float_%dby%d.raw", lmk_base.num_cols, lmk_base.num_rows);
     FILE *fp = fopen(buf, "wb");
     fwrite(tmpele, sizeof(float), lmk_base.num_cols*lmk_base.num_rows, fp);
     fclose(fp);
