@@ -133,8 +133,14 @@ bool displaceElevationCubic(LMK* lmk, float cubic_a, float cubic_b, float cubic_
     return false;
 }
 
-bool displaceElevationSine(LMK* lmk, float sine_amplitude, float sine_frequency, float sine_azimuth){
-    return false;
+void displaceElevationSine(LMK* lmk, float sine_amplitude, float sine_frequency, float sine_azimuth){
+    float sine_azimuth_rad = sine_azimuth * PI / 180.0;
+    for(size_t x =0; x<lmk->num_cols; x++){
+        for(size_t y =0; y<lmk->num_rows; y++){
+            lmk->ele[y * lmk->num_cols + x] += sine_amplitude
+            * sin(2.0 * PI * sine_frequency * (float)x * cos(sine_azimuth_rad) + (float)y * cos(sine_azimuth_rad));
+        }
+    }
 }
 
 int32_t main (int32_t argc, char **argv)
@@ -260,11 +266,7 @@ int32_t main (int32_t argc, char **argv)
     
     if(sine_amplitude !=0 || sine_frequency != 0 || sine_azimuth != 0 ){
         printf("Applying sine displacement to landmark: z(x,y) = %fsin(2PI*%fx*cos(%f) +y*cos(%f))...", sine_amplitude, sine_frequency, sine_azimuth, sine_azimuth);
-        if(!displaceElevationSine(&lmk, sine_amplitude, sine_frequency, sine_azimuth)){
-            printf("Failed to displace landmark\n");
-            free_lmk(&lmk);
-            return EXIT_FAILURE;
-        }
+        displaceElevationSine(&lmk, sine_amplitude, sine_frequency, sine_azimuth);
         printf("done.\n");
     }
     
