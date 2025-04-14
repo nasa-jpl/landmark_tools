@@ -133,12 +133,44 @@ bool displaceElevationCubic(LMK* lmk, float cubic_a, float cubic_b, float cubic_
     return false;
 }
 
-void displaceElevationSine(LMK* lmk, float sine_amplitude, float sine_frequency, float sine_azimuth){
-    float sine_azimuth_rad = sine_azimuth * PI / 180.0;
-    for(size_t x =0; x<lmk->num_cols; x++){
-        for(size_t y =0; y<lmk->num_rows; y++){
-            lmk->ele[y * lmk->num_cols + x] += sine_amplitude
-            * sin(2.0 * PI * sine_frequency * (float)x * cos(sine_azimuth_rad) + (float)y * cos(sine_azimuth_rad));
+void displaceElevationSine(
+        LMK* lmk,
+        float sine_amplitude,
+        float sine_frequency,
+        float sine_azimuth
+) {
+    float sine_azimuth_rad = sine_azimuth * PI / 180.0f;
+    float cos_a = cosf(sine_azimuth_rad);
+    float sin_a = sinf(sine_azimuth_rad);
+
+    // One-cycle width along the wave's axis
+    float width = 1.0f / sine_frequency;
+
+    // Center of the matrix
+    float center_x = (float)lmk->num_cols * 0.5f;
+    float center_y = (float)lmk->num_rows * 0.5f;
+
+    // Half-width to check distance in [-half_width, +half_width]
+    float half_width = 0.5f * width;
+
+    for (size_t y = 0; y < lmk->num_rows; y++) {
+        for (size_t x = 0; x < lmk->num_cols; x++) {
+
+            // Vector from center to (x,y)
+            float dx = (float)x - center_x;
+            float dy = (float)y - center_y;
+
+            // Distance along wave axis
+            float distance = dx * cos_a + dy * sin_a;
+
+            // Only apply wave if distance is within one cycle's range
+            if (distance >= -half_width && distance <= half_width) {
+                // Map distance in [-half_width, +half_width] to [-π, +π]
+                // or [0..2π], as you prefer. Here we do [0..2π] for one full cycle:
+                float normalized = (distance + half_width) / (2.0f * half_width);
+                float phase = 2.0f * PI * normalized;
+                lmk->srm[y * lmk->num_cols + x] += sine_amplitude * sinf(phase);
+            }
         }
     }
 }
@@ -158,7 +190,7 @@ int32_t main (int32_t argc, char **argv)
     float stddev = -1;
     float cubic_a = 0;
     float cubic_b = 0;
-    float cubic_c = 1;
+    float cubic_c = 0;
     float cubic_d = 0;
     float sine_amplitude = 0;
     float sine_frequency = 0;
@@ -254,7 +286,7 @@ int32_t main (int32_t argc, char **argv)
         printf("done.\n");
     }
     
-    if(cubic_a !=0 || cubic_b != 0 || cubic_c != 1 || cubic_d != 0 ){
+    if(cubic_a !=0 || cubic_b != 0 || cubic_c != 0 || cubic_d != 0 ){
         printf("Applying cubic displacement to landmark: f(z) = %fz^3 + %fz^2 + %fz + %f ...", cubic_a, cubic_b, cubic_c, cubic_d);
         if(!displaceElevationCubic(&lmk, cubic_a, cubic_b, cubic_c, cubic_d)){
             printf("Failed to displace landmark\n");

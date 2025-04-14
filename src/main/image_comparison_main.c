@@ -158,13 +158,14 @@ void show_usage_and_exit()
     printf("  Required arguments:\n");
     printf("    -base_image    <image_filepath> \n");
     printf("    -child_image   <image_filepath> \n");
+    printf("    -output_dir    <output_dir> \n");
+    printf("    -output_filename_prefix    <output_filename_prefix> \n");
+    printf("  Optional arguments:\n");
     printf("    -base_nan_mask     <mask_out_filepath> \n");
     printf("    -child_nan_mask    <mask_out_filepath> \n");
     printf("    -base_nan_max_count     <-1 to ignore, 0 or greater to filter> \n");
     printf("    -child_nan_max_count     <-1 to ignore, 0 or greater to filter> \n");
-    printf("    -warp    <image/template> \n");
-    printf("    -output_dir    <output_dir> \n");
-    printf("    -output_filename_prefix    <output_filename_prefix> \n");
+    printf("    -warp    <image(default)/template> \n");
     printf("    -homography_max_dist_between_matching_keypoints    <0 or greater> \n");
     printf("    -c    <ftp_config_filepath> \n");
     exit(EXIT_FAILURE);
@@ -181,9 +182,15 @@ int32_t main (int32_t argc, char **argv)
     char *output_dir = NULL;
     char *output_filename_prefix = NULL;
     char *parameter_file = NULL;
-    char *homography_max_dist_between_matching_keypoints_str = NULL;
-    char *base_nan_max_count_str = NULL;
-    char *child_nan_max_count_str = NULL;
+    
+    // Set this to > 0 to reject matches that are more than N pixels apart on any direction
+    // Only use this if images are expected to be in about the same frame
+    double homography_max_dist_between_matching_keypoints = 0.0;
+    
+    // Max number of nans per window
+    int32_t base_nan_max_count = -1;
+    int32_t child_nan_max_count = -1;
+
     argc--;
     argv++;
 
@@ -196,12 +203,12 @@ int32_t main (int32_t argc, char **argv)
             (m_getarg(argv, "-child_image",   &child_image_file,       CFO_STRING)!=1) &&
             (m_getarg(argv, "-base_nan_mask",     &base_nan_mask_file,       CFO_STRING)!=1) &&
             (m_getarg(argv, "-child_nan_mask",    &child_nan_mask_file,      CFO_STRING)!=1) &&
-            (m_getarg(argv, "-base_nan_max_count",     &base_nan_max_count_str,       CFO_STRING)!=1) &&
-            (m_getarg(argv, "-child_nan_max_count",    &child_nan_max_count_str,      CFO_STRING)!=1) &&
+            (m_getarg(argv, "-base_nan_max_count",     &base_nan_max_count,       CFO_INT)!=1) &&
+            (m_getarg(argv, "-child_nan_max_count",    &child_nan_max_count,      CFO_INT)!=1) &&
             (m_getarg(argv, "-warp",    &warp_image_or_template_str,      CFO_STRING)!=1) &&
             (m_getarg(argv, "-output_dir",    &output_dir,         CFO_STRING)!=1) &&
             (m_getarg(argv, "-output_filename_prefix",    &output_filename_prefix,         CFO_STRING)!=1) &&
-            (m_getarg(argv, "-homography_max_dist_between_matching_keypoints",    &homography_max_dist_between_matching_keypoints_str,         CFO_STRING)!=1) &&
+            (m_getarg(argv, "-homography_max_dist_between_matching_keypoints",    &homography_max_dist_between_matching_keypoints,         CFO_DOUBLE)!=1) &&
             (m_getarg(argv, "-c",    &parameter_file,         CFO_STRING)!=1))
             show_usage_and_exit( );
 
@@ -209,36 +216,32 @@ int32_t main (int32_t argc, char **argv)
         argv+=2;
     }
 
-    WarpingMethod warp_image_or_template = StrToWarpingMethod(warp_image_or_template_str);
+    WarpingMethod warp_image_or_template = WarpingMethod_IMAGE;
+    if(warp_image_or_template_str != NULL){
+        WarpingMethod warp_image_or_template = StrToWarpingMethod(warp_image_or_template_str);
+    }else{
+        printf("No warp method provided. Using image warp\n");
+    }
+
     if (
         (base_image_file == NULL)
         || (child_image_file == NULL)
-        || (base_nan_mask_file == NULL)
-        || (child_nan_mask_file == NULL)
-        || (base_nan_max_count_str == NULL)
-        || (child_nan_max_count_str == NULL)
-        || ((warp_image_or_template_str == NULL) && (warp_image_or_template != WarpingMethod_UNDEFINED))
+        || (warp_image_or_template == WarpingMethod_UNDEFINED)
         || (output_filename_prefix == NULL)
-        || (homography_max_dist_between_matching_keypoints_str == NULL)
-        || (parameter_file == NULL)
     )
     {
         show_usage_and_exit();
     }
-    // Set this to > 0 to reject matches that are more than N pixels apart on any direction
-    // Only use this if images are expected to be in about the same frame
-    double homography_max_dist_between_matching_keypoints = atof(homography_max_dist_between_matching_keypoints_str);
-
-    // Max number of nans per window
-    int32_t base_nan_max_count = atoi(base_nan_max_count_str);
-    int32_t child_nan_max_count = atoi(child_nan_max_count_str);
 
     Parameters parameters;
     load_default_parameters(&parameters);
+    if(parameter_file != NULL){
     int32_t success = read_parameterfile(parameter_file, &parameters);
-
-    if(!success){
-        return EXIT_FAILURE;
+        if(!success){
+            return EXIT_FAILURE;
+        }
+    }else{
+        printf("No parameter file provided. Using default parameters\n");
     }
 
     // Load images
@@ -255,10 +258,59 @@ int32_t main (int32_t argc, char **argv)
     }
 
     // Load masks
-    int child_nan_mask_num_rows, child_nan_mask_num_cols;
-    int base_nan_mask_num_rows, base_nan_mask_num_cols;
-    uint8_t *child_nan_mask = readPGMToArray(child_nan_mask_file, &child_nan_mask_num_cols, &child_nan_mask_num_rows);
-    uint8_t *base_nan_mask = readPGMToArray(base_nan_mask_file, &base_nan_mask_num_cols, &base_nan_mask_num_rows);
+    uint8_t *base_nan_mask;
+    if(base_nan_mask_file == NULL){
+        printf("Using zero nan mask for base image\n");
+        base_nan_mask = malloc(sizeof(uint8_t)*base_image_num_cols*base_image_num_rows);
+        if(base_nan_mask == NULL){
+            printf("Failure to allocate memory for nan mask\n");
+            free_image(&child_image);
+            free_image(&base_image);
+            free_image(&base_nan_mask);
+            return EXIT_FAILURE;
+        }
+        memset(base_nan_mask,0,sizeof(uint8_t)*base_image_num_cols*base_image_num_rows);
+    }else{
+        int base_nan_mask_num_rows, base_nan_mask_num_cols;
+        base_nan_mask = readPGMToArray(base_nan_mask_file, &base_nan_mask_num_cols, &base_nan_mask_num_rows);
+        // Check mask sizes
+    if ((base_image_num_cols != base_nan_mask_num_cols)
+        || (base_image_num_rows != base_nan_mask_num_rows))
+        {
+            printf("Image and mask size mismatch, exiting without output.\n");
+            free_image(&child_image);
+            free_image(&base_image);
+            free_image(&base_nan_mask);
+            return EXIT_FAILURE;
+        }
+    }
+
+    uint8_t *child_nan_mask;
+    if(child_nan_mask_file == NULL){
+        printf("Using zero nan mask for child image\n");
+        child_nan_mask = malloc(sizeof(uint8_t)*child_image_num_cols*child_image_num_rows);
+        if(child_nan_mask == NULL){
+            printf("Failure to allocate memory for nan mask\n");
+            free_image(&child_image);
+            free_image(&base_image);
+            free_image(&base_nan_mask);
+            free_image(&child_nan_mask);
+            return EXIT_FAILURE;
+        }
+        memset(child_nan_mask,0,sizeof(uint8_t)*child_image_num_cols*child_image_num_rows);
+    }else{
+        int child_nan_mask_num_rows, child_nan_mask_num_cols;
+        child_nan_mask = readPGMToArray(child_nan_mask_file, &child_nan_mask_num_cols, &child_nan_mask_num_rows);
+        if ((child_image_num_cols != child_nan_mask_num_cols)
+            || (child_image_num_rows != child_nan_mask_num_rows)){
+                printf("Image and mask size mismatch, exiting without output.\n");
+                free_image(&child_image);
+                free_image(&base_image);
+                free_image(&child_nan_mask);
+                free_image(&base_nan_mask);
+                return EXIT_FAILURE;
+            }
+    }
 
     if(child_nan_mask == NULL || base_nan_mask == NULL){
         printf("Failed to load masks, exiting without output.\n");
@@ -269,24 +321,8 @@ int32_t main (int32_t argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    // Check mask sizes
-    if (
-        (child_image_num_cols != child_nan_mask_num_cols)
-        || (child_image_num_rows != child_nan_mask_num_rows)
-        || (base_image_num_cols != base_nan_mask_num_cols)
-        || (base_image_num_rows != base_nan_mask_num_rows)
-    )
-    {
-        printf("Image and mask size mismatch, exiting without output.\n");
-        free_image(&child_image);
-        free_image(&base_image);
-        free_image(&child_nan_mask);
-        free_image(&base_nan_mask);
-        return EXIT_FAILURE;
-    }
-
     // Make sure nan masks are zeros and ones
-    for (int32_t i = 0; i < child_nan_mask_num_rows * child_nan_mask_num_cols; ++i)
+    for (int32_t i = 0; i < child_image_num_rows * child_image_num_cols; ++i)
     {
         if (child_nan_mask[i] > 0)
         {
@@ -297,7 +333,7 @@ int32_t main (int32_t argc, char **argv)
             child_nan_mask[i] = 0;
         }
     }
-    for (int32_t i = 0; i < base_nan_mask_num_rows * base_nan_mask_num_cols; ++i)
+    for (int32_t i = 0; i < base_image_num_rows * base_image_num_cols; ++i)
     {
         if (base_nan_mask[i] > 0)
         {
@@ -313,7 +349,7 @@ int32_t main (int32_t argc, char **argv)
     int child_image_num_pixels = child_image_num_rows * child_image_num_cols;
     CORR_STRUCT corr_struct;
     allocate_corr(&corr_struct, child_image_num_pixels);
-    success &= MatchFeatures_local_distortion_2d(
+    bool success = MatchFeatures_local_distortion_2d(
         parameters,
         &base_image,
         &base_nan_mask,

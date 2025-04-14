@@ -22,17 +22,41 @@ plt.rcParams.update({'font.size': 14})
 
 import numpy as np
 from PIL import Image
+import glob
 
-def readBinaryImage(filename, width, height, dtype='float32'):
+def readBinaryImage(filename, width, height, dtype='float32', save_image=False):
     I = np.fromfile(filename, dtype=dtype)
+    if(save_image):
+        saveAsImage(I, filename.replace(".raw", ".tif"))
     return np.reshape(I, (height, width))
 
 def saveAsImage(I, filename):
     Image.fromarray(I).save(filename)
 
-def visualize_corr(I, output_prefix, title_str, mask, limits=-1, fig=None, ax=None, ylabel="Meters"):
+def loadAllDisplacementMatrices(prefix, width, height, save_image=False):
+    coor_files = glob.glob(prefix + "*.raw")
+    displacement_maps = {}
+    for filepath in coor_files:
+        output_prefix = filepath.replace('.raw', '')
+        
+        if 'delta_x_' in filepath:
+            key = 'dx'
+        elif 'delta_y_' in filepath:
+            key = 'dy' 
+        elif 'delta_z_' in filepath:
+            key = 'dz'
+        elif 'corr_' in filepath:
+            key = 'correlation'
+        else:
+            continue
+ 
+        I = readBinaryImage(filepath, width, height, save_image=save_image)
+        displacement_maps[key] = I
+    return displacement_maps
 
-    if limits == -1:
+def visualize_displacement(I, output_prefix, title_str, mask, limits=None, fig=None, ax=None, colorbar_label="Meters"):
+
+    if limits is None:
         m = np.mean(I[~mask])
         sigma = np.std(I[~mask])
         limits = [m-4*sigma, m+4*sigma]
@@ -43,7 +67,7 @@ def visualize_corr(I, output_prefix, title_str, mask, limits=-1, fig=None, ax=No
     cax = ax.matshow(I, cmap='coolwarm', vmin=limits[0], vmax=limits[1])
     ax.set_title(title_str)
     cbar = fig.colorbar(cax, extend='both')
-    cbar.ax.set_ylabel(ylabel, rotation=270)
+    cbar.ax.set_ylabel(colorbar_label, rotation=270)
 
     # Axes
     [h, w] = I.shape
@@ -59,6 +83,28 @@ def visualize_corr(I, output_prefix, title_str, mask, limits=-1, fig=None, ax=No
     if output_prefix is not None:
         fig.savefig(output_prefix + '.png')
 
+def visualize_correlation(correlation_map, output_prefix, title_str, fig=None, ax=None):
+
+    if ax is None or fig is None:
+        fig, ax = plt.subplots()
+    
+    cax = ax.matshow(correlation_map, cmap='Greens', vmin=0, vmax=1)
+    ax.set_title(title_str)
+    cbar = fig.colorbar(cax)
+    cbar.ax.set_ylabel("Correlation", rotation=270)
+
+    # Axes
+    [h, w] = correlation_map.shape
+    ax.axis('equal')
+
+    ax.set_ylabel("Pixels")
+    ax.set_xlabel("Pixels")
+    ax.xaxis.set_ticks_position('bottom') # Moves ticks to the bottom
+    plt.xticks(rotation=45, ha='right') # Sets tick rotation
+    
+    # Save
+    if output_prefix is not None:
+        fig.savefig(output_prefix + '_correlation.png')
 
 def corr_histogram(I, output_prefix, title_str, mask, num_bins=50, fig=None, ax1=None, ax2=None, limits=None, ax2_title=None):
 
@@ -111,27 +157,63 @@ def corr_histogram(I, output_prefix, title_str, mask, num_bins=50, fig=None, ax1
     if output_prefix is not None:
         plt.savefig(output_prefix + '-histogram.png')
 
-def displayAll(filepath_prefix, width, height, output_prefix, mask_value=None):
-    for c in ['x', 'y', 'z']:
-        fig = plt.figure()
-        filepath = "{}_delta_{}_{}by{}.raw".format(filepath_prefix, c, width, height)
-        
-        I = readBinaryImage(filepath, width, height)
-        if(mask_value is None):
-            mask = np.isnan(I)
+def displayAllDisplacement(displacement_maps, filepath_prefix, on_grid=True):
+    for key,I in displacement_maps.items():
+        if key == 'dx':
+            title = "Delta X"
+        elif key == 'dy':
+            title = "Delta Y"
+        elif key == 'dz':
+            title = "Delta Z"
         else:
-            mask = I==mask_value
+            continue
 
-        ax = plt.subplot(1,9,(1,3))
-        visualize_corr(I, None, "Delta {}".format(c), mask, fig=fig, ax=ax)
+        output_prefix = filepath_prefix + "_" + key
+        mask = np.isnan(I)
 
+        if on_grid:
+            fig = plt.figure()
+            ax = plt.subplot(1,9,(1,3))
+        else:
+            fig, ax = plt.subplots()
+        visualize_displacement(I, output_prefix, title, mask, fig=fig, ax=ax)
+
+        if on_grid:
+            ax1= plt.subplot(1,9,(6,8))
+            ax2= plt.subplot(1,9,9)
+        else:
+            fig = plt.figure()
+            ax1 = plt.subplot(1, 4, (1, 3))
+            ax2 = plt.subplot(1, 4, 4)
+        corr_histogram(I, output_prefix, title, mask, fig=fig, ax1=ax1, ax2=ax2)
+
+def displayCorrelation(correlation_map, filepath_prefix, on_grid=True):
+    title = "Correlation"
+    if on_grid:
+            fig = plt.figure()
+            ax = plt.subplot(1,9,(1,3))
+    else:
+        fig, ax = plt.subplots()
+    visualize_correlation(correlation_map, filepath_prefix, title, fig=fig, ax=ax)
+
+    if on_grid:
         ax1= plt.subplot(1,9,(6,8))
         ax2= plt.subplot(1,9,9)
-        corr_histogram(I, "{}_{}".format(output_prefix, c), "Delta {}".format(c), mask, fig=fig, ax1=ax1, ax2=ax2)
+    else:
+        fig = plt.figure()
+        ax1 = plt.subplot(1, 4, (1, 3))
+        ax2 = plt.subplot(1, 4, 4)
+    output_prefix = filepath_prefix + "_correlation"
+    mask = np.isnan(correlation_map)
+    corr_histogram(correlation_map, output_prefix, title, mask, limits=[0,1], fig=fig, ax1=ax1, ax2=ax2)
+
+def displayAll(filepath_prefix, width, height, on_grid=True):
+    displacement_maps = loadAllDisplacementMatrices(filepath_prefix, width, height, save_image=True)
+    displayCorrelation(displacement_maps["correlation"], filepath_prefix, on_grid=on_grid)
+    displayAllDisplacement(displacement_maps, filepath_prefix, on_grid=on_grid)
 
 if __name__=='__main__':
     import argparse
-    import glob
 
     parser = argparse.ArgumentParser(
                     prog='VizualizeDEMCorrelation',
@@ -142,27 +224,5 @@ if __name__=='__main__':
 
     args = parser.parse_args()
 
-    coor_files = glob.glob(args.prefix + "*.raw")
-    for filepath in coor_files:
-        output_prefix = filepath.replace('.raw', '')
-        
-        if 'delta_x_' in filepath:
-            title = "Delta X";
-            limit = [-50, 50];
-        elif 'delta_y_' in filepath:
-            title = "Delta Y";
-            limit = [-50, 50];  
-        elif 'delta_z_' in filepath:
-            title = "Delta Z";
-            limit = [-20, 20];
-        else:
-            continue
- 
-        I = readBinaryImage(filepath, args.width, args.height)
-        saveAsImage(I, output_prefix+".tif")
-
-        mask = np.isnan(I)
-        visualize_corr(I, output_prefix, title, mask, limit)
-        corr_histogram(I, output_prefix, title, mask)
-
+    displayAll(args.prefix, args.width, args.height, on_grid=False)
     print("All figures have been generated.")
