@@ -153,14 +153,16 @@ class Landmark:
                 self.anchor_col == other.anchor_col and \
                 self.anchor_row == other.anchor_row and \
                 self.resolution == other.resolution and \
-                np.all(np.isclose(self.anchor_point, other.anchor_point)) and \
-                np.all(np.isclose(self.mapRworld, other.mapRworld)) and \
-                np.all(np.isclose(self.srm, other.srm)) and \
-                np.all(np.isclose(self.ele, other.ele))
+                np.allclose(self.anchor_point, other.anchor_point) and \
+                np.allclose(self.mapRworld, other.mapRworld) and \
+                np.allclose(self.srm, other.srm) and \
+                np.allclose(self.ele, other.ele)
         return NotImplemented
     
     def assess_equality(self, other):
-        if isinstance(other, Landmark):
+        if self == other :
+            print("Objects are equal")
+        elif isinstance(other, Landmark):
             if(self.BODY != other.BODY):
                 print("self.BODY = {} other.BODY = {}", self.BODY, other.BODY)
             if(self.lmk_id != other.lmk_id):
@@ -176,13 +178,13 @@ class Landmark:
             if(self.resolution != other.resolution):
                 print("self.resolution = {} other.resolution = {}", self.resolution, other.resolution)
         
-            if(not np.all(np.isclose(self.anchor_point, other.anchor_point))):
+            if(not np.allclose(self.anchor_point, other.anchor_point)):
                 print("self.anchor_point != other.anchor_point")
-            if(not np.all(np.isclose(self.mapRworld, other.mapRworld))):
+            if(not np.allclose(self.mapRworld, other.mapRworld)):
                 print("self.mapRworld != other.mapRworld")
-            if(not np.all(np.isclose(self.srm, other.srm))):
+            if(not np.allclose(self.srm, other.srm)):
                 print("self.srm != other.srm")
-            if(not np.all(np.isclose(self.ele, other.ele))):
+            if(not np.allclose(self.ele, other.ele)):
                 print("self.ele != other.ele")
         else:
             return NotImplemented

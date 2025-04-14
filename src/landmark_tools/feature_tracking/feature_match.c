@@ -165,7 +165,7 @@ int32_t MatchFeaturesOnlyExtended(
                 {
                     for (int32_t mask_col = left2; mask_col < left2 + cols_win2; ++mask_col)
                     {
-                        int32_t mask_pixel = mask_row * cols2 + mask_col;
+                        size_t mask_pixel = mask_row * cols2 + mask_col;
                         if (mask2[mask_pixel] != 0)
                         {
                             ++no_data2;
