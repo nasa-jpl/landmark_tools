@@ -44,7 +44,7 @@ void  show_usage_and_exit()
     printf("    -translate <x meters> <y meters> <z meters> - simulates map tie error \n");
     printf("    -rotate <in-plane rotation degrees> - simulates map orientation error\n");
     printf("    -random_displace <mean> <stddev> - simulates correlation noise with gaussian elevation displacement\n");
-//    printf("    -sine_wave <amplitude> <frequency> <azimuth> - simulates image jitter with elevation displacement\n");
+    printf("    -sine_wave <amplitude> <frequency> <azimuth> - simulates image jitter with elevation displacement\n");
 //    printf("    -cubic  <a> <b> <c> <d> - simulates camera model error with elevation displacement\n");
     
     exit(EXIT_FAILURE);
