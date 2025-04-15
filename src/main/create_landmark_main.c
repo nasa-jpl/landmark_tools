@@ -65,12 +65,12 @@ int32_t main(int32_t argc, char** argv)
 {
     float lmkcols=0.0, lmkrows = 0.0;
     float lmkres = 0.0;
-    char* projection_type=0;
-    char* config_file_name=0;
-    char* input_geotif_file_name=0;
-    char* output_lmk_file_name=0;
-    char* planet_str=0;
-    char* srm_file_name=0;
+    char* projection_type=NULL;
+    char* config_file_name=NULL;
+    char* input_geotif_file_name=NULL;
+    char* output_lmk_file_name=NULL;
+    char* planet_str=NULL;
+    char* srm_file_name=NULL;
     double lat0 = 0.0, long0 = 0.0;
     double nodata_value = NAN;
     float set_anchor_point_ele = NAN;

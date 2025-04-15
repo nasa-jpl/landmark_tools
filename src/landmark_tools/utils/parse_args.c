@@ -26,6 +26,7 @@ int32_t m_getarg(char **argv, char *argname, void *argvarptr, int32_t argtype)
 
     if (strncmp(argv[0], argname, strlen(argv[0])) == 0 && strlen(argv[0]) == strlen(argname))
     {
+        printf("%.256s = %.256s\n", argname, argv[1]);
         if (argtype == CFO_STRING)
             *((char **)argvarptr) = argv[1];
 
