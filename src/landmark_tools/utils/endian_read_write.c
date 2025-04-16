@@ -16,13 +16,13 @@
 
 #include "landmark_tools/utils/endian_read_write.h"
 
-#if defined(LINUX_OS) || defined(MAC_OS)
+#if defined(__linux__) || defined(__APPLE__)
 
 #include <arpa/inet.h>   // for htonl, ntohl, htons, ntohs
 
 #endif
 
-#if defined(LINUX_OS)
+#if defined(__linux__)
 
 #include <endian.h>
 
@@ -31,7 +31,7 @@
 
 #endif
 
-#ifdef WINDOWS_OS
+#ifdef _WIN32
 
 #include <winsock2.h>
 

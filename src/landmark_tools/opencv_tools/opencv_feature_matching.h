@@ -31,8 +31,7 @@ extern "C" {
 */
 typedef enum {
   SIFT,
-  ORB,
-  SURF
+  ORB
 } HomographyMatchMethod;
 
 /**

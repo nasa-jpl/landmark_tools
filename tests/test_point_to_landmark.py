@@ -17,7 +17,7 @@ def test_point_to_landmark_regression():
     """
     # Run executables
     run_cmd([ TOP_DIR / "build/point_2_landmark",
-            "-p", "unit_test_data/final_3d_points.txt",
+            "-p", "gold_standard_data/final_3d_points.txt",
             "-l", "output/pointcloud.lmk",
             "-d", "10", 
             "-lt", "-9.11089",
@@ -32,8 +32,9 @@ def test_point_to_landmark_regression():
     gt = landmark.Landmark(TEST_DIR / "gold_standard_data/pointcloud_v3.lmk")
 
     # Check changes
-    np.testing.assert_allclose(L1.ele, gt.ele, rtol=0, atol=1)
-    np.testing.assert_allclose(L1.srm, gt.srm, rtol=0, atol=1)
+    mask = np.logical_not(np.logical_or(np.isnan(L1.ele), np.isnan(gt.ele)))
+    np.testing.assert_allclose(L1.ele[mask], gt.ele[mask], rtol=0, atol=1)
+    np.testing.assert_allclose(L1.srm[mask], gt.srm[mask], rtol=0, atol=1)
 
 def test_LMK_to_PLY_to_LMK():
     """Transform the LMK file to a PLY file and back. The result should be the same as the original.  

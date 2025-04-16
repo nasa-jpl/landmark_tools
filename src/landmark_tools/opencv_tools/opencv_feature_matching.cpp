@@ -21,7 +21,6 @@
 
 #include "opencv2/calib3d/calib3d.hpp" // for findHomography
 #include <opencv2/features2d.hpp> // for drawMatches
-#include <opencv2/xfeatures2d/nonfree.hpp> // for SURF
 
 #include "opencv_feature_matching.h"
 
@@ -30,9 +29,6 @@ char* HomographyMatchMethodToStr(HomographyMatchMethod method){
     {
         case SIFT:
             return "SIFT";
-            break;
-        case SURF:
-            return "SURF";
             break;
         case ORB:
             return "ORB";
@@ -136,25 +132,6 @@ bool calc_homography_from_feature_matching(
         detector = cv::SIFT::create();
         descriptor = cv::SIFT::create();
         matcher = cv::BFMatcher::create(cv::NORM_L1);
-
-        // Detect keypoints
-        detector->detect(base_image_mat, base_keypoints, base_mask_mat);
-        detector->detect(child_image_mat, child_keypoints, child_mask_mat);
-
-        // TODO: filter keypoints based on masks
-
-        // Compute descriptors
-        descriptor->compute(base_image_mat, base_keypoints, base_descriptors);
-        descriptor->compute(child_image_mat, child_keypoints, child_descriptors);
-
-        // Compute matches
-        matcher->match(base_descriptors, child_descriptors, matches);
-    }
-    else if (homography_match_method == SURF)
-    {
-        detector = cv::xfeatures2d::SURF::create();
-        descriptor = cv::xfeatures2d::SURF::create();
-        matcher = cv::FlannBasedMatcher::create();
 
         // Detect keypoints
         detector->detect(base_image_mat, base_keypoints, base_mask_mat);
