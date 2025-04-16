@@ -5,8 +5,9 @@ import numpy as np
 
 # Path to the top-level repo directory
 TOP_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(1, str(TOP_DIR / 'scripts/python/landmark_tools'))
-import landmark
+TEST_DIR = Path(__file__).resolve().parent
+import landmark_tools.landmark as visualize_corr
+import landmark_tools.landmark as landmark
 
 def test_legacy_configuration_geographic_regression():
     """Compare the landmark file created using a configuration file and the current code to an archival copy

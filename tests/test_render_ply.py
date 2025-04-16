@@ -5,9 +5,10 @@ import numpy as np
 
 # Path to the top-level repo directory
 TOP_DIR = Path(__file__).resolve().parent.parent
+TEST_DIR = Path(__file__).resolve().parent
 PYTHON_SCRIPT_DIR = TOP_DIR / 'scripts/python/landmark_tools'
-sys.path.insert(1, str(PYTHON_SCRIPT_DIR))
-import landmark
+import landmark_tools.landmark as visualize_corr
+import landmark_tools.landmark as landmark
 
 def normalized_cross_correlation(img1, img2):
     img1 = (img1 - np.mean(img1)) / np.std(img1)

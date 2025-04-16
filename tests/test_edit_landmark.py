@@ -5,10 +5,9 @@ import numpy as np
 
 # Path to the top-level repo directory
 TOP_DIR = Path(__file__).resolve().parent.parent
-PYTHON_SCRIPT_DIR = TOP_DIR / 'scripts/python/landmark_tools'
 TEST_DIR = Path(__file__).resolve().parent
-sys.path.insert(1, str(PYTHON_SCRIPT_DIR))
-import landmark
+import landmark_tools.landmark as visualize_corr
+import landmark_tools.landmark as landmark
 
 def test_crop():
     """Crop the DEM directly to the target size, and compare with a two-step crop sequence that yields the same final size; results should be identical.
