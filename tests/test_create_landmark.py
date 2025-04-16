@@ -8,7 +8,7 @@ TOP_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(1, str(TOP_DIR / 'scripts/python/landmark_tools'))
 import landmark
 
-def test_legacy_configuration_geographic():
+def test_legacy_configuration_geographic_regression():
     """Compare the landmark file created using a configuration file and the current code to an archival copy
     
     Updates have changed the bilinear interpolation method, so some small differences in value are expected. 
@@ -22,16 +22,16 @@ def test_legacy_configuration_geographic():
               "-config_file", "make_equal_rectangular_lmk.txt"], 
               cwd= TOP_DIR / "tests/")
 
-    assert (Path( TOP_DIR / "tests/output/equal_rectangular_WY.lmk").exists())
+    assert Path(TOP_DIR / "tests/output/equal_rectangular_WY.lmk").exists()
 
     # Check changes
     L1 = landmark.Landmark( TOP_DIR / "tests/output/equal_rectangular_WY.lmk")
     gt = landmark.Landmark( TOP_DIR / "tests/gold_standard_data/equal_rectangular_WY.lmk")
 
     # Elevation difference less than 1m
-    assert np.all(np.less(np.abs(L1.ele-gt.ele), 1))
+    np.testing.assert_allclose(L1.ele, gt.ele, rtol=0, atol=1)
 
-def test_geotiff_configuration_geographic():
+def test_geotiff_configuration_geographic_regression():
     """Compare the landmark file created by automatically reading geotiff metadata to an archival copy
     
     Updates have changed the bilinear interpolation method, so some small differences in value are expected. 
@@ -49,16 +49,16 @@ def test_geotiff_configuration_geographic():
                 "-planet", "Earth"], 
                 cwd= TOP_DIR / "tests/")
 
-    assert (Path(TOP_DIR / "tests/output/equal_rectangular_WY_geotif.lmk").exists())
+    assert Path(TOP_DIR / "tests/output/equal_rectangular_WY_geotif.lmk").exists()
 
     # Check changes
     L1 = landmark.Landmark(TOP_DIR / "tests/output/equal_rectangular_WY_geotif.lmk")
     gt = landmark.Landmark(TOP_DIR / "tests/gold_standard_data/equal_rectangular_WY.lmk")
 
     # Elevation difference less than 1 m
-    assert np.all(np.less(np.abs(L1.ele-gt.ele), 1))
+    np.testing.assert_allclose(L1.ele, gt.ele, rtol=0, atol=1)
 
-def test_legacy_configuration_utm():
+def test_legacy_configuration_utm_regression():
     """Compare the landmark file created using a configuration file and the current code to an archival copy
     
     Updates have changed the bilinear interpolation method, so some small differences in value are expected. 
@@ -72,16 +72,16 @@ def test_legacy_configuration_utm():
               "-config_file", "make_UTM_lmk.txt"], 
               cwd= TOP_DIR / "tests/")
 
-    assert (Path(TOP_DIR / "tests/output/UTM_WY.lmk").exists())
+    assert Path(TOP_DIR / "tests/output/UTM_WY.lmk").exists()
 
     # Check changes
     L1 = landmark.Landmark(TOP_DIR / "tests/output/UTM_WY.lmk")
     gt = landmark.Landmark(TOP_DIR / "tests/gold_standard_data/UTM_WY.lmk")
 
     # Elevation difference less than 1 m
-    assert np.all(np.less(np.abs(L1.ele-gt.ele), 1))
+    np.testing.assert_allclose(L1.ele, gt.ele, rtol=0, atol=1)
 
-def test_geotiff_configuration_utm():
+def test_geotiff_configuration_utm_regression():
     """Compare the landmark file created by automatically reading geotiff metadata to an archival copy
     
     Updates have changed the bilinear interpolation method, so some small differences in value are expected. 
@@ -99,16 +99,16 @@ def test_geotiff_configuration_utm():
                 "-planet", "Earth"], 
                 cwd= TOP_DIR / "tests/")
 
-    assert (Path(TOP_DIR / "tests/output/UTM_WY_geotif.lmk").exists())
+    assert Path(TOP_DIR / "tests/output/UTM_WY_geotif.lmk").exists()
 
     # Check changes
     L1 = landmark.Landmark(TOP_DIR / "tests/output/UTM_WY_geotif.lmk")
     gt = landmark.Landmark(TOP_DIR / "tests/gold_standard_data/UTM_WY.lmk")
 
     # Elevation difference less than 1m
-    assert np.all(np.less(np.abs(L1.ele-gt.ele), 1))
+    np.testing.assert_allclose(L1.ele, gt.ele, rtol=0, atol=1)
 
-def test_legacy_configuration_stereo():
+def test_legacy_configuration_stereo_regression():
     """Compare the landmark file created using a configuration file and the current code to an archival copy
     
     Updates have changed the bilinear interpolation method, so some small differences in value are expected. 
@@ -121,7 +121,7 @@ def test_legacy_configuration_stereo():
               "-config_file", "make_polar_stereo_lmk.txt"], 
               cwd="tests/")
 
-    assert (Path(TOP_DIR / "tests/output/polarstereo_moon.lmk").exists())
+    assert Path(TOP_DIR / "tests/output/polarstereo_moon.lmk").exists()
 
     # Check changes
     L1 = landmark.Landmark(TOP_DIR / "tests/output/polarstereo_moon.lmk")
@@ -129,9 +129,9 @@ def test_legacy_configuration_stereo():
 
     # Elevation difference less than 1 m
     diff = np.abs(L1.ele-gt.ele)
-    assert np.all(np.less(diff[np.logical_not(np.isnan(diff))], 1))
+    np.testing.assert_allclose(L1.ele, gt.ele, rtol=0, atol=1)
 
-def test_geotiff_configuration_stereo():
+def test_geotiff_configuration_stereo_regression():
     """Compare the landmark file created by automatically reading geotiff metadata to an archival copy
     
     Updates have changed the bilinear interpolation method, so some small differences in value are expected. 
@@ -149,7 +149,7 @@ def test_geotiff_configuration_stereo():
                 "-planet", "Moon"], 
                 cwd= TOP_DIR / "tests/")
 
-    assert (Path(TOP_DIR / "tests/output/polarstereo_moon_geotif.lmk").exists())
+    assert Path(TOP_DIR / "tests/output/polarstereo_moon_geotif.lmk").exists()
 
     # Check changes
     L1 = landmark.Landmark(TOP_DIR / "tests/output/polarstereo_moon_geotif.lmk")
@@ -157,4 +157,4 @@ def test_geotiff_configuration_stereo():
 
     # Elevation difference less than 1 m
     diff = np.abs(L1.ele-gt.ele)
-    assert np.all(np.less(diff[np.logical_not(np.isnan(diff))], 1))
+    np.testing.assert_allclose(L1.ele, gt.ele, rtol=0, atol=1)

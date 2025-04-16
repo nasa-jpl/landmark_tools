@@ -14,7 +14,7 @@ def normalized_cross_correlation(img1, img2):
     img2 = (img2 - np.mean(img2)) / np.std(img2)
     return np.mean(img1 * img2)
 
-def test_render_ply():
+def test_render_ply_regression():
     """Compare the shadow rendering current code to an archival copy
     
     Completely different renderer (C vs Blender API), so some small differences in value are expected
@@ -29,7 +29,7 @@ def test_render_ply():
             "-frame", "LOCAL"], 
             cwd= TOP_DIR / "tests/")
 
-    assert (Path( TOP_DIR / "tests/output/UTM_WY.ply").exists())
+    assert Path( TOP_DIR / "tests/output/UTM_WY.ply").exists()
 
     run_cmd([ "python", PYTHON_SCRIPT_DIR / "render_ply.py",
             "output/UTM_WY.ply",
@@ -40,7 +40,7 @@ def test_render_ply():
             "-resolution", "10"], 
             cwd= TOP_DIR / "tests/")
 
-    assert (Path( TOP_DIR / "tests/output/UTM_WY.png").exists())
+    assert Path( TOP_DIR / "tests/output/UTM_WY.png").exists()
 
     run_cmd([ TOP_DIR / "build/add_srm",
             "-input", "gold_standard_data/UTM_WY.lmk",
@@ -48,7 +48,7 @@ def test_render_ply():
             "-srm", "output/UTM_WY.png"], 
             cwd= TOP_DIR / "tests/")
 
-    assert (Path( TOP_DIR / "tests/output/UTM_WY_rendered.lmk").exists())
+    assert Path( TOP_DIR / "tests/output/UTM_WY_rendered.lmk").exists()
 
     # Check changes
     L1 = landmark.Landmark( TOP_DIR / "tests/output/UTM_WY_rendered.lmk")

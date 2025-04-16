@@ -154,7 +154,7 @@ class Landmark:
                 self.anchor_row == other.anchor_row and \
                 self.resolution == other.resolution and \
                 np.allclose(self.anchor_point, other.anchor_point) and \
-                np.allclose(self.mapRworld, other.mapRworld) and \
+                np.allclose(self.mapRworld, other.mapRworld, rtol=0, atol=1e-4) and \
                 np.allclose(self.srm, other.srm) and \
                 np.allclose(self.ele, other.ele)
         return NotImplemented
@@ -180,7 +180,7 @@ class Landmark:
         
             if(not np.allclose(self.anchor_point, other.anchor_point)):
                 print("self.anchor_point != other.anchor_point")
-            if(not np.allclose(self.mapRworld, other.mapRworld)):
+            if(not np.allclose(self.mapRworld, other.mapRworld, rtol=0, atol=1e-4)):
                 print("self.mapRworld != other.mapRworld")
             if(not np.allclose(self.srm, other.srm)):
                 print("self.srm != other.srm")

@@ -1,0 +1,4 @@
+bpy 
+matplotlib
+numpy
+pillow

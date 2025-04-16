@@ -30,7 +30,9 @@
 
 void  show_usage_and_exit()
 {
-    printf("Crop or scale a landmark file\n");
+    printf("Crop or scale a landmark file\n\n");
+    printf("SUBSET uses the same tangent plane and rastor grid as the original DEM\n"); 
+    printf("CROP defines a new tangent plane at the center of the cropped area and performs interpolation\n");
     printf("Usage for render_landmark:\n");
     printf("------------------\n");
     printf("  Required arguments:\n");

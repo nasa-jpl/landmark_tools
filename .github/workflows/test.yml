@@ -1,0 +1,51 @@
+name: Build C code and run tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libpng-dev \
+          libyaml-dev \
+          libgsl-dev \
+          libgdal-dev \
+          libopencv-dev \
+          cmake \
+          build-essential \
+          python3-dev
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+
+    - name: Configure and build C code
+      run: |
+        mkdir -p build
+        cd build
+        cmake -DWITH_OPENCV=ON  ..
+        make -j$(nproc)
+
+    - name: Run tests
+      run: |
+        pytest --maxfail=3 --tb=short
+
