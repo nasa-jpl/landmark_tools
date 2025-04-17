@@ -6,23 +6,24 @@ import numpy as np
 # Path to the top-level repo directory
 TOP_DIR = Path(__file__).resolve().parent.parent
 TEST_DIR = Path(__file__).resolve().parent
-import landmark_tools.landmark as visualize_corr
-import landmark_tools.landmark as landmark
+import landmark_tools.visualize_corr as visualize_corr
 
-def test_landmark_comparison_regression():
+def test_landmark_comparison_regression(tmp_path):
     """Compare the disparity map output of the current code to an archival copy
     
     Using the gold standard landmark files to compare with so that we are only comparing differences in the comparison code, 
     not accumulated differences from the landmark creation, rendering, etc.  
     """
+
+    output_prefix = tmp_path / "comparison"
     # Run executables
     run_cmd([ TOP_DIR / "build/landmark_comparison",
         "-l1", "gold_standard_data/UTM_WY.lmk_demo.lmk",
         "-l2", "gold_standard_data/equal_rectangular_WY.lmk_demo.lmk",
-        "-o", "output/comparison "], 
+        "-o", output_prefix], 
         cwd= TEST_DIR)
 
-    filepath1 = str(TEST_DIR / "output/comparison_")
+    filepath1 = str(output_prefix)
     filepath2 = str(TEST_DIR / "gold_standard_data/comparison_")
     width = 500
     height = 500
@@ -36,17 +37,19 @@ def test_landmark_comparison_regression():
         np.testing.assert_allclose(I1, I2, rtol=0, atol=1)
 
 
-def test_landmark_comparison_self():
+def test_landmark_comparison_self(tmp_path):
     """A landmark compared to itself should have zero disparity
     """
+    output_prefix = tmp_path / "comparison"
+
     # Run executables
     run_cmd([ TOP_DIR / "build/landmark_comparison",
         "-l1", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
         "-l2", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
-        "-o", "output/self_compare"], 
+        "-o", output_prefix], 
         cwd= TEST_DIR)
 
-    filepath1 = str(TEST_DIR / "output/self_compare")
+    filepath1 = str(output_prefix)
     width = 1000
     height = 1000
 

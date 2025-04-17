@@ -383,7 +383,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
     
     size_t buff_size = 256;
     char strbuf[buff_size];
-    snprintf(strbuf, buff_size, "%.256s_registered.lmk", lmkname_child);
+    snprintf(strbuf, buff_size, "%.200s_registered.lmk", lmkname_child);
     Write_LMK(strbuf, &lmk_child);
     
     

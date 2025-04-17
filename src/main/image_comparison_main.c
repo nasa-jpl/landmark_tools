@@ -379,29 +379,29 @@ int32_t main (int32_t argc, char **argv)
         }
     }
 
-    size_t output_basepath_size = 256;
+    size_t output_basepath_size = 512;
     char output_basepath[output_basepath_size];
     snprintf(output_basepath, output_basepath_size, "%.256s/%.256s", output_dir, output_filename_prefix);
-    printf("Saving results to %.256s\n", output_basepath);
+    printf("Saving results to %.512\n", output_basepath);
 
     FILE *fp;
-    size_t buf_size = 256;
+    size_t buf_size = 544;
     char buf[buf_size];
-    snprintf(buf, buf_size, "%.256s_delta_x_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
+    snprintf(buf, buf_size, "%.544s%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.deltax, sizeof(float), child_image_num_pixels, fp);
     fclose(fp);
-    snprintf(buf, buf_size, "%.256s_delta_y_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
+    snprintf(buf, buf_size, "%.544s_delta_y_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.deltay, sizeof(float), child_image_num_pixels, fp);
     fclose(fp);
 
-    snprintf(buf, buf_size, "%.256s_delta_z_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
+    snprintf(buf, buf_size, "%.544s_delta_z_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.deltaz, sizeof(float), child_image_num_pixels, fp);
     fclose(fp);
 
-    snprintf(buf, buf_size, "%.256s_corr_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
+    snprintf(buf, buf_size, "%.544s_corr_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.corr_m, sizeof(float), child_image_num_pixels, fp);
     fclose(fp);
@@ -454,14 +454,14 @@ bool estimateHomographyFromFeatureMatching(
         snprintf(
             path_draw_match_image,
                  path_string_length,
-            "%.256s/homography_match_image_%.16s.jpg",
+            "%.200s/homography_match_image_%.16s.jpg",
             output_dir,
             homography_match_method
         );
         snprintf(
             path_draw_inlier_image,
                  path_string_length,
-            "%.256s/homography_inlier_image_%.16s.jpg",
+            "%.200s/homography_inlier_image_%.16s.jpg",
             output_dir,
             homography_match_method
         );
