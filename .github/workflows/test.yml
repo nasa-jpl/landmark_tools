@@ -15,8 +15,21 @@ jobs:
       uses: actions/checkout@v3
       with:
         submodules: recursive
-        lfs: true
-        lfs-depth: 1
+        lfs: false
+  
+    - name: Restore LFS cache
+      uses: actions/cache@v3
+      with:
+        path: .git/lfs
+        key: lfs-${{ runner.os }}-${{ github.sha }}
+        restore-keys: |
+          lfs-${{ runner.os }}-
+
+    - name: Fetch only needed LFS files
+      run: |
+        git lfs install
+        git lfs fetch --include="tests/gold_standard_data/**"
+        git lfs checkout
 
     - name: Install system dependencies
       run: |
@@ -50,11 +63,6 @@ jobs:
         cd build
         cmake -DWITH_OPENCV=ON  ..
         make -j$(nproc)
-
-    - name: Fetch only needed LFS files
-      run: |
-        git lfs fetch --include="tests/gold_standard_data/**"
-        git lfs checkout
 
     - name: Run tests
       run: |
