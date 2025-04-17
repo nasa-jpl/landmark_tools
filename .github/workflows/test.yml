@@ -31,11 +31,6 @@ jobs:
         git lfs fetch --include="tests/gold_standard_data/**"
         git lfs checkout
 
-    - name: Debug check gold_standard_data files
-      run: |
-        file tests/gold_standard_data/*
-        cat tests/gold_standard_data/*.tif | head -n 10
-
     - name: Install system dependencies
       run: |
         sudo apt-get update
