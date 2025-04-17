@@ -306,21 +306,21 @@ int32_t main (int32_t argc, char **argv)
     FILE *fp;
     size_t buf_size = 256;
     char buf[buf_size];
-    snprintf(buf, buf_size, "%.256s_delta_x_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
+    snprintf(buf, buf_size, "%.200s_delta_x_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.deltax, sizeof(float), lmk_child.num_pixels, fp);
     fclose(fp);
-    snprintf(buf, buf_size, "%.256s_delta_y_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
+    snprintf(buf, buf_size, "%.200s_delta_y_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.deltay, sizeof(float), lmk_child.num_pixels, fp);
     fclose(fp);
     
-    snprintf(buf, buf_size, "%.256s_delta_z_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
+    snprintf(buf, buf_size, "%.200s_delta_z_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.deltaz, sizeof(float), lmk_child.num_pixels, fp);
     fclose(fp);
     
-    snprintf(buf, buf_size, "%.256s_corr_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
+    snprintf(buf, buf_size, "%.200s_corr_%dby%d.raw", outfile, lmk_child.num_cols, lmk_child.num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.corr_m, sizeof(float), lmk_child.num_pixels, fp);
     fclose(fp);

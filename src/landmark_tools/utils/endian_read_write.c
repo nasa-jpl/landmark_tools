@@ -15,14 +15,15 @@
  */
 
 #include "landmark_tools/utils/endian_read_write.h"
+#include <inttypes.h> 
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(LINUX_OS) || defined(MAC_OS)
 
 #include <arpa/inet.h>   // for htonl, ntohl, htons, ntohs
 
 #endif
 
-#if defined(__linux__)
+#if defined(LINUX_OS)
 
 #include <endian.h>
 
@@ -31,7 +32,7 @@
 
 #endif
 
-#ifdef _WIN32
+#ifdef WINDOWS_OS
 
 #include <winsock2.h>
 
@@ -52,7 +53,7 @@ int64_t read_big_endian_array(void* array, uint8_t byte_width, bool isfloat, int
                 double* ptr = (double*)array;
                 if(!read_double_big_endian(fp, &ptr[i])) return i;
             }else{
-                printf("read_big_endian_array: Unsupported float numerical type %lld\n", size);
+                printf("read_big_endian_array: Unsupported float numerical type %" PRId64 "\n", size);
                 return 0;
             }
         }else{
@@ -72,7 +73,7 @@ int64_t read_big_endian_array(void* array, uint8_t byte_width, bool isfloat, int
                 uint16_t* ptr = (uint16_t*)array;
                 ptr[i] = ntohs(big_endian_16);
             }else{
-                printf("read_big_endian_array: Unsupported int numerical type %lld\n", size);
+                printf("read_big_endian_array: Unsupported int numerical type %" PRId64 "\n", size);
                 return 0;
             }
             
@@ -126,7 +127,7 @@ int64_t write_big_endian_array(void* array, uint8_t byte_width, bool isfloat, in
                 double* ptr = (double*)array;
                 if(!write_double_big_endian(fp, ptr[i])) return i;
             }else{
-                printf("write_big_endian_array: Unsupported float numerical type %lld\n", size);
+                printf("write_big_endian_array: Unsupported float numerical type %" PRId64 "\n", size);
                 return 0;
             }
             
@@ -144,7 +145,7 @@ int64_t write_big_endian_array(void* array, uint8_t byte_width, bool isfloat, in
                 uint16_t big_endian_16 = htons(ptr[i]);
                 if(fwrite(&big_endian_16, sizeof(uint16_t), 1, fp)!= 1) return i;
             }else{
-                printf("write_big_endian_array: Unsupported int numerical type %lld\n", size);
+                printf("write_big_endian_array: Unsupported float numerical type %" PRId64 "\n", size);
                 return 0;
             }
         }

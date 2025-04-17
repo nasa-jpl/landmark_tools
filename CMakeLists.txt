@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
 project(landmark_tools)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message(STATUS "Configuring on/for Linux")
+if(UNIX AND NOT APPLE)
+    message(STATUS "Configuring for Linux-like system")
     add_definitions(-DLINUX_OS)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    message(STATUS "Configuring on/for Windows")
-    add_definitions(-DWINDOWS_OS)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    # Darwin is the system name for macOS
-    message(STATUS "Configuring on/for macOS")
+elseif(APPLE)
+    message(STATUS "Configuring for macOS")
     add_definitions(-DMAC_OS)
+elseif(WIN32)
+    message(STATUS "Configuring for Windows")
+    add_definitions(-DWINDOWS_OS)
 endif()
+
 
 # Add local CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")

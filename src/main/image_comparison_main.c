@@ -443,7 +443,7 @@ bool estimateHomographyFromFeatureMatching(
     for (int i_method = 0; i_method < method_count; ++i_method)
     {
         double homography_arr_local[3][3];
-        char* homography_match_method = HomographyMatchMethodToStr(method_arr[i_method]);
+        const char* homography_match_method = HomographyMatchMethodToStr(method_arr[i_method]);
         uint32_t homography_min_inlier_count = 4;
         uint32_t homography_found_inlier_count = 0;
         bool do_draw_homography_image = true;

@@ -24,7 +24,7 @@
 
 #include "opencv_feature_matching.h"
 
-char* HomographyMatchMethodToStr(HomographyMatchMethod method){
+const char* HomographyMatchMethodToStr(HomographyMatchMethod method){
     switch (method)
     {
         case SIFT:

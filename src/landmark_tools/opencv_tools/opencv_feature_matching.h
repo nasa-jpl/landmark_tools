@@ -40,7 +40,7 @@ typedef enum {
  \param[in] method 
  \return char* 
 */
-char* HomographyMatchMethodToStr(HomographyMatchMethod method);
+const char* HomographyMatchMethodToStr(HomographyMatchMethod method);
 
 /**
  \brief TODO
