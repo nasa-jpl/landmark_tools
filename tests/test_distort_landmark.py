@@ -18,7 +18,7 @@ def test_translate(tmp_path):
     test2_path = tmp_path / "translate_test2.lmk"
     # Run executables
     run_cmd([ TOP_DIR / "build/distort_landmark",
-            "-input", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
+            "-input", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
             "-output", test1_path,
             "-translate", str(x), str(y), str(z)], 
             cwd= TEST_DIR)
@@ -45,7 +45,7 @@ def test_rotate(tmp_path):
     test2_path = tmp_path / "rotate_test2.lmk"
     # Run executables
     run_cmd([ TOP_DIR / "build/distort_landmark",
-            "-input", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
+            "-input", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
             "-output", test1_path,
             "-rotate", str(rotate)], 
             cwd= TEST_DIR)

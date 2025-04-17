@@ -69,7 +69,7 @@ def test_geotiff_configuration_geographic_regression(tmp_path):
     # Run create_landmark
     output = tmp_path / "equal_rectangular_WY_geotif.lmk"
     run_cmd([TOP_DIR / "build/create_landmark",
-              "-geotif_file", "gold_standard_data/equal_rectangular_WY.tif",
+              "-geotif_file", TEST_DIR / "gold_standard_data/equal_rectangular_WY.tif",
                 "-lmk_file", output,
                 "-lmk_width_meters", "5000",
                 "-lmk_height_meters", "5000",
@@ -150,7 +150,7 @@ def test_geotiff_configuration_utm_regression(tmp_path):
     # Run create_landmark
     output = tmp_path / "UTM_WY_geotif.lmk"
     run_cmd([TOP_DIR / "build/create_landmark",
-              "-geotif_file", "gold_standard_data/UTM_WY.tif",
+              "-geotif_file", TEST_DIR / "gold_standard_data/UTM_WY.tif",
                 "-lmk_file", output,
                 "-lmk_width_meters", "5000",
                 "-lmk_height_meters", "5000",
@@ -232,7 +232,7 @@ def test_geotiff_configuration_stereo_regression(tmp_path):
     # Run create_landmark
     output = tmp_path / "polarstereo_moon_geotif.lmk"
     run_cmd([TOP_DIR / "build/create_landmark",
-              "-geotif_file", "gold_standard_data/polarstereo_moon.tif",
+              "-geotif_file", TEST_DIR / "gold_standard_data/polarstereo_moon.tif",
                 "-lmk_file", output,
                 "-lmk_width_meters", "10000",
                 "-lmk_height_meters", "10000",

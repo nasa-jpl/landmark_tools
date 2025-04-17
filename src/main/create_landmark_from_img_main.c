@@ -230,8 +230,6 @@ int32_t main(int32_t argc, char** argv)
         }
         
         ok = CreateLandmark(&info_ele, srm_img, icols, irows, anchor_latitude_degrees, anchor_longitude_degrees, info_ele.projection, &lmk, set_anchor_point_ele);
-        write_channel_separated_image("lmk.srm.png", lmk.srm, lmk.num_cols, lmk.num_rows, 1);
-        
         if(srm_img) free(srm_img);
     }
     

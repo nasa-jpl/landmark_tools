@@ -17,7 +17,7 @@ def test_point_to_landmark_regression(tmp_path):
     output_path = tmp_path / "pointcloud.lmk"
     # Run executables
     run_cmd([ TOP_DIR / "build/point_2_landmark",
-            "-p", "gold_standard_data/final_3d_points.txt",
+            "-p", TEST_DIR / "gold_standard_data/final_3d_points.txt",
             "-l", output_path,
             "-d", "10", 
             "-lt", "-9.11089",
@@ -43,7 +43,7 @@ def test_LMK_to_PLY_to_LMK(tmp_path):
     output_path = tmp_path / "pointcloud.lmk"
     # Run executables
     run_cmd([ TOP_DIR / "build/landmark_2_point",
-            "-landmark", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
+            "-landmark", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
             "-ply", ply_path,
             "-frame", "WORLD"], 
         cwd= TEST_DIR)

@@ -18,8 +18,8 @@ def test_landmark_comparison_regression(tmp_path):
     output_prefix = tmp_path / "comparison"
     # Run executables
     run_cmd([ TOP_DIR / "build/landmark_comparison",
-        "-l1", "gold_standard_data/UTM_WY.lmk_demo.lmk",
-        "-l2", "gold_standard_data/equal_rectangular_WY.lmk_demo.lmk",
+        "-l1", TEST_DIR / "gold_standard_data/UTM_WY.lmk_demo.lmk",
+        "-l2", TEST_DIR / "gold_standard_data/equal_rectangular_WY.lmk_demo.lmk",
         "-o", output_prefix], 
         cwd= TEST_DIR)
 
@@ -44,8 +44,8 @@ def test_landmark_comparison_self(tmp_path):
 
     # Run executables
     run_cmd([ TOP_DIR / "build/landmark_comparison",
-        "-l1", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
-        "-l2", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
+        "-l1", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
+        "-l2", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
         "-o", output_prefix], 
         cwd= TEST_DIR)
 

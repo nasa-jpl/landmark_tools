@@ -18,14 +18,14 @@ def test_crop(tmp_path):
     crop2_path = tmp_path / "Haworth_final_adj_5mpp_surf_tif_rendered_cropped2.lmk"
     crop_rough_path = tmp_path / "Haworth_final_adj_5mpp_surf_tif_rendered_cropped_rough.lmk"
     run_cmd([ TOP_DIR / "build/edit_landmark", 
-             "-input", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
+             "-input", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
              "-output", crop1_path, 
              "-operation", "CROP", 
              "-roi", "150", "150", "200", "200"], 
             cwd= TEST_DIR)
     
     run_cmd([ TOP_DIR / "build/edit_landmark", 
-             "-input", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
+             "-input", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
              "-output", crop_rough_path, 
              "-operation", "CROP", 
              "-roi", "50", "50", "400", "400"], 
@@ -53,7 +53,7 @@ def test_subset(tmp_path):
     y1 = 25
     subset_path = tmp_path / "Haworth_final_adj_5mpp_surf_tif_rendered_subset.lmk"
     run_cmd([ TOP_DIR / "build/edit_landmark", 
-             "-input", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
+             "-input", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
              "-output", subset_path, 
              "-operation", "SUBSET", 
              "-roi", str(x1), str(y1), str(width), str(height)], 
@@ -84,7 +84,7 @@ def test_rescale(tmp_path):
     upscale_path = tmp_path / "Haworth_final_adj_5mpp_surf_tif_rendered_upsample.lmk"
     downscale_path = tmp_path / "Haworth_final_adj_5mpp_surf_tif_rendered_downsample.lmk"
     run_cmd([ TOP_DIR / "build/edit_landmark", 
-             "-input", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
+             "-input", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk", 
              "-output", upscale_path, 
              "-operation", "RESCALE", 
              "-scale", str(scale)], 

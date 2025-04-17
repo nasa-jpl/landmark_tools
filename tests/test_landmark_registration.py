@@ -18,7 +18,7 @@ def test_landmark_registration(tmp_path):
     translate_path = tmp_path / "translate_test1.lmk"
     translate_registered_path = tmp_path / "translate_test1.lmk_registered.lmk"
     run_cmd([ TOP_DIR / "build/distort_landmark",
-            "-input", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
+            "-input", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk",
             "-output", translate_path,
             "-translate", str(x), str(y), str(z)], 
             cwd= TEST_DIR)
@@ -26,7 +26,7 @@ def test_landmark_registration(tmp_path):
     # Run executables
     run_cmd([ TOP_DIR / "build/landmark_registration",
         "-child", translate_path,
-        "-base", "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk"], 
+        "-base", TEST_DIR / "gold_standard_data/Haworth_final_adj_5mpp_surf_tif_rendered.lmk"], 
         cwd= TEST_DIR)
 
     L1 = landmark.Landmark(translate_path)

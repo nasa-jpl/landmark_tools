@@ -27,7 +27,7 @@ def test_render_ply_regression(tmp_path):
     output_path = tmp_path / "UTM_WY_rendered.lmk"
     # Run executables
     run_cmd([ TOP_DIR / "build/landmark_2_point",
-            "-landmark", "gold_standard_data/UTM_WY.lmk",
+            "-landmark", TEST_DIR / "gold_standard_data/UTM_WY.lmk",
             "-ply", ply_path,
             "-frame", "LOCAL"], 
             cwd= TEST_DIR)
@@ -46,7 +46,7 @@ def test_render_ply_regression(tmp_path):
     assert Path( png_path).exists()
 
     run_cmd([ TOP_DIR / "build/add_srm",
-            "-input", "gold_standard_data/UTM_WY.lmk",
+            "-input", TEST_DIR / "gold_standard_data/UTM_WY.lmk",
             "-output", output_path,
             "-srm", png_path], 
             cwd= TEST_DIR)

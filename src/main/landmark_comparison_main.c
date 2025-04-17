@@ -280,9 +280,6 @@ int32_t main (int32_t argc, char **argv)
     write_channel_separated_image("childmap.png", lmk_child.srm, lmk_child.num_cols, lmk_child.num_rows, 1);
 #endif
 
-    write_channel_separated_image("lmk_base.srm.png", lmk_base.srm, lmk_base.num_cols, lmk_base.num_rows, 1);
-    write_channel_separated_image("lmk_child.srm.png", lmk_child.srm, lmk_child.num_cols, lmk_child.num_rows, 1);
-
     CORR_STRUCT corr_struct;
     allocate_corr(&corr_struct, lmk_child.num_pixels);
     success &= MatchFeatures_local_distortion(
