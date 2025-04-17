@@ -4,3 +4,4 @@
 tests/unit_test_data/final_3d_points.txt filter=lfs diff=lfs merge=lfs -text
 tests/gold_standard_data/final_3d_points.txt filter=lfs diff=lfs merge=lfs -text
 tests/gold_standard_data filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
