@@ -79,53 +79,56 @@ double  inter_float_matrix(float *img, size_t xsize, size_t ysize, double  x, do
     register int64_t ix, iy;
     register double dx, dy, dx0, dy0;
     
-    
-    if(x<0 || y<0 || x>=xsize || y>=ysize){
+    double round_x = round(x);
+    double round_y = round(y);
+    if(round_x<0 || round_y<0 || round_x>=xsize || round_y>=ysize){
         //Out of bounds
         return NAN;
     }
-    else if(x == round(x) && y == round(y)){
+    else if(x == round_x && y == round_y){
         //Indices are round
         return img[(int32_t)y*xsize + (int32_t)x];
     }
-    else if(x >= 1 && x < xsize-1 && y >= 1 &&  y < ysize - 1)
-    {
-        // Floor of x and y
-        ix = (int64_t)x;
-        iy = (int64_t)y;
-        
-        // Fractional part of x and y
-        dx = (x - ix);
-        dy = (y - iy);
-        dx0 = 1.0 - dx;
-        dy0 = 1.0 - dy;
-        
-        //Four neighboring elements
-        // img[floor(x), floor(y)]
-        p00 = img[iy*xsize + ix];
-        // img[floor(x)+1, floor(y)]
-        p01 = img[iy*xsize + ix+1];
-        // img[floor(x)+1, floor(y)+1]
-        p11 = img[(iy+1)*xsize + ix+1];
-        // img[floor(x), floor(y)+1]
-        p10 = img[(iy+1)*xsize + ix];
-        
-        if(isnan(p00) || isnan(p01) || isnan(p11) || isnan(p10))
-        {
-            return NAN;
-        }
-        
-        //Bilinear interpolation
-        bv = dy0 * (dx0 * p00 + dx * p01) + dy * (dx0 * p10 + dx * p11);
-        
-        return bv;
+    
+    // If close to edge, don't interpolate along that axis
+    if(x > xsize-1){
+        x = round_x;
     }
-    else
-    {
-        return img[(int32_t)y*xsize + (int32_t)x];
-        
+    
+    if(y > ysize - 1){
+        y = round_y;
     }
- 
+    
+    // Floor of x and y
+    ix = (int64_t)x;
+    iy = (int64_t)y;
+    
+    // Fractional part of x and y
+    dx = (x - ix);
+    dy = (y - iy);
+    dx0 = 1.0 - dx;
+    dy0 = 1.0 - dy;
+    
+    //Four neighboring elements
+    // img[floor(x), floor(y)]
+    p00 = img[iy*xsize + ix];
+    // img[floor(x)+1, floor(y)]
+    p01 = img[iy*xsize + ix+1];
+    // img[floor(x)+1, floor(y)+1]
+    p11 = img[(iy+1)*xsize + ix+1];
+    // img[floor(x), floor(y)+1]
+    p10 = img[(iy+1)*xsize + ix];
+    
+    if(isnan(p00) || isnan(p01) || isnan(p11) || isnan(p10))
+    {
+        return NAN;
+    }
+    
+    //Bilinear interpolation
+    bv = dy0 * (dx0 * p00 + dx * p01) + dy * (dx0 * p10 + dx * p11);
+    
+    return bv;
+
 }
  
 bool  inter_uint8_matrix(uint8_t *img, size_t xsize, size_t ysize, double  x, double  y, uint8_t* val)

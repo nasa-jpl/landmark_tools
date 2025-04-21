@@ -57,7 +57,7 @@ def test_landmark_comparison_self(tmp_path):
 
     # Check changes
     for key,I1 in displacement_maps1.items():
-        if(key is not "correlation"):
+        if(key != "correlation"):
             # Displacement should be low
             np.testing.assert_allclose(I1[np.logical_not(np.isnan(I1))], 0, rtol=0, atol=1)
         else:
