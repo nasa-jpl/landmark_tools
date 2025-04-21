@@ -6,7 +6,7 @@ The WY data is cropped from USGS Wyoming DEMs.
 
 These DEMs are originally provided as a UTM projection and converted to equal rectangular using gdal.
 
-The landmark files were created from these DEMs using commit 6828ae2084eeace3a21210e195c91de76c194923
+The landmark files were created from these DEMs using commit e52093a7b18132933e15866ccc51dc2653354c43 
 
 The polar stereo DEM is a crop from Site 01 from [High-Resolution LOLA Topography for Lunar South Pole Sites](https://pgda.gsfc.nasa.gov/products/78) 
 
