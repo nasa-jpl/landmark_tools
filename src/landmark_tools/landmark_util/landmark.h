@@ -161,7 +161,7 @@ void LMK_Col_Row_Elevation2World(LMK *lmk, double x, double y, double ele,
  \return true if the map coordinate had elevation data
  \return false if the map coordiante was a non-data value and 0 elevation was used as a stand-in.
  */
-bool LMK_Col_Row2World(LMK *lmk, double x, double y, double p[3]);
+bool LMK_Col_Row2World(const LMK *lmk, double x, double y, double p[3]);
 
 /**
  \brief Interpolate the elevation at pixel location (col, row)

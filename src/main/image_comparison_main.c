@@ -382,7 +382,7 @@ int32_t main (int32_t argc, char **argv)
     size_t output_basepath_size = 512;
     char output_basepath[output_basepath_size];
     snprintf(output_basepath, output_basepath_size, "%.256s/%.256s", output_dir, output_filename_prefix);
-    printf("Saving results to %.512\n", output_basepath);
+    printf("Saving results to %.512s\n", output_basepath);
 
     FILE *fp;
     size_t buf_size = 544;
@@ -724,7 +724,7 @@ bool MatchFeatures_local_distortion_2d(
             if(pts_in_block > 40)
             {
                 double covs[pts_in_block];
-                int32_t num_matched_features = MatchFeaturesOnlyExtended(
+                int32_t num_matched_features = MatchFeaturesWithNaNHandling(
                     parameters,
                     *p_child_image,
                     *p_child_nan_mask,

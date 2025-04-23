@@ -123,6 +123,7 @@ src/landmark_tools/landmark_util/estimate_homography.c
 src/landmark_tools/feature_tracking/feature_match.c
 src/landmark_tools/feature_tracking/corr_image_long.c
 src/landmark_tools/feature_tracking/parameters.c
+src/landmark_tools/feature_tracking/correlation_results.c
 src/landmark_tools/math/homography_util.c
 src/landmark_tools/utils/two_level_yaml_parser.c
 )
@@ -213,6 +214,7 @@ if (WITH_OPENCV)
     add_executable(image_comparison
         src/main/image_comparison_main.c
         ${common_sources}
+        src/landmark_tools/landmark_util/estimate_homography.c
         src/landmark_tools/feature_tracking/feature_match.c
         src/landmark_tools/feature_tracking/corr_image_long.c
         src/landmark_tools/feature_tracking/parameters.c

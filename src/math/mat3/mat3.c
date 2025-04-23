@@ -677,7 +677,7 @@ float3 (*mult313(
     pointer to output vector. */
 
 float3 *mult331(
-    float3 m[3][3],	/* input matrix */
+    const float3 m[3][3],	/* input matrix */
     const float3 v[3],	/* input vector */
     float3 u[3])	/* output vector */
 {

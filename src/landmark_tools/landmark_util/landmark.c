@@ -292,7 +292,7 @@ void LMK_Col_Row_Elevation2World(LMK *lmk,  double col, double row, double ele, 
 }
 
 
-bool LMK_Col_Row2World(LMK *lmk,  double col, double row,  double p[3])
+bool LMK_Col_Row2World(const LMK *lmk,  double col, double row,  double p[3])
 {
     double pm[3];
     double pim[3];

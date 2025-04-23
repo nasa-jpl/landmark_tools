@@ -113,10 +113,10 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
     Read_LMK(lmkname_child, &lmk_child);
     Read_LMK(lmkname_base, &lmk_base);
     
-    int32_t template_size = parameters.correlation_window_size;
-    int32_t half_template = parameters.correlation_window_size / 2;
-    int32_t search_win_size = parameters.search_window_size;
-    int32_t half_search_win_size = parameters.search_window_size / 2;
+    int32_t template_size = parameters.matching.correlation_window_size;
+    int32_t half_template = parameters.matching.correlation_window_size / 2;
+    int32_t search_win_size = parameters.matching.search_window_size;
+    int32_t half_search_win_size = parameters.matching.search_window_size / 2;
     
     int32_t pc = lmk_child.num_cols / 20;
     int32_t pr = lmk_child.num_rows / 20;
@@ -147,9 +147,9 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
     
     // Find forstner features
     int32_t num_features = 0;
-    int64_t (*feature_coord)[2] = malloc(sizeof(int64_t[parameters.num_features * 2]));
-    float *feature_strength = malloc(sizeof(float) * parameters.num_features);
-    int_forstner_nbest_even_distribution(lmk_child.srm, lmk_child.num_cols, lmk_child.num_rows, 10, 10  , lmk_child.num_cols-20, lmk_child.num_rows -20, parameters.forstner_feature_window_size, parameters.num_features, &num_features, feature_coord, feature_strength, (int32_t)parameters.min_dist_feature);
+    int64_t (*feature_coord)[2] = malloc(sizeof(int64_t[parameters.detector.num_features * 2]));
+    float *feature_strength = malloc(sizeof(float) * parameters.detector.num_features);
+    int_forstner_nbest_even_distribution(lmk_child.srm, lmk_child.num_cols, lmk_child.num_rows, 10, 10  , lmk_child.num_cols-20, lmk_child.num_rows -20, parameters.detector.window_size, parameters.detector.num_features, &num_features, feature_coord, feature_strength, (int32_t)parameters.detector.min_dist_feature);
     
     uint8_t *tmpimg = (uint8_t *)malloc(sizeof(uint8_t)*lmk_base.num_pixels);
     if(tmpimg == NULL){
@@ -216,7 +216,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
                                 left2, top2,
                                 cols_win2, rows_win2,
                                 &bestr, &bestc, &bestv, cov);
-            if (status && bestv > parameters.min_correlation)
+            if (status && bestv > parameters.matching.min_correlation)
             {
                 double center_base[2];
                 double center_child[2];
@@ -255,7 +255,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
     
     //Calculate a homography from the feature pairs
     double homo[3][3]= {0};
-    int32_t num_inliers = getHomographyFromPoints_RANSAC_frame(match_pair_child, match_pair_base, num_pairs, homo, REPROJECTION_THRESHOLD);
+    int32_t num_inliers = getHomographyFromPoints_RANSAC_frame(match_pair_child, match_pair_base, num_pairs, homo, parameters.sliding.reprojection_threshold);
     
     double *pts_3d_child = (double *)malloc(sizeof(double)*num_pairs * 3);
     double *pts_3d_base = (double *)malloc(sizeof(double)*num_pairs * 3);
@@ -297,7 +297,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
         d_diff[0] = d_base[0] - d_pair[0];
         d_diff[1] = d_base[1] - d_pair[1];
         double s = sqrt(d_diff[0] * d_diff[0] + d_diff[1] * d_diff[1]);
-        if (s < REPROJECTION_THRESHOLD)
+        if (s < parameters.sliding.reprojection_threshold)
         {
             
 #ifdef DEBUG
@@ -344,7 +344,7 @@ int32_t MatchFeatures_register_two_landmarks(Parameters parameters, const char *
     double T[3]= {0};
 
     // [THP 2024/10/21] Point_Clouds_rot_T_RANSAC does not update baseRchild and T if it cannot find enough inliers
-    int32_t success_homography_to_rot_T = Point_Clouds_rot_T_RANSAC(pts_3d_child, pts_3d_base, j, baseRchild, T, 30);
+    int32_t success_homography_to_rot_T = Point_Clouds_rot_T_RANSAC(pts_3d_child, pts_3d_base, j, baseRchild, T, parameters.sliding.min_n_features);
     if (!success_homography_to_rot_T)
     {
         printf("MatchFeatures_register_two_landmarks(): Point_Clouds_rot_T_RANSAC did not find enough inliers\n");
