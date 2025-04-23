@@ -24,34 +24,9 @@
 
 import numpy as np
 import struct
-from landmark import Landmark
+from landmark import Landmark, unpack_matrix
 
 body_conversion = {'Earth':0, 'Moon':1, 'Mars':0};
-
-## \brief Unpack a big endian binary matrix into a numpy array
-#
-# Element types supported:
-# d = double
-# f = float
-# B = uint8
-def unpack_little_endian_matrix(type, size, buffer):
-    if type == 'd':
-        b_size = 8
-    elif type == 'f':
-        b_size = 4
-    elif type == 'B':
-        b_size = 1
-    else:
-        raise ValueError("Type not supported");
-
-    list_m = []
-    bytes_unpacked = 0
-    for ii in range(size[1]):
-        nbytes = b_size*size[0]
-        list_m.append(struct.unpack('<'+type*size[0], buffer[bytes_unpacked:bytes_unpacked+nbytes]))
-        bytes_unpacked += nbytes
-
-    return np.array(list_m)
 
 class LegacyLittleEndianLandmark(Landmark):
 
@@ -83,17 +58,17 @@ class LegacyLittleEndianLandmark(Landmark):
         bytes_unpacked += (3*2)*8
         bytes_unpacked += (3*2)*8
         
-        self.mapRworld = unpack_little_endian_matrix('d', [3, 3], file_data[bytes_unpacked:])
+        self.mapRworld = unpack_matrix('d', [3, 3], file_data[bytes_unpacked:], little_endian=True)
         bytes_unpacked += (3*3)*8
 
         #skipped derived matrices
         bytes_unpacked += (3)*8
         bytes_unpacked += (4)*8
 
-        self.srm = unpack_little_endian_matrix('B', [self.num_cols, self.num_rows], file_data[bytes_unpacked:])
+        self.srm = unpack_matrix('B', [self.num_cols, self.num_rows], file_data[bytes_unpacked:], little_endian=True)
         bytes_unpacked += (self.num_pixels)*1
 
-        self.ele = unpack_little_endian_matrix('f', [self.num_cols, self.num_rows], file_data[bytes_unpacked:])
+        self.ele = unpack_matrix('f', [self.num_cols, self.num_rows], file_data[bytes_unpacked:], little_endian=True)
         bytes_unpacked += (self.num_pixels)*4
     
 
