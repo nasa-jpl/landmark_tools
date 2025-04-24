@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(landmark_tools)
 
+# Enable testing
+enable_testing()
+include(CTest)
+
 if(UNIX AND NOT APPLE)
     message(STATUS "Configuring for Linux-like system")
     add_definitions(-DLINUX_OS)
@@ -246,27 +250,28 @@ list(REMOVE_ITEM library_sources
     "${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools/opencv_tools/feature_matching_2d.c"
 )
 
-## Shared library
-
-add_library(landmark_tools
-SHARED
-${library_sources}
-${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/rply.c
+# Build the landmark_tools library first
+add_library(landmark_tools SHARED
+  ${library_sources}
+  ${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/rply.c
 )
 
 target_include_directories(landmark_tools PUBLIC
     ${PNG_INCLUDE_DIRS})
 
 target_include_directories(landmark_tools INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # During build
-    $<INSTALL_INTERFACE:include>  # During installation
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 if(GDAL_FOUND)
-    target_link_libraries( landmark_tools PUBLIC GDAL::GDAL ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
+    target_link_libraries(landmark_tools PUBLIC GDAL::GDAL ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
 else()
-    target_link_libraries( landmark_tools PUBLIC ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
+    target_link_libraries(landmark_tools PUBLIC ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
 endif()
+
+# Then add the tests
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp)
 
 install(TARGETS landmark_tools EXPORT LandmarkTools
         ARCHIVE DESTINATION lib
