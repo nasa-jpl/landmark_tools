@@ -83,7 +83,7 @@ float3 *copy3(
     This function copies a 3x3 matrix. Returns pointer to output matrix. */
 
 float3 (*copy33(
-    float3 a[3][3],	/* input matrix */
+    const float3 a[3][3],	/* input matrix */
     float3 b[3][3]	/* output matrix */
     ))[3];
 

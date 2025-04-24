@@ -110,14 +110,14 @@ void calculateDerivedValuesVectors(LMK* lmk);
  *  \return true if success
  * \return false if memory allocation fails
  */
-bool Copy_LMK(LMK *from, LMK *to);
+bool Copy_LMK(const LMK *from, LMK *to);
 
 /**
  * \brief Copy the header values of a landmark structure
  *  \param[in] from original landmark structure
  *  \param[out] to new copy
  */
-void Copy_LMK_Header(LMK *from, LMK *to);
+void Copy_LMK_Header(const LMK *from, LMK *to);
 
 /**
  * \brief Write a landmark file to disk and also write an ascii file of landmark header to "filename".txt
@@ -126,7 +126,7 @@ void Copy_LMK_Header(LMK *from, LMK *to);
  * \return true on success
  * \return false if fopen cannot open file to write
  */
-bool Write_LMK(const char *filename, LMK *lmk);
+bool Write_LMK(const char *filename, const LMK *lmk);
 
 /**
  * \brief Read landmark file into landmark structure
@@ -147,7 +147,7 @@ bool Read_LMK(const char *filename, LMK *lmk);
  \param[in] ele elevation
  \param[out] p world position
  */
-void LMK_Col_Row_Elevation2World(LMK *lmk, double x, double y, double ele,
+void LMK_Col_Row_Elevation2World(const LMK *lmk, double x, double y, double ele,
                                     double p[3]);
 
 /**
@@ -173,7 +173,7 @@ Uses bilinear interpolation
  \param[in] row row coordinate
  \return elevation value
  */
-double Interpolate_LMK_ELE(LMK *lmk, double x, double y);
+double Interpolate_LMK_ELE(const LMK *lmk, double x, double y);
 
 /**
  \brief Interpolate the surface reflectance map at pixel location (col, row)
@@ -185,7 +185,7 @@ double Interpolate_LMK_ELE(LMK *lmk, double x, double y);
  \param[in] row row coordinate
  \return surface reflectance value
  */
-double Interpolate_LMK_SRM(LMK *lmk, double x, double y);
+double Interpolate_LMK_SRM(const LMK *lmk, double x, double y);
 
 /**
  \brief Give a 3d point in world frame to caculate the col, row and altitude in landmark frame
@@ -198,7 +198,7 @@ double Interpolate_LMK_SRM(LMK *lmk, double x, double y);
  \param[out] row row coordinate in landmark frame
  \param[out] ele elevation in landmark frame
  */
-void World2LMK_Col_Row_Ele(LMK *lmk, double p[3], double *x, double *y,
+void World2LMK_Col_Row_Ele(const LMK *lmk, double p[3], double *x, double *y,
                               double *ele);
 
 /**
@@ -213,7 +213,7 @@ void World2LMK_Col_Row_Ele(LMK *lmk, double p[3], double *x, double *y,
  \return false if ray is parallel with plane
  \return true if success
  */
-bool Intersect_LMK_map_plane_params_World(LMK *lmk, double c[3],
+bool Intersect_LMK_map_plane_params_World(const LMK *lmk, double c[3],
                                              double ray[3], double point3d[3]);
 
 /**
@@ -233,7 +233,7 @@ bool Intersect_LMK_map_plane_params_World(LMK *lmk, double c[3],
  \return true if success
  \return false if no intersection found
  */
-bool Intersect_LMK_ELE(LMK *lmk, double c[3], double ray[3],
+bool Intersect_LMK_ELE(const LMK *lmk, double c[3], double ray[3],
                           double point3d[3], double tol);
 
 /**
@@ -254,7 +254,7 @@ bool Intersect_LMK_ELE(LMK *lmk, double c[3], double ray[3],
  \return true if success
  \return false if intersection is not found (for example out-of-bounds, no data array, ray is parallel to plane, etc)
 */
-bool Intersect_LMK_ELE_low_slant_angle(LMK *lmk, double c[3], double ray[3],
+bool Intersect_LMK_ELE_low_slant_angle(const LMK *lmk, double c[3], double ray[3],
                                           double max_range, double point3d[3],
                                           double mine, double maxe);
 
@@ -273,7 +273,7 @@ bool Intersect_LMK_ELE_low_slant_angle(LMK *lmk, double c[3], double ray[3],
  * \return true on success
  * \return false otherwise
  */                                          
-bool SubsetLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
+bool SubsetLMK(const LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
                   int32_t ncols, int32_t nrows);
 
 /**
@@ -285,7 +285,7 @@ bool SubsetLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
  * \return true on success
  * \return false otherwise
  */
-bool ResampleLMK(LMK *lmk_from, LMK *lmk_to, double scale);
+bool ResampleLMK(const LMK *lmk_from, LMK *lmk_to, double scale);
 
 /** \brief Crop a landmark struct to a region of interest (ROI)
  *
@@ -298,7 +298,7 @@ bool ResampleLMK(LMK *lmk_from, LMK *lmk_to, double scale);
  * \param[in] ncols width of roi
  * \param[in] nrows height of roi
  */
-bool Crop_IntepolateLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
+bool Crop_IntepolateLMK(const LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
                         int32_t ncols, int32_t nrows);
 
 /**
@@ -310,7 +310,7 @@ bool Crop_IntepolateLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
  * \return true on success
  * \return false otherwise
  */
-bool RescaleLMK(LMK *lmk_from, LMK *lmk_to,
+bool RescaleLMK(const LMK *lmk_from, LMK *lmk_to,
                    double out_lmk_res);
 
 #ifdef __cplusplus

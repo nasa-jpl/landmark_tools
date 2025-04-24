@@ -132,6 +132,7 @@ add_dependencies(landmark_comparison link_public_headers)
 add_executable( landmark_registration
 src/main/landmark_registration_main.c
 ${common_sources}
+src/landmark_tools/landmark_registration/landmark_registration.c
 src/landmark_tools/landmark_util/estimate_homography.c
 src/landmark_tools/feature_selection/int_forstner_extended.c
 src/landmark_tools/feature_tracking/corr_image_long.c
@@ -205,6 +206,7 @@ if (WITH_OPENCV)
     add_library(landmark_tools_opencv_tools
        src/landmark_tools/opencv_tools/opencv_feature_matching.cpp
        src/landmark_tools/opencv_tools/opencv_image_io.cpp
+       src/landmark_tools/opencv_tools/homography_estimation.c
     )
     target_compile_features(landmark_tools_opencv_tools PUBLIC cxx_std_11)
     target_include_directories(landmark_tools_opencv_tools PRIVATE ${OpenCV_INCLUDE_DIRS})
@@ -218,6 +220,10 @@ if (WITH_OPENCV)
         src/landmark_tools/feature_tracking/feature_match.c
         src/landmark_tools/feature_tracking/corr_image_long.c
         src/landmark_tools/feature_tracking/parameters.c
+        src/landmark_tools/opencv_tools/opencv_feature_matching.cpp 
+        src/landmark_tools/opencv_tools/homography_estimation.c
+        src/landmark_tools/opencv_tools/feature_matching_2d.c
+        src/landmark_tools/feature_tracking/correlation_results.c
         src/landmark_tools/math/homography_util.c
         src/landmark_tools/utils/two_level_yaml_parser.c
     )
@@ -233,6 +239,12 @@ file(GLOB_RECURSE library_sources
  "${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools/*.c"
  "${CMAKE_CURRENT_SOURCE_DIR}/src/math/*.c"
  "${CMAKE_CURRENT_SOURCE_DIR}/src/img/*.c")
+
+# Remove cpp files
+list(REMOVE_ITEM library_sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools/opencv_tools/homography_estimation.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools/opencv_tools/feature_matching_2d.c"
+)
 
 ## Shared library
 

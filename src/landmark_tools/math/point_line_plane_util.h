@@ -14,7 +14,7 @@ extern "C" {
  \param[in] plane The coefficients of the plane equation Ax + By + Cz + D = 0.
  \return double distance 
 */
-double Point2PlaneDist(double P[3], double plane[4]);
+double Point2PlaneDist(const double P[3], const double plane[4]);
 
 /**
  \brief Calculate distance between 2D point and 2D line
@@ -88,7 +88,7 @@ int32_t PointRayIntersection2Plane(double p[3], double r[3], double plane[4], do
  \param[out] plane The coefficients of the plane equation Ax + By + Cz + D = 0.
  \return int32_t 
 */
-int32_t normalpoint2plane(double vec[3], double p[3], double plane[4]);
+int32_t normalpoint2plane(const double vec[3], const double p[3], double plane[4]);
 
 /**
  \brief TODO 

@@ -117,7 +117,7 @@ bool read_float_big_endian(FILE *fp, float *val) {
 }
 
 
-int64_t write_big_endian_array(void* array, uint8_t byte_width, bool isfloat, int64_t size, FILE *fp){
+int64_t write_big_endian_array(const void* array, uint8_t byte_width, bool isfloat, int64_t size, FILE *fp){
     for(int32_t i = 0; i< size; i++){
         if(isfloat){
             if(byte_width == 32){
