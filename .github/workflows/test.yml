@@ -64,7 +64,11 @@ jobs:
         cmake -DWITH_OPENCV=ON  ..
         make -j$(nproc)
 
-    - name: Run tests
+    - name: Run pytest tests
       run: |
         pytest --maxfail=3 --tb=short
+
+    - name: Run gtest tests
+      run: |
+        ctest --output-on-failure
 
