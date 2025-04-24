@@ -276,6 +276,11 @@ bool Read_LMK(const char *filename, LMK *lmk)
 
 void LMK_Col_Row_Elevation2World(const LMK *lmk,  double col, double row, double ele, double p[3])
 {
+    if (lmk == NULL || p == NULL) {
+        ele = NAN;
+        return; // Invalid input parameters
+    }
+
     double pm[3];
     double pim[3];
     double p1[3];
@@ -294,26 +299,9 @@ void LMK_Col_Row_Elevation2World(const LMK *lmk,  double col, double row, double
 
 bool LMK_Col_Row2World(const LMK *lmk,  double col, double row,  double p[3])
 {
-    double pm[3];
-    double pim[3];
-    pim[0] = col;
-    pim[1] = row;
-    pim[2] = 1;
-    
-    //mult331(lmk->col_row2mapxy, pim, pm);
-    pm[0] = dot3(lmk->col_row2mapxy[0], pim);
-    pm[1] = dot3(lmk->col_row2mapxy[1], pim);
-    pm[2] = Interpolate_LMK_ELE(lmk, col,  row);
-    
-    bool elevation_is_nan = isnan(pm[2]);
-    if(elevation_is_nan)
-    {
-       pm[2] = 0;
-    }
-    
-    //sub3(pm, lmk.v, pm);
-    mult331(lmk->worldRmap, pm, p);
-    add3(p, lmk->anchor_point, p);
+    double ele = Interpolate_LMK_ELE(lmk, col,  row);
+    bool elevation_is_nan = isnan(ele);
+    LMK_Col_Row_Elevation2World(lmk, col, row, ele, p);
     return !elevation_is_nan;
 }
 
@@ -617,11 +605,13 @@ bool Crop_IntepolateLMK(const LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
     lmk_sub->anchor_col = (double)ncols/2.0 ;
     lmk_sub->anchor_row = (double)nrows/2.0 ;
     lmk_sub->num_pixels = ncols*nrows;
-    
-    double center_ele = (float)Interpolate_LMK_ELE(lmk , left + lmk_sub->anchor_col, top + lmk_sub->anchor_row);
-    LMK_Col_Row_Elevation2World( lmk,  left + lmk_sub->anchor_col, top + lmk_sub->anchor_row, center_ele, lmk_sub->anchor_point);
-    double anchor_latitude_degrees, anchor_longitude_degrees;
-    ECEF_to_LatLongHeight(lmk_sub->anchor_point, &anchor_latitude_degrees, &anchor_longitude_degrees, &center_ele, lmk_sub->BODY);
+
+    int32_t crop_center_col_in_source = left + lmk_sub->anchor_col;
+    int32_t crop_center_row_in_source = top + lmk_sub->anchor_row;
+    double crop_center_point[3];
+    LMK_Col_Row2World(lmk, crop_center_col_in_source, crop_center_row_in_source, crop_center_point);
+    double center_ele, anchor_latitude_degrees, anchor_longitude_degrees;
+    ECEF_to_LatLongHeight(crop_center_point, &anchor_latitude_degrees, &anchor_longitude_degrees, &center_ele, lmk->BODY);
     calculateAnchorRotation(lmk_sub, anchor_latitude_degrees, anchor_longitude_degrees, center_ele);
     calculateDerivedValuesVectors(lmk_sub);
     
@@ -634,10 +624,12 @@ bool Crop_IntepolateLMK(const LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top,
     {
         for(int32_t j =0 ; j <  lmk_sub->num_cols; ++j)
         {
-            double p[3], x, y, ele;
+            double p[3], x, y, temp_ele, temp_col, temp_row, ele_in_crop;
             LMK_Col_Row_Elevation2World(lmk_sub,  (double)j,  (double)i, 0.0,   p);
-            World2LMK_Col_Row_Ele(lmk, p, &x, &y, &ele);
-            lmk_sub->ele[k] = Interpolate_LMK_ELE(lmk , x, y);
+            World2LMK_Col_Row_Ele(lmk, p, &x, &y, &temp_ele);
+            LMK_Col_Row2World(lmk, x, y, p);
+            World2LMK_Col_Row_Ele(lmk_sub, p, &temp_col, &temp_row, &ele_in_crop);
+            lmk_sub->ele[k] = ele_in_crop;
             lmk_sub->srm[k] = Interpolate_LMK_SRM(lmk, x, y);
             k++;
         }
