@@ -241,9 +241,6 @@ bool corimg_long (
     *bestrow += top2 + (rows1 -1) * 0.5;
     *bestcol += left2 + (cols1 -1) * 0.5;
 
-    SAFE_PRINTF(128, "Pixel-resolution match coordinate: %d %d\n",
-            (int) *bestrow, (int) *bestcol);
-
     return true;
 }
 
