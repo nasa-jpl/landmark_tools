@@ -18,6 +18,7 @@
 
 #include <stdio.h>   // for sscanf
 #include <string.h>  // for strncmp
+#include "landmark_tools/utils/safe_string.h"
 
 
 int32_t m_getarg(char **argv, char *argname, void *argvarptr, int32_t argtype)
