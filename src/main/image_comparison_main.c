@@ -45,6 +45,7 @@
 
 #include "landmark_tools/feature_tracking/correlation_results.h"  // for CorrelationResults
 #include "landmark_tools/opencv_tools/homography_estimation.h" // for estimateHomographyFromFeatureMatching
+#include "landmark_tools/utils/write_array.h"
 
 void show_usage_and_exit()
 {
@@ -295,22 +296,16 @@ int32_t main (int32_t argc, char **argv)
     snprintf(output_basepath, output_basepath_size, "%s/%s", output_dir, output_filename_prefix);
     SAFE_PRINTF(512, "Saving results to %s\n", output_basepath);
 
-    FILE *fp;
     size_t buf_size = 544;
     char buf[buf_size];
     snprintf(buf, buf_size, "%s_delta_x_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
-    fp = fopen(buf, "wb");
-    fwrite(corr_struct.delta_x, sizeof(float), child_image_num_pixels, fp);
-    fclose(fp);
+    write_data_to_file(buf, corr_struct.delta_x, sizeof(float), child_image_num_pixels);
+    
     snprintf(buf, buf_size, "%s_delta_y_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
-    fp = fopen(buf, "wb");
-    fwrite(corr_struct.delta_y, sizeof(float), child_image_num_pixels, fp);
-    fclose(fp);
-
+    write_data_to_file(buf, corr_struct.delta_y, sizeof(float), child_image_num_pixels);
+    
     snprintf(buf, buf_size, "%s_corr_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
-    fp = fopen(buf, "wb");
-    fwrite(corr_struct.correlation, sizeof(float), child_image_num_pixels, fp);
-    fclose(fp);
+    write_data_to_file(buf, corr_struct.correlation, sizeof(float), child_image_num_pixels);
 
     cleanup_resources(&child_image, &base_image, &child_nan_mask, &base_nan_mask, &corr_struct);
     return success ? EXIT_SUCCESS : EXIT_FAILURE;

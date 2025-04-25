@@ -30,7 +30,7 @@ bool readGeoTiff(const char* fileName, GeoTiffData* data) {
     GDALAllRegister();
     GDALDatasetH hDataset = GDALOpen(fileName, GA_ReadOnly);
     if (hDataset == NULL) {
-        SAFE_FPRINTF(stderr, 512, "Failed to open file: %.256s\n", fileName);
+        SAFE_FPRINTF(stderr, 512, "Failed to open file: %s\n", fileName);
         return false;
     }
     
@@ -74,7 +74,7 @@ bool readGeoTiff(const char* fileName, GeoTiffData* data) {
                 //            }else if(strncmp(pszProjectionType, "Lambert_Conformal_Conic_2SP", 28)==0){
                 //                data->projection = LAMBERT;
             }else{
-                SAFE_FPRINTF(stderr, 512, "Projection type %.50s is not supported", pszProjectionType);
+                SAFE_FPRINTF(stderr, 512, "Projection type %s is not supported", pszProjectionType);
                 OSRDestroySpatialReference(hSRS);
                 GDALClose(hDataset);
                 return false;

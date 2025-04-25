@@ -14,6 +14,7 @@
 #include "landmark_tools/opencv_tools/homography_match_method.h"
 #include "landmark_tools/opencv_tools/opencv_feature_matching.h"
 #include "landmark_tools/math/homography_util.h"
+#include "landmark_tools/utils/safe_string.h"
 
 /**
  * \brief Estimate homography between two images using feature matching
@@ -83,7 +84,7 @@ bool estimateHomographyFromFeatureMatching(
             homography_match_method
         );
 
-        printf("Calculate homography with feature matching method %.16s\n", homography_match_method);
+        SAFE_PRINTF(128, "Calculate homography with feature matching method %s\n", homography_match_method);
         
         // Try to estimate homography with current method
         bool success_homography_local = calc_homography_from_feature_matching(
@@ -107,11 +108,9 @@ bool estimateHomographyFromFeatureMatching(
 
         if (success_homography_local) {
             success_homography = true; // At least one method succeeded
-            printf(
-                "Found %d inliers for homography match method %.16s\n",
+            SAFE_PRINTF(512, "Found %d inliers for homography match method %s\n",
                 homography_found_inlier_count,
-                homography_match_method
-            );
+                homography_match_method);
 
             // Update best method if this one has more inliers
             if (homography_found_inlier_count > homography_found_inlier_count_best) {
@@ -128,8 +127,8 @@ bool estimateHomographyFromFeatureMatching(
     }
 
     if (success_homography) {
-        printf(
-            "Best homography: %.16s with %d inliers\n",
+        SAFE_PRINTF(512,
+            "Best homography: %s with %d inliers\n",
             HomographyMatchMethodToStr(best_method),
             homography_found_inlier_count_best
         );

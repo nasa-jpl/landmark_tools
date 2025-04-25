@@ -31,6 +31,7 @@
 #include "landmark_tools/math/math_constants.h"
 #include "landmark_tools/utils/parse_args.h"        // for m_getarg, CFO_STRING
 #include "math/mat3/mat3.h"
+#include "landmark_tools/utils/safe_string.h"
 
 void  show_usage_and_exit()
 {
@@ -262,32 +263,32 @@ int32_t main (int32_t argc, char **argv)
     
     LMK lmk = {0};
     if(!Read_LMK(infile, &lmk)){
-        printf("Failed to read landmark file: %.256s\n", infile);
+        SAFE_PRINTF(256, "Failed to read landmark file: %s\n", infile);
         free_lmk(&lmk);
         return EXIT_FAILURE;
     }
     
     if(rot_z != 0){
-        printf("Rotating landmark in plane by %f degrees...", rot_z);
+        SAFE_PRINTF(256, "Rotating landmark in plane by %f degrees...", rot_z);
         rotateLandmark(&lmk, rot_z);
         printf("done.\n");
     }
     
     if(translate_x != 0 || translate_y != 0 || translate_z != 0){
-        printf("Translating landmark by (%f, %f, %f)...", translate_x, translate_y, translate_z);
+        SAFE_PRINTF(256, "Translating landmark by (%f, %f, %f)...", translate_x, translate_y, translate_z);
         translateLandmark(&lmk, translate_x, translate_y, translate_z);
         printf("done.\n");
     }
     
     if(stddev != -1){
-        printf("Applying random displacement to landmark with mu=%f, sigma=%f ...", mean, stddev);
+        SAFE_PRINTF(256, "Applying random displacement to landmark with mu=%f, sigma=%f ...", mean, stddev);
         srand(time(NULL)); //seed random number generator
         displaceElevationGaussian(&lmk, mean, stddev);
         printf("done.\n");
     }
     
     if(cubic_a !=0 || cubic_b != 0 || cubic_c != 0 || cubic_d != 0 ){
-        printf("Applying cubic displacement to landmark: f(z) = %fz^3 + %fz^2 + %fz + %f ...", cubic_a, cubic_b, cubic_c, cubic_d);
+        SAFE_PRINTF(256, "Applying cubic displacement to landmark: f(z) = %fz^3 + %fz^2 + %fz + %f ...", cubic_a, cubic_b, cubic_c, cubic_d);
         if(!displaceElevationCubic(&lmk, cubic_a, cubic_b, cubic_c, cubic_d)){
             printf("Failed to displace landmark\n");
             free_lmk(&lmk);
@@ -297,7 +298,7 @@ int32_t main (int32_t argc, char **argv)
     }
     
     if(sine_amplitude !=0 || sine_frequency != 0 || sine_azimuth != 0 ){
-        printf("Applying sine displacement to landmark: z(x,y) = %fsin(2PI*%fx*cos(%f) +y*cos(%f))...", sine_amplitude, sine_frequency, sine_azimuth, sine_azimuth);
+        SAFE_PRINTF(256, "Applying sine displacement to landmark: z(x,y) = %fsin(2PI*%fx*cos(%f) +y*cos(%f))...", sine_amplitude, sine_frequency, sine_azimuth, sine_azimuth);
         displaceElevationSine(&lmk, sine_amplitude, sine_frequency, sine_azimuth);
         printf("done.\n");
     }
@@ -307,7 +308,7 @@ int32_t main (int32_t argc, char **argv)
     free_lmk(&lmk);
     
     if(success){
-        printf("Landmark file written to: %.256s\n", outfile);
+        SAFE_PRINTF(256, "Landmark file written to: %s\n", outfile);
         return EXIT_SUCCESS;
     }else{
         return EXIT_FAILURE;

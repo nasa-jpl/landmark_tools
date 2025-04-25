@@ -29,6 +29,7 @@
 #include "landmark_tools/map_projection/datum_conversion.h"  // for Planet
 #include "landmark_tools/landmark_util/point_cloud2grid.h"
 #include "landmark_tools/utils/parse_args.h"                 // for m_getarg
+#include "landmark_tools/utils/safe_string.h"
 
 void show_usage_and_exit()
 {
@@ -117,7 +118,7 @@ int32_t main(int32_t argc, char **argv)
     }
     
     if(!read_success){
-        printf("Unable to read %.256s\n", pointfile);
+        SAFE_PRINTF(256, "Unable to read %s\n", pointfile);
         return EXIT_FAILURE;
     }
     
@@ -161,10 +162,10 @@ int32_t main(int32_t argc, char **argv)
     success = Write_LMK(lmkfile, &lmk);
     free_lmk(&lmk);
     if(success){
-        printf("Landmark file saved at %.256s\n", lmkfile);
+        SAFE_PRINTF(256, "Landmark file saved at %s\n", lmkfile);
         return EXIT_SUCCESS;
     }else{
-        printf("Failed to save landmark file at %.256s\n", lmkfile);
+        SAFE_PRINTF(256, "Failed to save landmark file at %s\n", lmkfile);
         return EXIT_FAILURE;
     }
 }

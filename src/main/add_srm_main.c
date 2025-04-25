@@ -74,7 +74,7 @@ int32_t main (int32_t argc, char **argv)
     
     LMK lmk = {0};
     if(!Read_LMK(infile, &lmk)){
-        SAFE_PRINTF(256, "Failed to read landmark file: %.256s\n", infile);
+        SAFE_PRINTF(256, "Failed to read landmark file: %s\n", infile);
         return EXIT_FAILURE;
     }
     
@@ -82,7 +82,7 @@ int32_t main (int32_t argc, char **argv)
     uint8_t *srm_img = load_channel_separated_image(srmfile, &icols, &irows);
     
     if (srm_img == NULL) {
-        SAFE_PRINTF(256, "Failure to load surface reflectance map from %.256s\n", srmfile);
+        SAFE_PRINTF(256, "Failure to load surface reflectance map from %s\n", srmfile);
         return EXIT_FAILURE;
     }
     
@@ -97,7 +97,7 @@ int32_t main (int32_t argc, char **argv)
     free_lmk(&lmk);
     
     if(success){
-        SAFE_PRINTF(256, "Landmark file written to: %.256s\n", outfile);
+        SAFE_PRINTF(256, "Landmark file written to: %s\n", outfile);
         return EXIT_SUCCESS;
     }else{
         return EXIT_FAILURE;

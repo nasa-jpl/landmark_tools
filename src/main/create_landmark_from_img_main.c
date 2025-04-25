@@ -149,12 +149,12 @@ int32_t main(int32_t argc, char** argv)
     GeoTiffData info_ele = {0};
     GeoTiffData info_srm = {0};
     if(!readGeoTiff(input_ele_lbl_file_name, &info_ele)){
-        SAFE_PRINTF(256, "Failed to read: %.256s\n", input_ele_lbl_file_name);
+        SAFE_PRINTF(256, "Failed to read: %s\n", input_ele_lbl_file_name);
         free_lmk(&lmk);
         return EXIT_FAILURE;
     }
     if(input_srm_lbl_file_name != NULL && !readGeoTiff(input_srm_lbl_file_name, &info_srm)){
-        SAFE_PRINTF(256, "Failed to read: %.256s\n", input_srm_lbl_file_name);
+        SAFE_PRINTF(256, "Failed to read: %s\n", input_srm_lbl_file_name);
         free_lmk(&lmk);
         return EXIT_FAILURE;
     }

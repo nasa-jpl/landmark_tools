@@ -41,7 +41,7 @@
 #include "landmark_tools/utils/parse_args.h"
 #include "math/mat3/mat3.h"                   // for mult331, mult333, sub3, zero3, copy3
 #include "landmark_tools/landmark_registration/landmark_registration.h"
-
+#include "landmark_tools/utils/safe_string.h"
 
 void show_usage_and_exit()
 {
@@ -84,7 +84,7 @@ int32_t main(int32_t argc, char **argv)
     }else{
         int32_t success = read_parameterfile(parametersfile, &parameters);
         if(!success){
-            printf("Cannot load %.256s\n", parametersfile);
+            SAFE_PRINTF(256, "Cannot load %s\n", parametersfile);
             return EXIT_FAILURE;
         }
     }

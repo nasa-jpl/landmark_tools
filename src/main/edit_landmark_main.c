@@ -27,6 +27,7 @@
 
 #include "landmark_tools/landmark_util/landmark.h"  // for free_lmk, Crop_In...
 #include "landmark_tools/utils/parse_args.h"        // for m_getarg, CFO_STRING
+#include "landmark_tools/utils/safe_string.h"
 
 void  show_usage_and_exit()
 {
@@ -94,7 +95,7 @@ int32_t main (int32_t argc, char **argv)
     LMK lmk = {0};
     LMK lmk_out = {0};
     if(!Read_LMK(infile, &lmk)){
-        printf("Failed to read landmark file: %.256s\n", infile);
+        SAFE_PRINTF(256, "Failed to read landmark file: %s\n", infile);
         return EXIT_FAILURE;
     }
     
@@ -133,7 +134,7 @@ int32_t main (int32_t argc, char **argv)
     free_lmk(&lmk_out);
     
     if(success){
-        printf("Landmark file written to: %.256s\n", outfile);
+        SAFE_PRINTF(256, "Landmark file written to: %s\n", outfile);
         return EXIT_SUCCESS;
     }else{
         return EXIT_FAILURE;

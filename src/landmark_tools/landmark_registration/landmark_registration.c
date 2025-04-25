@@ -36,7 +36,8 @@
 #include "landmark_tools/math/math_utils.h"
 #include "landmark_tools/math/point_line_plane_util.h"
 #include "math/mat3/mat3.h"
-
+#include "landmark_tools/utils/write_array.h"
+#include "landmark_tools/utils/safe_string.h"
 // Constants for landmark registration
 #define GRID_DIVISION_FACTOR 20
 #define STRBUF_SIZE 256
@@ -101,14 +102,7 @@ static void visualize_warped_landmark(const LMK *base_landmark, const LMK *child
     char elevation_filename[DEBUG_BUF_SIZE];
     snprintf(elevation_filename, DEBUG_BUF_SIZE, "warped_ele_float_%dby%d.raw", 
              base_landmark->num_cols, base_landmark->num_rows);
-    
-    FILE *elevation_file = fopen(elevation_filename, "wb");
-    if (elevation_file != NULL) {
-        fwrite(warped_elevation, sizeof(float), base_landmark->num_cols*base_landmark->num_rows, elevation_file);
-        fclose(elevation_file);
-    } else {
-        printf("visualize_warped_landmark(): Failed to open elevation file for writing\n");
-    }
+    write_data_to_file(elevation_filename, warped_elevation, sizeof(float), base_landmark->num_pixels);
 
     free(warped_elevation);
 }

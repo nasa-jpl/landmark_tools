@@ -143,7 +143,7 @@ int32_t main(int32_t argc, char** argv)
         bool success = readCreateLandmarkConfiguration(config_file_name, geotiff_info.projection, planet, &lmk, &geotiff_info,
             demname, demname_size, &anchor_latitude_degrees, &anchor_longitude_degrees);
         if(!success){
-            printf("Failed to read configuration file:%.256s\n", config_file_name);
+            SAFE_PRINTF(512, "Failed to read configuration file:%s\n", config_file_name);
             return EXIT_FAILURE;
         }
         
@@ -151,7 +151,7 @@ int32_t main(int32_t argc, char** argv)
         geotiff_info.demValues = (float *)malloc(sizeof(float)* geotiff_info.imageSize[0]*geotiff_info.imageSize[1]);
         if(geotiff_info.demValues == NULL){
             free_lmk(&lmk);
-            printf("Failed to allocate memory for DEM: %.256s\n", demname);
+            SAFE_PRINTF(256, "Failed to allocate memory for DEM: %s\n", demname);
             return EXIT_FAILURE;
         }
         
@@ -159,7 +159,7 @@ int32_t main(int32_t argc, char** argv)
         if(fp == NULL)
         {
            free_lmk(&lmk);
-           printf("Failed to open DEM file: %.256s\n", demname);
+           SAFE_PRINTF(256, "Failed to open DEM file: %s\n", demname);
            return EXIT_FAILURE;
         }
         
@@ -229,7 +229,7 @@ int32_t main(int32_t argc, char** argv)
         if (!ok)
         {
             free_lmk(&lmk);
-            printf("main() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+            SAFE_PRINTF(512, "main() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
             return EXIT_FAILURE;
         }
         
@@ -268,7 +268,7 @@ int32_t main(int32_t argc, char** argv)
         uint8_t *srm_img = load_channel_separated_image(srm_file_name, &icols, &irows);
         
         if (srm_img == NULL) {
-            printf("Failure to load surface reflectance map from %.256s\n", srm_file_name);
+            SAFE_PRINTF(256, "Failure to load surface reflectance map from %s\n", srm_file_name);
             return EXIT_FAILURE;
         }
         

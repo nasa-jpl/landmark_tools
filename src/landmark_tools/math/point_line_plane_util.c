@@ -152,14 +152,14 @@ int32_t  Point_Clouds_rot_T_RANSAC(double *ptsA, double *ptsB, int32_t num_pts, 
     ptsA_tmp = (double *)malloc(sizeof(double)*num_pts*3);
     if (ptsA_tmp == NULL)
     {
-        SAFE_PRINTF(512, "Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
         return 0;
     }
 
     ptsB_tmp = (double *)malloc(sizeof(double)*num_pts*3);
     if (ptsB_tmp == NULL)
     {
-        SAFE_PRINTF(512, "Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
         return 0;
     }
     

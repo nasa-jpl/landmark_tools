@@ -43,7 +43,7 @@ WarpingMethod StrToWarpingMethod(const char* str){
             return WarpingMethod_TEMPLATE;
         }
     }
-    SAFE_FPRINTF(stderr, 512, "No WarpingMethod defined that corresponds to %.16s. Valid methods are \"image\" and \"template\"/n",
+    SAFE_FPRINTF(stderr, 512, "No WarpingMethod defined that corresponds to %s. Valid methods are \"image\" and \"template\"/n",
             str);
     return WarpingMethod_UNDEFINED;
 }

@@ -46,7 +46,7 @@ int32_t m_getarg(char **argv, char *argname, void *argvarptr, int32_t argtype)
         {
             if (sscanf(argv[1], "%f", &dummy) != 1)
             {
-                printf("m_getarg() ==>> Error reading %.256s value: %.256s\n", argname, argv[1]);
+                SAFE_PRINTF(512, "m_getarg() ==>> Error reading %s value: %s\n", argname, argv[1]);
                 return -1;
             }
             else
@@ -57,7 +57,7 @@ int32_t m_getarg(char **argv, char *argname, void *argvarptr, int32_t argtype)
         {
             if (sscanf(argv[1], "%d", ((int *)argvarptr)) != 1)
             {
-                printf("m_getarg() ==>> Error reading %.256s value: %.256s\n", argname, argv[1]);
+                SAFE_PRINTF(512, "m_getarg() ==>> Error reading %s value: %s\n", argname, argv[1]);
                 return -1;
             }
         }

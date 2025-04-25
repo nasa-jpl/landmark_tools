@@ -88,6 +88,7 @@ src/landmark_tools/math/point_line_plane_util.c
 src/landmark_tools/utils/parse_args.c
 src/landmark_tools/utils/endian_read_write.c
 src/math/mat3/mat3.c
+src/landmark_tools/utils/write_array.c
 )
 
 add_executable( create_landmark

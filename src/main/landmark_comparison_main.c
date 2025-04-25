@@ -43,6 +43,8 @@
 #include "landmark_tools/utils/parse_args.h"                // for m_getarg
 #include "math/mat3/mat3.h"                                 // for mult331
 #include "landmark_tools/feature_tracking/correlation_results.h"  // for CorrelationResults
+#include "landmark_tools/utils/write_array.h"
+#include "landmark_tools/utils/safe_string.h"
 
 /**
  * \brief Display usage information and exit
@@ -114,7 +116,7 @@ int32_t main(int32_t argc, char **argv)
     } else {
         int32_t success = read_parameterfile(parameters_path, &parameters);
         if (!success) {
-            printf("Cannot load %.256s\n", parameters_path);
+            SAFE_PRINTF(256, "Cannot load %s\n", parameters_path);
             return EXIT_FAILURE;
         }
     }
@@ -167,35 +169,34 @@ int32_t main(int32_t argc, char **argv)
     }
     
     // Save results to output files
-    printf("Saving results to %.256s\n", output_prefix);
+    SAFE_PRINTF(256, "Saving results to %s\n", output_prefix);
     
-    FILE *fp;
     size_t buf_size = 256;
     char buf[buf_size];
     
     // Save delta x map
     snprintf(buf, buf_size, "%s_delta_x_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
-    fp = fopen(buf, "wb");
-    fwrite(results.delta_x, sizeof(float), child_landmark.num_pixels, fp);
-    fclose(fp);
+    if (write_data_to_file(buf, results.delta_x, sizeof(float), child_landmark.num_pixels) != 0) {
+        return EXIT_FAILURE;
+    }
     
     // Save delta y map
     snprintf(buf, buf_size, "%s_delta_y_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
-    fp = fopen(buf, "wb");
-    fwrite(results.delta_y, sizeof(float), child_landmark.num_pixels, fp);
-    fclose(fp);
+    if (write_data_to_file(buf, results.delta_y, sizeof(float), child_landmark.num_pixels) != 0) {
+        return EXIT_FAILURE;
+    }
     
     // Save delta z map
     snprintf(buf, buf_size, "%s_delta_z_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
-    fp = fopen(buf, "wb");
-    fwrite(results.delta_z, sizeof(float), child_landmark.num_pixels, fp);
-    fclose(fp);
+    if (write_data_to_file(buf, results.delta_z, sizeof(float), child_landmark.num_pixels) != 0) {
+        return EXIT_FAILURE;
+    }
     
     // Save correlation map
     snprintf(buf, buf_size, "%s_corr_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
-    fp = fopen(buf, "wb");
-    fwrite(results.correlation, sizeof(float), child_landmark.num_pixels, fp);
-    fclose(fp);
+    if (write_data_to_file(buf, results.correlation, sizeof(float), child_landmark.num_pixels) != 0) {
+        return EXIT_FAILURE;
+    }
     
     // Cleanup
     free_lmk(&child_landmark);

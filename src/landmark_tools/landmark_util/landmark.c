@@ -203,7 +203,7 @@ bool Write_LMK(const char *filename, const LMK *lmk)
     }
 
     SAFE_FPRINTF(fp, 512, "LMK_BODY %d \n", lmk->BODY );
-    SAFE_FPRINTF(fp, 512, "LMK_ID %.32s\n", lmk->lmk_id );
+    SAFE_FPRINTF(fp, 512, "LMK_ID %s\n", lmk->lmk_id );
     SAFE_FPRINTF(fp, 512, "LMK_SIZE %d %d\n",  lmk->num_cols, lmk->num_rows );
     SAFE_FPRINTF(fp, 512, "LMK_RESOLUTION %f \n", lmk->resolution );
     SAFE_FPRINTF(fp, 512, "LMK_ANCHOR_POINT %f %f %f \n", lmk->anchor_point[0],lmk->anchor_point[1],lmk->anchor_point[2]  );

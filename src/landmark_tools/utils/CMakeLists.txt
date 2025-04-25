@@ -5,4 +5,5 @@ endian_read_write.h
 parse_args.h
 two_level_yaml_parser.h
 safe_string.h
+write_array.h
 )
