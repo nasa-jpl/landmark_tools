@@ -34,6 +34,7 @@
 #include "landmark_tools/map_projection/datum_conversion.h"  // for Projection
 #include "landmark_tools/utils/parse_args.h"                 // for m_getarg
 #include "landmark_tools/data_interpolation/interpolate_data.h" // rev_short
+#include "landmark_tools/utils/safe_string.h"
 
 #include "landmark_tools/image_io/geotiff_struct.h"
 
@@ -148,12 +149,12 @@ int32_t main(int32_t argc, char** argv)
     GeoTiffData info_ele = {0};
     GeoTiffData info_srm = {0};
     if(!readGeoTiff(input_ele_lbl_file_name, &info_ele)){
-        printf("Failed to read: %.256s\n", input_ele_lbl_file_name);
+        SAFE_PRINTF(256, "Failed to read: %.256s\n", input_ele_lbl_file_name);
         free_lmk(&lmk);
         return EXIT_FAILURE;
     }
     if(input_srm_lbl_file_name != NULL && !readGeoTiff(input_srm_lbl_file_name, &info_srm)){
-        printf("Failed to read: %.256s\n", input_srm_lbl_file_name);
+        SAFE_PRINTF(256, "Failed to read: %.256s\n", input_srm_lbl_file_name);
         free_lmk(&lmk);
         return EXIT_FAILURE;
     }
@@ -225,7 +226,7 @@ int32_t main(int32_t argc, char** argv)
 #endif
         
         if (srm_img == NULL) {
-            printf("Failure to load surface reflectance map from %.256s\n", srm_file_name);
+            SAFE_PRINTF(512, "Failure to load surface reflectance map from %s\n", srm_file_name);
             return EXIT_FAILURE;
         }
         

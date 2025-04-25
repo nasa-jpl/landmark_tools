@@ -15,6 +15,7 @@
  */
 
 #include "landmark_tools/feature_tracking/parameters.h"
+#include "landmark_tools/utils/safe_string.h"
 
 #include <stdio.h>          // for sscanf, fprintf, fopen, fgets, printf, FILE
 #include <string.h>         // for strstr
@@ -127,21 +128,21 @@ bool read_parameterfile(char *filename, Parameters *ftParms)
 
 void print_parameters(Parameters parameters)
 {
-    printf("feature_match: \n");
-    printf("  correlation_window_size: %d\n", parameters.matching.correlation_window_size);
-    printf("  search_window_size: %d\n", parameters.matching.search_window_size);
-    printf("  min_correlation: %f\n", parameters.matching.min_correlation);
+    SAFE_PRINTF(128, "feature_match: \n");
+    SAFE_PRINTF(128, "  correlation_window_size: %d\n", parameters.matching.correlation_window_size);
+    SAFE_PRINTF(128, "  search_window_size: %d\n", parameters.matching.search_window_size);
+    SAFE_PRINTF(128, "  min_correlation: %f\n", parameters.matching.min_correlation);
     
-    printf("forstner_feature_detector: \n");
-    printf("  window_size: %d\n", parameters.detector.window_size);
-    printf("  min_dist_feature: %f\n", parameters.detector.min_dist_feature);
-    printf("  num_features: %d\n", parameters.detector.num_features);
+    SAFE_PRINTF(128, "forstner_feature_detector: \n");
+    SAFE_PRINTF(128, "  window_size: %d\n", parameters.detector.window_size);
+    SAFE_PRINTF(128, "  min_dist_feature: %f\n", parameters.detector.min_dist_feature);
+    SAFE_PRINTF(128, "  num_features: %d\n", parameters.detector.num_features);
     
-    printf("sliding_window: \n");
-    printf("  block_size: %d\n", parameters.sliding.block_size);
-    printf("  step_size: %d\n", parameters.sliding.step_size);
-    printf("  min_n_features: %d\n", parameters.sliding.min_n_features);
-    printf("  feature_influence_window: %d\n", parameters.sliding.feature_influence_window);
-    printf("  reprojection_threshold: %f\n", parameters.sliding.reprojection_threshold);
-    printf("  max_delta_map: %f\n", parameters.sliding.max_delta_map);
+    SAFE_PRINTF(128, "sliding_window: \n");
+    SAFE_PRINTF(128, "  block_size: %d\n", parameters.sliding.block_size);
+    SAFE_PRINTF(128, "  step_size: %d\n", parameters.sliding.step_size);
+    SAFE_PRINTF(128, "  min_n_features: %d\n", parameters.sliding.min_n_features);
+    SAFE_PRINTF(128, "  feature_influence_window: %d\n", parameters.sliding.feature_influence_window);
+    SAFE_PRINTF(128, "  reprojection_threshold: %f\n", parameters.sliding.reprojection_threshold);
+    SAFE_PRINTF(128, "  max_delta_map: %f\n", parameters.sliding.max_delta_map);
 }

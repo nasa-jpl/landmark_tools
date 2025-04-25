@@ -31,6 +31,7 @@
 #include "landmark_tools/landmark_util/landmark.h"           // for free_lmk
 #include "landmark_tools/map_projection/datum_conversion.h"  // for Projection
 #include "landmark_tools/utils/parse_args.h"                 // for m_getarg
+#include "landmark_tools/utils/safe_string.h"                // for SAFE_FPRINTF
 
 #include "landmark_tools/image_io/geotiff_struct.h"
 
@@ -182,7 +183,7 @@ int32_t main(int32_t argc, char** argv)
                fread(&(geotiff_info.demValues)[i*geotiff_info.imageSize[0]], sizeof(float), geotiff_info.imageSize[0], fp);
            }
         }else{
-            fprintf(stderr, "Bit depth not supported: %d\n", geotiff_info.bits_per_sample);
+            SAFE_FPRINTF(stderr, 512, "Bit depth not supported: %d\n", geotiff_info.bits_per_sample);
             fclose(fp);
             return EXIT_FAILURE;
         }

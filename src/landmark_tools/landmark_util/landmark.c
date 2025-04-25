@@ -26,6 +26,7 @@
 #include "landmark_tools/math/point_line_plane_util.h"  // for normalpoint2plane, PointRayInters...
 #include "landmark_tools/utils/endian_read_write.h"
 #include "math/mat3/mat3.h"                                         // for dot3
+#include "landmark_tools/utils/safe_string.h"
 
 #define INTERSECTION_MAX_ITERATIONS 100
 
@@ -36,7 +37,7 @@ bool allocate_lmk_arrays(LMK* lmk, int32_t num_cols, int32_t num_rows) {
 
     if (lmk->srm == NULL)
     {
-        printf("allocate_lmk_arrays() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "allocate_lmk_arrays() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
         return false;
     }else{
         for(int32_t i = 0; i < lmk->num_cols*lmk->num_rows; ++i)
@@ -48,7 +49,7 @@ bool allocate_lmk_arrays(LMK* lmk, int32_t num_cols, int32_t num_rows) {
     lmk->ele = (float *)malloc(sizeof(float)*lmk->num_cols*lmk->num_rows);
     if (lmk->ele == NULL)
     {
-        printf("allocate_lmk_arrays() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "allocate_lmk_arrays() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
         free(lmk->srm);
         return false;
     }else{
@@ -154,12 +155,11 @@ void Copy_LMK_Header(const LMK *from, LMK *to){
 
 bool Write_LMK(const char *filename, const LMK *lmk)
 {
-    // Write landmark file
     FILE *fp;
     fp = fopen(filename, "wb");
     if(fp == NULL)
     {
-        printf("Write_LMK() ==>> cannot open file %.256s to write\n", filename);
+        SAFE_PRINTF(512, "Write_LMK() ==>> cannot open file %s to write\n", filename);
         return false;
     }
 
@@ -198,23 +198,19 @@ bool Write_LMK(const char *filename, const LMK *lmk)
     fp = fopen(buf, "w");
     if(fp == NULL)
     {
-        printf("Write_LMK() ==>> cannot open the file %.256s to write\n", buf);
+        SAFE_PRINTF(512, "Write_LMK() ==>> cannot open file %s to write\n", buf);
         return false;
-        
     }
-    
-    fprintf(fp, "LMK_BODY %d \n", lmk->BODY );
-    fprintf(fp, "LMK_ID %.32s\n", lmk->lmk_id );
-    fprintf(fp, "LMK_SIZE %d %d\n",  lmk->num_cols, lmk->num_rows );
-    
-    fprintf(fp, "LMK_RESOLUTION %f \n", lmk->resolution );
-    
-    fprintf(fp, "LMK_ANCHOR_POINT %f %f %f \n", lmk->anchor_point[0],lmk->anchor_point[1],lmk->anchor_point[2]  );
-    fprintf(fp, "LMK_ANCHOR_PIXEL %f %f \n", lmk->anchor_col, lmk->anchor_row );
-    
-    fprintf(fp, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[0][0], lmk->mapRworld[0][1], lmk->mapRworld[0][2]  );
-    fprintf(fp, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[1][0], lmk->mapRworld[1][1], lmk->mapRworld[1][2]  );
-    fprintf(fp, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[2][0], lmk->mapRworld[2][1], lmk->mapRworld[2][2]  );
+
+    SAFE_FPRINTF(fp, 512, "LMK_BODY %d \n", lmk->BODY );
+    SAFE_FPRINTF(fp, 512, "LMK_ID %.32s\n", lmk->lmk_id );
+    SAFE_FPRINTF(fp, 512, "LMK_SIZE %d %d\n",  lmk->num_cols, lmk->num_rows );
+    SAFE_FPRINTF(fp, 512, "LMK_RESOLUTION %f \n", lmk->resolution );
+    SAFE_FPRINTF(fp, 512, "LMK_ANCHOR_POINT %f %f %f \n", lmk->anchor_point[0],lmk->anchor_point[1],lmk->anchor_point[2]  );
+    SAFE_FPRINTF(fp, 512, "LMK_ANCHOR_PIXEL %f %f \n", lmk->anchor_col, lmk->anchor_row );
+    SAFE_FPRINTF(fp, 512, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[0][0], lmk->mapRworld[0][1], lmk->mapRworld[0][2]  );
+    SAFE_FPRINTF(fp, 512, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[1][0], lmk->mapRworld[1][1], lmk->mapRworld[1][2]  );
+    SAFE_FPRINTF(fp, 512, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[2][0], lmk->mapRworld[2][1], lmk->mapRworld[2][2]  );
     
     fclose(fp);
     
@@ -227,7 +223,7 @@ bool Read_LMK(const char *filename, LMK *lmk)
     fp = fopen(filename, "rb");
     if(fp == NULL)
     {
-        printf("Read_LMK() ==>> cannot open file %.256s to read\n", filename);
+        SAFE_PRINTF(512, "Read_LMK() ==>> cannot open file %s to read\n", filename);
         return false;
     }
     
@@ -239,7 +235,7 @@ bool Read_LMK(const char *filename, LMK *lmk)
     size_t char_array_size = 32;
     char char_array[char_array_size];
     if(fread(char_array, sizeof(char), char_array_size, fp) != char_array_size) return false;
-    printf("%32s\n", char_array);
+    SAFE_PRINTF(64, "%s\n", char_array);
 
     if(fread(lmk->lmk_id, sizeof(char), LMK_ID_SIZE, fp) != LMK_ID_SIZE) return false;
 

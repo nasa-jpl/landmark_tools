@@ -17,6 +17,7 @@
 #include <math.h>                                                // for fabs
 #include <stdio.h>                                               // for printf
 #include <stdlib.h>                                              // for free
+#include "landmark_tools/utils/safe_string.h"
 
 #include "landmark_tools/data_interpolation/interpolate_data.h"  // for inte...
 #include "landmark_tools/math/homography_util.h"
@@ -203,7 +204,7 @@ bool getHomographyFromPoints_Eigenvalue(double *prefeatures, double *curfeatures
     // Copy intrinsic matrix to gsl_matrix
     gsl_matrix *M = gsl_matrix_alloc(3, 3);
     if (M == NULL) {
-        fprintf(stderr, "getHomographyFromPoints_Eigenvalue -> Could not allocate memory for matrix M: %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_Eigenvalue -> Could not allocate memory for matrix M: %.256s, %d\n", __FILE__, __LINE__);
         return false;
     }
 
@@ -216,7 +217,7 @@ bool getHomographyFromPoints_Eigenvalue(double *prefeatures, double *curfeatures
     // Calculate inverse 
     gsl_matrix *invM = gsl_matrix_inverse(M);
     if(invM == NULL){
-        fprintf(stderr, "getHomographyFromPoints_Eigenvalue() ==>> Could calculate inverse of intrinsics matrix: %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_Eigenvalue() ==>> Could calculate inverse of intrinsics matrix: %.256s, %d\n", __FILE__, __LINE__);
         if(M != NULL){
             gsl_matrix_free(M);
         }
@@ -232,7 +233,7 @@ bool getHomographyFromPoints_Eigenvalue(double *prefeatures, double *curfeatures
     gsl_matrix *prepoint_p = gsl_matrix_alloc(3,1);
 
     if (ATA == NULL || A == NULL || temp_ATA == NULL || point == NULL || curpoint_p == NULL || prepoint_p == NULL) {
-        fprintf(stderr, "getHomographyFromPoints_Eigenvalue() ==>> Could not allocate memory for gsl matrix or vector: %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_Eigenvalue() ==>> Could not allocate memory for gsl matrix or vector: %.256s, %d\n", __FILE__, __LINE__);
         if(M != NULL){
             gsl_matrix_free(M);
         }
@@ -319,7 +320,7 @@ bool getHomographyFromPoints_Eigenvalue(double *prefeatures, double *curfeatures
     gsl_matrix *eigenvectors = gsl_matrix_alloc(9, 9);
     gsl_vector *eigenvalues = gsl_vector_alloc(9);
     if (eigenvectors == NULL || eigenvalues == NULL) {
-        fprintf(stderr, "getHomographyFromPoints_Eigenvalue() ==>> Could not allocate memory for gsl matrix or vector: %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_Eigenvalue() ==>> Could not allocate memory for gsl matrix or vector: %.256s, %d\n", __FILE__, __LINE__);
         if(M != NULL){
             gsl_matrix_free(M);
         }
@@ -343,7 +344,7 @@ bool getHomographyFromPoints_Eigenvalue(double *prefeatures, double *curfeatures
 
     if (!gsl_eigen_jacobi(ATA, eigenvalues, eigenvectors, 100, &iter))
     {
-        fprintf(stderr, "getHomographyFromPoints_Eigenvalue() ==>> gsl_eigen_jacobi() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_Eigenvalue() ==>> gsl_eigen_jacobi() failed, %.256s, %d\n", __FILE__, __LINE__);
         if(M != NULL){
             gsl_matrix_free(M);
         }
@@ -419,14 +420,14 @@ int32_t getHomographyFromPoints_RANSAC(double *prefeature, double *curfeature, i
     features1 = (double *)malloc(sizeof(double)*num_features*2);
     if (features1 == NULL)
     {
-        printf("getHomographyFromPoints_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
         return 0;
     }
     
     features2 = (double *)malloc(sizeof(double)*num_features*2);
     if (features2 == NULL)
     {
-        printf("getHomographyFromPoints_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
         free(features1);
         return 0;
     }
@@ -450,7 +451,6 @@ int32_t getHomographyFromPoints_RANSAC(double *prefeature, double *curfeature, i
             
             if(flag == 1)
             {
-                //printf("p1 = %d\n", p1);
                 features1[nm*2+0] = prefeature[p1*2+0];
                 features1[nm*2+1] = prefeature[p1*2+1];
                 features2[nm*2+0] = curfeature[p1*2+0];
@@ -481,7 +481,6 @@ int32_t getHomographyFromPoints_RANSAC(double *prefeature, double *curfeature, i
                 k++;
             }
         }
-        //	printf("k = %d best k %d\n", k, bestk);
         if(k > bestk)
         {
             copy33(homo_loc, besthomo);
@@ -508,15 +507,13 @@ int32_t getHomographyFromPoints_RANSAC(double *prefeature, double *curfeature, i
             features1[k*2+1] = prefeature[i*2+1];
             features2[k*2+0] = curfeature[i*2+0];
             features2[k*2+1] = curfeature[i*2+1];
-            //printf("i = %d pre %f %f cur %f %f diff %f\n", i, feature_41[k][0], feature_41[k][1],
-            //feature_42[k][0], feature_42[k][1], s);
             k++;
         }
     }
     // to compute the epipole on both images
     if(k > 4)
     {
-        printf("total points used in homography are %d\n", k);
+        SAFE_PRINTF(128, "total points used in homography are %d\n", k);
         getHomographyFromPoints_Eigenvalue(features1, features2, k, intrisicM, h);
         
     }
@@ -551,7 +548,6 @@ int32_t getHomographyFromPoints(double *points2d1,
         ipoint[1] = points2d1[i*2+1];
         ipoint1[0] = points2d2[i*2+0];
         ipoint1[1] = points2d2[i*2+1];
-        //printf("i = %d point from %f %f to  %f %f\n", i, ipoint[0], ipoint[1], ipoint1[0], ipoint1[1]);
         r[  0] = (double)ipoint[0];
         r[  1] = (double)ipoint[1];
         r[  2] = 1.0;
@@ -612,7 +608,6 @@ int32_t getHomographyFromPoints(double *points2d1,
     homo[2][0] = m[6];
     homo[2][1] = m[7];
     homo[2][2] = 1.0;
-    //printf("homo %f %f %f %f %f %f %f %f\n", m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
     
     
     return 1;
@@ -632,7 +627,7 @@ int32_t getHomographyFromPointsNormalize(double *points2d1,
     r = (double *)malloc(sizeof(double)*num_pts_plane*16);
     if (r == NULL)
     {
-        printf("getHomographyFromPointsNormalize() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPointsNormalize() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
         return 0;
     }
     
@@ -640,7 +635,7 @@ int32_t getHomographyFromPointsNormalize(double *points2d1,
     if (rt == NULL)
     {
         free(r);
-        printf("getHomographyFromPointsNormalize() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPointsNormalize() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
         return 0;
     }
     
@@ -649,7 +644,7 @@ int32_t getHomographyFromPointsNormalize(double *points2d1,
     {
         free(r);
         free(rt);
-        printf("getHomographyFromPointsNormalize() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPointsNormalize() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
         return 0;
     }
     
@@ -675,7 +670,6 @@ int32_t getHomographyFromPointsNormalize(double *points2d1,
         ipoint[1] = points2d1[i*2+1] - p10[1];
         ipoint1[0] = points2d2[i*2+0] - p20[0];
         ipoint1[1] = points2d2[i*2+1] - p20[1];
-        //printf("i = %d point from %f %f to  %f %f\n", i, ipoint[0], ipoint[1], ipoint1[0], ipoint1[1]);
         r[k*16 + 0] = (double)ipoint[0];
         r[k*16 + 1] = (double)ipoint[1];
         r[k*16 + 2] = 1.0;
@@ -727,7 +721,6 @@ int32_t getHomographyFromPointsNormalize(double *points2d1,
     p20[0] = -p20[0];
     p20[1] = -p20[1];
     ShiftHomographyOrigin(homo, p10, p20);
-    //printf("homo %f %f %f %f %f %f %f %f\n", m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
     
     free(r);
     free(rt);
@@ -754,7 +747,7 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
     //convert to image coordinate system
     if(num_features < 5)
     {
-        printf("getHomographyFromPoints_RANSAC_frame() ==>> too few points to be used for ransac method here, , %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_RANSAC_frame() ==>> too few points to be used for ransac method here, , %.256s, %d\n", __FILE__, __LINE__);
         return -1;
     }
     
@@ -764,7 +757,7 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
     features1 = (double *)malloc(sizeof(double)*num_features*2);
     if (features1 == NULL)
     {
-        printf("getHomographyFromPoints_RANSAC_frame() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_RANSAC_frame() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
         return -1;
     }
     
@@ -772,7 +765,7 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
     if (features2 == NULL)
     {
         free(features1);
-        printf("getHomographyFromPoints_RANSAC_frame() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "getHomographyFromPoints_RANSAC_frame() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
         return -1;
     }
     
@@ -794,7 +787,6 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
             
             if(flag == 1)
             {
-                //printf("p1 = %d\n", p1);
                 features1[nm*2+0] = prefeature[p1*2+0];
                 features1[nm*2+1] = prefeature[p1*2+1];
                 features2[nm*2+0] = curfeature[p1*2+0];
@@ -851,14 +843,11 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
         {
             free(features1);
             free(features2);
-            printf("getHomographyFromPoints_RANSAC_frame() ==>> getHomographyFromPointsNormalize() failed, %.256s, %d\n", __FILE__, __LINE__);
+            SAFE_PRINTF(512, "getHomographyFromPoints_RANSAC_frame() ==>> getHomographyFromPointsNormalize() failed, %.256s, %d\n", __FILE__, __LINE__);
             return -1;
         }
     }
     
-    //heap_ok = check_for_heap_integrity(__FILE__, __LINE__);
-    
-    //	printf("best k = %d num_features %d\n", bestk, num_features);
     if(bestk > 10)
     {
         for(iter = 0; iter < 3; ++iter)
@@ -883,8 +872,6 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
                     features1[k*2+1] = prefeature[i*2+1];
                     features2[k*2+0] = curfeature[i*2+0];
                     features2[k*2+1] = curfeature[i*2+1];
-                    // printf("i = %d pre %f %f cur %f %f diff %f\n", i, features1[k*2+0], features1[k*2+1],
-                    // features2[k*2+0], features2[k*2+1], s);
                     k++;
                 }
             }
@@ -892,7 +879,7 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
             {
                 free(features1);
                 free(features2);
-                printf("getHomographyFromPoints_RANSAC_frame() ==>> getHomographyFromPointsNormalize() failed, %.256s, %d\n", __FILE__, __LINE__);
+                SAFE_PRINTF(512, "getHomographyFromPoints_RANSAC_frame() ==>> getHomographyFromPointsNormalize() failed, %.256s, %d\n", __FILE__, __LINE__);
                 return -1;
             }
             
@@ -907,7 +894,7 @@ int32_t getHomographyFromPoints_RANSAC_frame(double *prefeature, double *curfeat
     {
         free(features1);
         free(features2);
-        printf("best feat for homography %d\n", k);
+        SAFE_PRINTF(128, "best feat for homography %d\n", k);
         return k;
     }
     else

@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <float.h>
+#include "landmark_tools/utils/safe_string.h"
 
 #include "img/utils/imgutils.h"  // for FAILURE, int_forstner, SUCCESS
 #include "landmark_tools/feature_selection/int_forstner_extended.h"
@@ -128,7 +129,7 @@ int32_t int_forstner_nbest_even_distribution(uint8_t *image, int32_t xdim, int32
                 count ++;
                 if (count == max)
                 {
-                    printf("At feature i = %ld done length %d\n", i, length);
+                    SAFE_PRINTF(128, "At feature i = %ld done length %d\n", i, length);
                     break;
                 }
             }

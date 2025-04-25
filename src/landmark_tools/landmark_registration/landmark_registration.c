@@ -365,7 +365,7 @@ int32_t RegisterLandmarks(Parameters parameters, const char *base_landmark_filen
     }
 
 #ifdef DEBUG
-    printf("# of RANSAC inliers %d\n", num_3d_points);
+    SAFE_PRINTF(128, "# of RANSAC inliers %d\n", num_3d_points);
     write_channel_separated_image("RANSAC_inlier.png", visualization_buffer, lmk_base.num_cols, lmk_base.num_rows, 1);
 #endif
     

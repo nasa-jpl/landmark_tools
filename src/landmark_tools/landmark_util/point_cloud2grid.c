@@ -22,6 +22,7 @@
 
 #include "landmark_tools/landmark_util/landmark.h"    // for Write_LMK_PLY_Facet_Window
 #include "landmark_tools/landmark_util/point_cloud2grid.h"
+#include "landmark_tools/utils/safe_string.h"
 #include "rply.h"
 #include "math/mat3/mat3.h"
 
@@ -220,7 +221,7 @@ bool readinpoints_ascii(char * plyname, double **pts, uint8_t **bv, size_t *num_
             if(sscanf(buf, "%lf %lf %lf %ld", &pts_array[*num_pts*3], &pts_array[*num_pts*3+1], &pts_array[*num_pts*3+2] , &bv_array[*num_pts]) == 4){
                  *num_pts += 1;
             }else{
-                printf("Failure to scan point values from line %.256s\n", buf);
+                SAFE_PRINTF(512, "Failure to scan point values from line %.256s\n", buf);
                 printf("Ignoring line and continuing\n");
             }
         }

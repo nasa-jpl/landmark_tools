@@ -17,6 +17,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "landmark_tools/utils/safe_string.h"
 
 #include "landmark_tools/feature_tracking/corr_image_long.h"
 
@@ -122,9 +123,7 @@ bool corimg_long (
         }
     }
     normsumasq = sumasq - suma * suma / n;
-    //printf("%f %f %f\n", sumasq, suma, normsumasq);
     if (normsumasq == 0) {
-        //fprintf (stderr, "Uniform pixels in target window");
         return false;
     }
 
@@ -242,6 +241,9 @@ bool corimg_long (
     *bestrow += top2 + (rows1 -1) * 0.5;
     *bestcol += left2 + (cols1 -1) * 0.5;
 
+    SAFE_PRINTF(128, "Pixel-resolution match coordinate: %d %d\n",
+            (int) *bestrow, (int) *bestcol);
+
     return true;
 }
 
@@ -258,25 +260,14 @@ bool subpixel_long (size_t bestr, size_t bestc, size_t rows, size_t cols,
     *bestrow = bestr;
     *bestcol = bestc;
 
-    /* Print correlation array as a diagnostic */
-    /*...
-    printf ("Pixel-resolution maximum: %d %d\n", bestr, bestc);
-    for (r=0; r<rows; r++) {
-    for (c=0; c<cols; c++) {
-        printf ("%5.2f ", cbuff[r*cols+c]);
-    }
-    printf ("\n");
-    }
-    ...*/
-
+    
     /* Check that pixel-resolution maximum is interior */
     if (bestr == 0 || bestc == 0 || bestr ==  rows-1  ||
         bestc ==  cols-1 ) {
 #ifdef PRINT_ERR
-         fprintf (stderr, "Pixel-resolution maximum not interior bestr %d rows %d\n", bestr, rows);
+         SAFE_FPRINTF(stderr, 512, "Pixel-resolution maximum not interior bestr %d rows %d\n", bestr, rows);
 #endif
         return false;
-
     }
 
     /* Make sure that pixel-resolution maximum is a strong maximum.
@@ -332,11 +323,9 @@ bool subpixel_long (size_t bestr, size_t bestc, size_t rows, size_t cols,
 
     /* Verify that subpixel offset is within +/- 1 */
     if (fabs(subc) >= 1.0 || fabs(subr) >= 1.0) {
-        // printf ( "Subpixel offset > 1 %f %f \n", subc, subr);
-        // printf(" Q = %f %f %f\n Q =   %f %f %f\n Q =   %f %f %f \n", Q[0], Q[1], Q[2], Q[3], Q[4], Q[5], Q[6], Q[7], Q[8]);
          
 #ifdef PRINT_ERR
-       fprintf (stderr, "Subpixel offset > 1 subc %f subr %f \n", subc, subr);
+       SAFE_FPRINTF(stderr, 512, "Subpixel offset > 1 subc %f subr %f \n", subc, subr);
 #endif
         return false;
     }

@@ -37,6 +37,7 @@
 #include "landmark_tools/utils/parse_args.h"                // for m_getarg
 #include "math/mat3/mat3.h"                                 // for mult331
 #include "landmark_tools/opencv_tools/feature_matching_2d.h"  // for process_matched_feature_2d, MatchFeatures_local_distortion_2d
+#include "landmark_tools/utils/safe_string.h"
 
 // OpenCV C++ code
 #include "landmark_tools/opencv_tools/opencv_feature_matching.h" // for calc_homography_from_feature_matching
@@ -292,7 +293,7 @@ int32_t main (int32_t argc, char **argv)
     size_t output_basepath_size = 512;
     char output_basepath[output_basepath_size];
     snprintf(output_basepath, output_basepath_size, "%.256s/%.256s", output_dir, output_filename_prefix);
-    printf("Saving results to %.512s\n", output_basepath);
+    SAFE_PRINTF(512, "Saving results to %s\n", output_basepath);
 
     FILE *fp;
     size_t buf_size = 544;

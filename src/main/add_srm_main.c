@@ -29,8 +29,9 @@
 #include "landmark_tools/landmark_util/landmark.h"  // for free_lmk, Crop_In...
 #include "landmark_tools/utils/parse_args.h"        // for m_getarg, CFO_STRING
 #include "landmark_tools/image_io/image_utils.h"             // for load_cha...
+#include "landmark_tools/utils/safe_string.h"
 
-void  show_usage_and_exit()
+static void show_usage_and_exit(void)
 {
     printf("Usage for add_srm:\n");
     printf("Adds a surface image to an existing landmark file. The image must be the same dimensions and resolution as landmark structure. It must also be in an orthographic projection.\n");
@@ -73,7 +74,7 @@ int32_t main (int32_t argc, char **argv)
     
     LMK lmk = {0};
     if(!Read_LMK(infile, &lmk)){
-        printf("Failed to read landmark file: %.256s\n", infile);
+        SAFE_PRINTF(256, "Failed to read landmark file: %.256s\n", infile);
         return EXIT_FAILURE;
     }
     
@@ -81,12 +82,12 @@ int32_t main (int32_t argc, char **argv)
     uint8_t *srm_img = load_channel_separated_image(srmfile, &icols, &irows);
     
     if (srm_img == NULL) {
-        printf("Failure to load surface reflectance map from %.256s\n", srmfile);
+        SAFE_PRINTF(256, "Failure to load surface reflectance map from %.256s\n", srmfile);
         return EXIT_FAILURE;
     }
     
     if(icols!= lmk.num_cols || irows!=lmk.num_rows){
-        printf("SRM dimensions (%dx%d) differ from landmark dimensions (%dx%d)\n", icols, irows, lmk.num_cols, lmk.num_rows);
+        SAFE_PRINTF(256, "SRM dimensions (%dx%d) differ from landmark dimensions (%dx%d)\n", icols, irows, lmk.num_cols, lmk.num_rows);
         return EXIT_FAILURE;
     }
     
@@ -96,7 +97,7 @@ int32_t main (int32_t argc, char **argv)
     free_lmk(&lmk);
     
     if(success){
-        printf("Landmark file written to: %.256s\n", outfile);
+        SAFE_PRINTF(256, "Landmark file written to: %.256s\n", outfile);
         return EXIT_SUCCESS;
     }else{
         return EXIT_FAILURE;

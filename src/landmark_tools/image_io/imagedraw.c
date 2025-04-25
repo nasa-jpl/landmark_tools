@@ -206,9 +206,6 @@ int32_t DrawEllipse(uint8_t *greyscale, int32_t cols,int32_t rows,  double x0, d
     double xa0,ya0,xb0,yb0,step;
 	max = (int32_t)(a*b*2);
 	step=2*PI/(double)max;
-	//printf("a = %f b = %f max = %d\n", a, b, max);
-    //printf("cols rows %d %d\n", cols, rows);
-	//printf("x y %f %f step %f\n", x0, y0, step);
 
     for(i=0;i<max;i++)
     {
@@ -216,12 +213,10 @@ int32_t DrawEllipse(uint8_t *greyscale, int32_t cols,int32_t rows,  double x0, d
         ya0=b*sin(i*step);
         xb0=a*cos(((i+1)%(max))*step);
         yb0=b*sin(((i+1)%(max))*step);
-        //printf("xa0 %f %f %f %f\n", xa0, ya0, xb0, yb0);
         xa1=(int32_t)(xa0*cos(theta)-ya0*sin(theta)+x0+0.5);
         ya1=(int32_t)(xa0*sin(theta)+ya0*cos(theta)+y0+0.5);
         xb1=(int32_t)(xb0*cos(theta)-yb0*sin(theta)+x0+0.5);
         yb1=(int32_t)(xb0*sin(theta)+yb0*cos(theta)+y0+0.5);
-		//printf("xa1 %f %f %f %f\n", xa1, ya1, xb1, yb1);
 		if(xa1 > 0 && xa1< cols && ya1 > 0 && ya1 < rows &&
 		   xb1 > 0 && xb1 < cols && yb1 > 0 && yb1 < rows)
 		{

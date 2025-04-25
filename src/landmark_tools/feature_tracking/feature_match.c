@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
+#include "landmark_tools/utils/safe_string.h"
 
 #include "landmark_tools/data_interpolation/interpolate_data.h"
 #include "landmark_tools/feature_tracking/corr_image_long.h"
@@ -181,7 +182,7 @@ int32_t MatchFeaturesWithNaNHandling(
     uint8_t *template_buffer = (uint8_t *)malloc(sizeof(uint8_t) * template_size * template_size);
     
     if(template_buffer == NULL) {
-        printf("MatchFeaturesWithNaNHandling(): memory allocation error\n");
+        SAFE_PRINTF(256, "MatchFeaturesWithNaNHandling(): memory allocation error\n");
         return 0;
     }
     
@@ -387,7 +388,7 @@ bool MatchFeaturesWithLocalDistortion(
     
     // Process landmarks in blocks
     for (int32_t row_index = 0; row_index < child_landmark->num_rows; row_index += parameters.sliding.block_size) {
-        printf("Processing row %d of %d\n", row_index, child_landmark->num_rows);
+        SAFE_PRINTF(128, "Processing row %d of %d\n", row_index, child_landmark->num_rows);
         
         for (int32_t col_index = 0; col_index < child_landmark->num_cols; col_index += parameters.sliding.block_size) {
             // Extract feature points at STEP_SIZE intervals within the current block
@@ -432,7 +433,7 @@ bool MatchFeaturesWithLocalDistortion(
                 num_points
             );
             
-            printf("Found %d matched features in window\n", num_matched_features);
+            SAFE_PRINTF(128, "Found %d matched features in window\n", num_matched_features);
             
             if (num_matched_features > parameters.sliding.min_n_features) {
                 // Compute local homography for matched features

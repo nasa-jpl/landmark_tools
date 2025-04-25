@@ -33,6 +33,7 @@
 #include "landmark_tools/opencv_tools/homography_estimation.h"
 #include "landmark_tools/opencv_tools/opencv_image_io.h"
 #include "math/mat3/mat3.h"                                 // for mult331
+#include "landmark_tools/utils/safe_string.h"
 
 WarpingMethod StrToWarpingMethod(const char* str){
     if(str != NULL){
@@ -42,7 +43,7 @@ WarpingMethod StrToWarpingMethod(const char* str){
             return WarpingMethod_TEMPLATE;
         }
     }
-    fprintf(stderr, "No WarpingMethod defined that corresponds to %.16s. Valid methods are \"image\" and \"template\"/n",
+    SAFE_FPRINTF(stderr, 512, "No WarpingMethod defined that corresponds to %.16s. Valid methods are \"image\" and \"template\"/n",
             str);
     return WarpingMethod_UNDEFINED;
 }
@@ -229,7 +230,7 @@ bool MatchFeatures_local_distortion_2d(
         char path_warp_image[path_size];
         snprintf(path_warp_image, path_size, "%.256s/base_image_warped_onto_child_image.pgm", output_dir);
         if(!writePGMFromArray(path_warp_image, warped_base_image, *child_image_num_cols, *child_image_num_rows)){
-            fprintf(stderr, "Failed to write %.256s\n", path_warp_image);
+            SAFE_FPRINTF(stderr, 512, "Failed to write %.256s\n", path_warp_image);
         }
 #endif
     } else if (warp_image_or_template == WarpingMethod_TEMPLATE) {
@@ -254,7 +255,7 @@ bool MatchFeatures_local_distortion_2d(
 
     // Process image in sliding windows
     for(int32_t row_index = 0; row_index < *child_image_num_rows; row_index += parameters.sliding.block_size) {
-        printf("Processing row %d of %d\n", row_index, *child_image_num_rows);
+        SAFE_PRINTF(512, "Processing row %d of %d\n", row_index, *child_image_num_rows);
         
         for(int32_t col_index = 0; col_index < *child_image_num_cols; col_index += parameters.sliding.block_size) {
             // Extract feature points at regular intervals within the current block
@@ -300,7 +301,7 @@ bool MatchFeatures_local_distortion_2d(
                 pts_in_block
             );
 
-            printf("Found %d matched features in window\n", num_matched_features);
+            SAFE_PRINTF(512, "Found %d matched features in window\n", num_matched_features);
 
             // Process matched features if enough were found
             if(num_matched_features > parameters.sliding.min_n_features) {
