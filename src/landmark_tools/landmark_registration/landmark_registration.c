@@ -409,7 +409,7 @@ int32_t RegisterLandmarks(Parameters parameters, const char *base_landmark_filen
     
     // Save registered landmark
     char output_filename[STRBUF_SIZE];
-    snprintf(output_filename, STRBUF_SIZE, "%.200s_registered.lmk", child_landmark_filename);
+    snprintf(output_filename, STRBUF_SIZE, "%s_registered.lmk", child_landmark_filename);
     Write_LMK(output_filename, &lmk_child);
     
     #ifdef DEBUG

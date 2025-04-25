@@ -71,14 +71,14 @@ bool estimateHomographyFromFeatureMatching(
         snprintf(
             path_draw_match_image,
             path_string_length,
-            "%.200s/homography_match_image_%.16s.jpg",
+            "%s/homography_match_image_%s.jpg",
             output_dir,
             homography_match_method
         );
         snprintf(
             path_draw_inlier_image,
             path_string_length,
-            "%.200s/homography_inlier_image_%.16s.jpg",
+            "%s/homography_inlier_image_%s.jpg",
             output_dir,
             homography_match_method
         );

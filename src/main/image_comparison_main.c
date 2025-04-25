@@ -292,22 +292,22 @@ int32_t main (int32_t argc, char **argv)
 
     size_t output_basepath_size = 512;
     char output_basepath[output_basepath_size];
-    snprintf(output_basepath, output_basepath_size, "%.256s/%.256s", output_dir, output_filename_prefix);
+    snprintf(output_basepath, output_basepath_size, "%s/%s", output_dir, output_filename_prefix);
     SAFE_PRINTF(512, "Saving results to %s\n", output_basepath);
 
     FILE *fp;
     size_t buf_size = 544;
     char buf[buf_size];
-    snprintf(buf, buf_size, "%.544s_delta_x_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
+    snprintf(buf, buf_size, "%s_delta_x_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.delta_x, sizeof(float), child_image_num_pixels, fp);
     fclose(fp);
-    snprintf(buf, buf_size, "%.544s_delta_y_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
+    snprintf(buf, buf_size, "%s_delta_y_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.delta_y, sizeof(float), child_image_num_pixels, fp);
     fclose(fp);
 
-    snprintf(buf, buf_size, "%.544s_corr_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
+    snprintf(buf, buf_size, "%s_corr_%dby%d.raw", output_basepath, child_image_num_cols, child_image_num_rows);
     fp = fopen(buf, "wb");
     fwrite(corr_struct.correlation, sizeof(float), child_image_num_pixels, fp);
     fclose(fp);

@@ -194,7 +194,7 @@ bool Write_LMK(const char *filename, const LMK *lmk)
     //Write ascii header file
     size_t buf_size = 256;
     char buf[buf_size];
-    snprintf(buf, buf_size, "%.251s.txt", filename);
+    snprintf(buf, buf_size, "%s.txt", filename);
     fp = fopen(buf, "w");
     if(fp == NULL)
     {

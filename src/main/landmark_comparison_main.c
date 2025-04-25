@@ -174,25 +174,25 @@ int32_t main(int32_t argc, char **argv)
     char buf[buf_size];
     
     // Save delta x map
-    snprintf(buf, buf_size, "%.200s_delta_x_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
+    snprintf(buf, buf_size, "%s_delta_x_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
     fp = fopen(buf, "wb");
     fwrite(results.delta_x, sizeof(float), child_landmark.num_pixels, fp);
     fclose(fp);
     
     // Save delta y map
-    snprintf(buf, buf_size, "%.200s_delta_y_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
+    snprintf(buf, buf_size, "%s_delta_y_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
     fp = fopen(buf, "wb");
     fwrite(results.delta_y, sizeof(float), child_landmark.num_pixels, fp);
     fclose(fp);
     
     // Save delta z map
-    snprintf(buf, buf_size, "%.200s_delta_z_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
+    snprintf(buf, buf_size, "%s_delta_z_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
     fp = fopen(buf, "wb");
     fwrite(results.delta_z, sizeof(float), child_landmark.num_pixels, fp);
     fclose(fp);
     
     // Save correlation map
-    snprintf(buf, buf_size, "%.200s_corr_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
+    snprintf(buf, buf_size, "%s_corr_%dby%d.raw", output_prefix, child_landmark.num_cols, child_landmark.num_rows);
     fp = fopen(buf, "wb");
     fwrite(results.correlation, sizeof(float), child_landmark.num_pixels, fp);
     fclose(fp);

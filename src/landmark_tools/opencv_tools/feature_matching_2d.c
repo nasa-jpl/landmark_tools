@@ -228,9 +228,9 @@ bool MatchFeatures_local_distortion_2d(
         // Write warped image for debugging
         size_t path_size = 256;
         char path_warp_image[path_size];
-        snprintf(path_warp_image, path_size, "%.256s/base_image_warped_onto_child_image.pgm", output_dir);
+        snprintf(path_warp_image, path_size, "%s/base_image_warped_onto_child_image.pgm", output_dir);
         if(!writePGMFromArray(path_warp_image, warped_base_image, *child_image_num_cols, *child_image_num_rows)){
-            SAFE_FPRINTF(stderr, 512, "Failed to write %.256s\n", path_warp_image);
+            SAFE_FPRINTF(stderr, 512, "Failed to write %s\n", path_warp_image);
         }
 #endif
     } else if (warp_image_or_template == WarpingMethod_TEMPLATE) {
