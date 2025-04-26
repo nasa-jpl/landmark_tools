@@ -218,7 +218,6 @@ class Landmark:
             fp.write(file_data)
 
 
-
     def __eq__(self, other):
         if isinstance(other, Landmark):
             return self.BODY == other.BODY and \
@@ -233,7 +232,22 @@ class Landmark:
                 np.allclose(self.srm, other.srm) and \
                 np.allclose(self.ele, other.ele)
         return NotImplemented
-    
+
+    def approx_equal(self, other, elevation_tolerance):
+        if isinstance(other, Landmark):
+            return self.BODY == other.BODY and \
+                self.lmk_id == other.lmk_id and \
+                self.num_cols == other.num_cols and \
+                self.num_rows == other.num_rows and \
+                self.anchor_col == other.anchor_col and \
+                self.anchor_row == other.anchor_row and \
+                self.resolution == other.resolution and \
+                np.allclose(self.anchor_point, other.anchor_point) and \
+                np.allclose(self.mapRworld, other.mapRworld, rtol=0, atol=1e-4) and \
+                np.allclose(self.srm, other.srm) and \
+                np.allclose(self.ele, other.ele, rtol=0, atol=elevation_tolerance)
+        return NotImplemented
+
     def assess_equality(self, other):
         if self == other :
             print("Objects are equal")

@@ -11,8 +11,7 @@ import landmark_tools.visualize_corr as visualize_corr
 def test_image_comparison_regression(tmp_path):
     """Compare the disparity map output of the current code to an archival copy
     
-    Using the gold standard image files to compare with so that we are only comparing differences in the comparison code, 
-    not accumulated differences from the image creation, rendering, etc.  
+    TODO Currently testing a tolerance of 5m disparity. Check whether tighter bounds are desired
     """
 
     # Run executables

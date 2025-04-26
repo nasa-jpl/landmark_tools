@@ -39,7 +39,7 @@ void show_usage_and_exit()
     printf("    -landmark   <filename> - input lmkfile\n");
     printf("    -ply  <filename> - output PLY filepath\n");
     printf("  Optional arguments:\n");
-    printf("    -filetype <PLY_ASCII|PLY_LITTLE_ENDIAN|PLY_BIG_ENDIAN> - (default arch endian)\n");
+    printf("    -filetype <PLY_ASCII|PLY_LITTLE_ENDIAN|PLY_BIG_ENDIAN> - (default arch endian) warning: ascii is lossy\n");
     printf("    -structure <POINTCLOUD|MESH> - (default MESH)\n");
     printf("    -frame <WORLD|LOCAL|RASTER> - (default WORLD)\n");
     exit(EXIT_FAILURE);

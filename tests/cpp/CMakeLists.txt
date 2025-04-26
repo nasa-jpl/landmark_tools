@@ -34,7 +34,6 @@ target_link_libraries(landmark_tests
     ${PNG_LIBRARIES}
     ${yaml_LIBRARIES}
     m
-    z
 )
 
 # Add test to CTest

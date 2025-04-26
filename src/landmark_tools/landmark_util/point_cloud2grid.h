@@ -50,8 +50,9 @@ enum PointFrame{WORLD, LOCAL, RASTER};
  \param[in] bv array of point intensities for each point in `pts`
  \param[in] num_pts number of points in pts
  \param[in,out] lmk should have complete header at the time of input
+ \param[in] smooth if true, use inverse distance weighting to calculate elevations on a grid. if false, assign point to nearest raster neighbor.
  */
-bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFrame frame);
+bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFrame frame, bool smooth);
 
 /** \brief Open a .ply file and read the points into an array
  * \param[in] plyname filename
