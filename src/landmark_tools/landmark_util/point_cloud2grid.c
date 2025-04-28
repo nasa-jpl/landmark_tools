@@ -19,6 +19,7 @@
 #include <stdio.h>                  // for fopen, snprintf, fclose, FILE, fgets
 #include <stdlib.h>                 // for malloc
 #include <string.h>
+#include <float.h>
 
 #include "landmark_tools/landmark_util/landmark.h"    // for Write_LMK_PLY_Facet_Window
 #include "landmark_tools/landmark_util/point_cloud2grid.h"
@@ -50,7 +51,7 @@ bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFr
     memset(srm1, 0, sizeof(float)*lmk->num_cols*lmk->num_rows);
     memset(ele1, 0, sizeof(float)*lmk->num_cols*lmk->num_rows);
     for(int32_t i = 0; i < num_pts; ++i){
-        nearest[i] = MAXFLOAT;
+        nearest[i] = FLT_MAX;
     }
     
     for(int32_t i = 0; i < num_pts; ++i)
