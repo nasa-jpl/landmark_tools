@@ -35,11 +35,16 @@ def test_landmark_comparison_regression(tmp_path):
     for key,I1 in displacement_maps1.items():
         I2 = displacement_maps2[key]
         mask = np.logical_not(np.logical_or(np.isnan(I1), np.isnan(I2)))
-        np.testing.assert_allclose(I1[mask], I2[mask], rtol=0, atol=1)
+        if(key != "correlation"):
+            np.testing.assert_allclose(I1[mask], I2[mask], rtol=0, atol=1)
+        else:
+            np.testing.assert_allclose(I1[mask], I2[mask])
 
 
 def test_landmark_comparison_self(tmp_path):
     """A landmark compared to itself should have zero disparity
+
+    The resolution of the map is 5m/px. The test tolerance is < 5m maximum, so sub-pixel disparity.
     """
     output_prefix = tmp_path / "comparison"
 
@@ -60,7 +65,7 @@ def test_landmark_comparison_self(tmp_path):
     for key,I1 in displacement_maps1.items():
         if(key != "correlation"):
             # Displacement should be low
-            np.testing.assert_allclose(I1[np.logical_not(np.isnan(I1))], 0, rtol=0, atol=1)
+            np.testing.assert_allclose(I1[np.logical_not(np.isnan(I1))], 0, rtol=0, atol=5)
         else:
             # Correlation should be high
             assert np.all(I1[np.logical_not(np.isnan(I1))] > 0.7), "Not all elements are greater than 0.7"

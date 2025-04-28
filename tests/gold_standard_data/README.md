@@ -13,3 +13,4 @@ The polar stereo DEM is a crop from Site 01 from [High-Resolution LOLA Topograph
 The landmark files were created from polar stereo DEMs using commit 7ff339f07fbc0e7599d24590a7f81c3a060ad30d due to inconsistancy with how polar stereo projection was handled in  
 6828ae2084eeace3a21210e195c91de76c194923
  
+The comparison raw files were created using f6f06a1c5f2710689f38cf30f74021475006421e.

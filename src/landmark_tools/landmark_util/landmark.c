@@ -165,7 +165,7 @@ bool Write_LMK(const char *filename, const LMK *lmk)
 
     size_t version_size = 32;
     char version[version_size];
-    strncpy(version, "#! LVS Map v3.0", version_size);
+    strncpy(version, "#! LVS Map v3.0", 16);
     if(fwrite(version, sizeof(uint8_t), version_size, fp) != version_size) return false;
 
      if(fwrite(&lmk->lmk_id, sizeof(uint8_t), LMK_ID_SIZE, fp) != LMK_ID_SIZE) return false;
@@ -235,7 +235,7 @@ bool Read_LMK(const char *filename, LMK *lmk)
     size_t char_array_size = 32;
     char char_array[char_array_size];
     if(fread(char_array, sizeof(char), char_array_size, fp) != char_array_size) return false;
-    SAFE_PRINTF(64, "%s\n", char_array);
+    SAFE_PRINTF(char_array_size, "%s\n", char_array);
 
     if(fread(lmk->lmk_id, sizeof(char), LMK_ID_SIZE, fp) != LMK_ID_SIZE) return false;
 
