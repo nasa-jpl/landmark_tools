@@ -324,11 +324,18 @@ bool process_matched_feature(
                 
                 // Update maps with weighted contributions
                 int32_t index = m * num_cols + n;
-                results->delta_x[index] += (float)(delta_map[0] * weight);
-                results->delta_y[index] += (float)(delta_map[1] * weight);
-                results->delta_z[index] += (float)(delta_map[2] * weight);
-                results->correlation[index] += (float)(covariance * weight);
                 
+                if(isnan(results->delta_x[index])){
+                    results->delta_x[index] = (float)(delta_map[0] * weight);
+                    results->delta_y[index] = (float)(delta_map[1] * weight);
+                    results->delta_z[index] = (float)(delta_map[2] * weight);
+                    results->correlation[index] = (float)(covariance * weight);
+                }else{
+                    results->delta_x[index] += (float)(delta_map[0] * weight);
+                    results->delta_y[index] += (float)(delta_map[1] * weight);
+                    results->delta_z[index] += (float)(delta_map[2] * weight);
+                    results->correlation[index] += (float)(covariance * weight);
+                }
                 // Update weights
                 if (isnan(weights[index])) {
                     weights[index] = weight;
@@ -414,6 +421,7 @@ bool MatchFeaturesWithLocalDistortion(
             }
             
             double covariances[num_points];
+            memset(covariances, 0, sizeof(double)*num_points);
             int32_t num_matched_features = MatchFeaturesWithNaNHandling(
                 parameters,
                 child_landmark->srm,

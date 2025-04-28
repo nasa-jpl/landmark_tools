@@ -21,6 +21,7 @@
  *  limitations under the License.
  */
 
+#include <math.h> // for NAN
 #include <stdlib.h>  // for malloc, free
 #include <stdbool.h> // for bool, false
 #include "landmark_tools/feature_tracking/correlation_results.h"
@@ -39,12 +40,12 @@ bool allocate_correlation_results(CorrelationResults* corr_struct, size_t num_pi
         return false;
     }
     
-    // Initialize all values to 0
+    // Initialize all values to NAN
     for (size_t i = 0; i < num_pixels; ++i) {
-        corr_struct->delta_x[i] = 0.0f;
-        corr_struct->delta_y[i] = 0.0f;
-        corr_struct->delta_z[i] = 0.0f;
-        corr_struct->correlation[i] = 0.0f;
+        corr_struct->delta_x[i] = NAN;
+        corr_struct->delta_y[i] = NAN;
+        corr_struct->delta_z[i] = NAN;
+        corr_struct->correlation[i] = NAN;
     }
     
     return true;

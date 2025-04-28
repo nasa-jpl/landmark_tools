@@ -102,16 +102,20 @@ bool process_matched_feature_2d(
 
                 // Update correlation results with weighted contributions
                 int32_t index = m * num_cols + n;
-                results->delta_x[index] += (float)(p_delta_map[0] * weight);
-                results->delta_y[index] += (float)(p_delta_map[1] * weight);
-                results->delta_z[index] += (float)(p_delta_map[2] * weight);
-                results->correlation[index] += (float)(correlation * weight);
-
+                
                 // Update weight matrix for later normalization
                 if (isnan(weights[index])) {
                     weights[index] = weight;  // First contribution to this point
+                    results->delta_x[index] = (float)(p_delta_map[0] * weight);
+                    results->delta_y[index] = (float)(p_delta_map[1] * weight);
+                    results->delta_z[index] = (float)(p_delta_map[2] * weight);
+                    results->correlation[index] = (float)(correlation * weight);
                 } else {
                     weights[index] += weight; // Accumulate weights for multiple features
+                    results->delta_x[index] += (float)(p_delta_map[0] * weight);
+                    results->delta_y[index] += (float)(p_delta_map[1] * weight);
+                    results->delta_z[index] += (float)(p_delta_map[2] * weight);
+                    results->correlation[index] += (float)(correlation * weight);
                 }
             }
         }
