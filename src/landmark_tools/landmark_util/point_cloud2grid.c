@@ -19,9 +19,11 @@
 #include <stdio.h>                  // for fopen, snprintf, fclose, FILE, fgets
 #include <stdlib.h>                 // for malloc
 #include <string.h>
+#include <float.h>
 
 #include "landmark_tools/landmark_util/landmark.h"    // for Write_LMK_PLY_Facet_Window
 #include "landmark_tools/landmark_util/point_cloud2grid.h"
+#include "landmark_tools/utils/safe_string.h"
 #include "rply.h"
 #include "math/mat3/mat3.h"
 
@@ -30,22 +32,27 @@ static double *pts_array = 0;
 static uint8_t *bv_array = 0;
 
 
-bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFrame frame)
+bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFrame frame, bool smooth)
 {
     float* weight_map = (float *)malloc(sizeof(float)*lmk->num_cols*lmk->num_rows);
     float* srm1 = (float *)malloc(sizeof(float)*lmk->num_cols*lmk->num_rows);
     float* ele1 = (float *)malloc(sizeof(float)*lmk->num_cols*lmk->num_rows);
+    float* nearest = (float *)malloc(sizeof(float)*lmk->num_cols*lmk->num_rows);
     
-    if(weight_map == NULL || srm1 == NULL || ele1 == NULL){
+    if(weight_map == NULL || srm1 == NULL || ele1 == NULL || nearest == NULL){
         if(weight_map != NULL) free(weight_map);
         if(srm1 != NULL) free(srm1);
         if(ele1 != NULL) free(ele1);
+        if(nearest != NULL) free(nearest);
         return false;
     }
     
     memset(weight_map, 0, sizeof(float)*lmk->num_cols*lmk->num_rows);
     memset(srm1, 0, sizeof(float)*lmk->num_cols*lmk->num_rows);
     memset(ele1, 0, sizeof(float)*lmk->num_cols*lmk->num_rows);
+    for(int32_t i = 0; i < num_pts; ++i){
+        nearest[i] = FLT_MAX;
+    }
     
     for(int32_t i = 0; i < num_pts; ++i)
     {
@@ -72,24 +79,34 @@ bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFr
         
         if(ix >= 0 && iy >= 0 && ix < lmk->num_cols && iy < lmk->num_rows)
         {
-            int32_t cmin = ix - 4;
-            int32_t  cmax = ix + 4;
-            if(cmin < 0) cmin = 0;
-            if(cmax >= lmk->num_cols) cmax =lmk->num_cols-1;
-            
-            int32_t rmin = iy - 4;
-            int32_t rmax = iy + 4;
-            if(rmin < 0) rmin = 0;
-            if(rmax >= lmk->num_rows) rmax = lmk->num_rows-1;
-            for(int32_t m = rmin; m <= rmax; ++m)
-            {
-                for(int32_t n = cmin; n <= cmax; ++n)
+            if(smooth){
+                int32_t cmin = ix - 4;
+                int32_t  cmax = ix + 4;
+                if(cmin < 0) cmin = 0;
+                if(cmax >= lmk->num_cols) cmax =lmk->num_cols-1;
+                
+                int32_t rmin = iy - 4;
+                int32_t rmax = iy + 4;
+                if(rmin < 0) rmin = 0;
+                if(rmax >= lmk->num_rows) rmax = lmk->num_rows-1;
+                for(int32_t m = rmin; m <= rmax; ++m)
                 {
-                    double d = 2.0*sqrt((m- y)*(m-y) + (n- x)*(n-x));
-                    double wt = exp(-d);
-                    ele1[m*lmk->num_cols + n] += wt*ele;
-                    srm1[m*lmk->num_cols + n] +=wt*(double)bb;
-                    weight_map[m*lmk->num_cols + n] +=wt;
+                    for(int32_t n = cmin; n <= cmax; ++n)
+                    {
+                        double d = 2.0*sqrt((m- y)*(m-y) + (n- x)*(n-x));
+                        double wt = exp(-d);
+                        ele1[m*lmk->num_cols + n] += wt*ele;
+                        srm1[m*lmk->num_cols + n] +=wt*(double)bb;
+                        weight_map[m*lmk->num_cols + n] +=wt;
+                    }
+                }
+            }else{
+                double d = 2.0*sqrt((iy- y)*(iy-y) + (ix- x)*(ix-x));
+                if(nearest[iy*lmk->num_cols + ix] > d){
+                    ele1[iy*lmk->num_cols + ix] = ele;
+                    srm1[iy*lmk->num_cols + ix] = bb;
+                    weight_map[iy*lmk->num_cols + ix] = 1;
+                    nearest[iy*lmk->num_cols + ix] = d;
                 }
             }
             
@@ -117,6 +134,7 @@ bool point2lmk( double *pts, uint8_t *bv, size_t num_pts, LMK *lmk, enum PointFr
     if(weight_map != NULL) free(weight_map);
     if(srm1 != NULL) free(srm1);
     if(ele1 != NULL) free(ele1);
+    if(nearest != NULL) free(nearest);
     return true;
 }
 
@@ -220,7 +238,7 @@ bool readinpoints_ascii(char * plyname, double **pts, uint8_t **bv, size_t *num_
             if(sscanf(buf, "%lf %lf %lf %ld", &pts_array[*num_pts*3], &pts_array[*num_pts*3+1], &pts_array[*num_pts*3+2] , &bv_array[*num_pts]) == 4){
                  *num_pts += 1;
             }else{
-                printf("Failure to scan point values from line %.256s\n", buf);
+                SAFE_PRINTF(512, "Failure to scan point values from line %s\n", buf);
                 printf("Ignoring line and continuing\n");
             }
         }
@@ -398,9 +416,9 @@ bool Write_LMK_PLY_Facet_Window(const char *filename, LMK *lmk, int32_t x0, int3
     }
     
     if (!ply_add_element(oply, "vertex", numpts)) return false;
-    if (!ply_add_scalar_property(oply, "x", PLY_FLOAT)) return false;
-    if (!ply_add_scalar_property(oply, "y", PLY_FLOAT)) return false;
-    if (!ply_add_scalar_property(oply, "z", PLY_FLOAT)) return false;
+    if (!ply_add_scalar_property(oply, "x", PLY_DOUBLE)) return false;
+    if (!ply_add_scalar_property(oply, "y", PLY_DOUBLE)) return false;
+    if (!ply_add_scalar_property(oply, "z", PLY_DOUBLE)) return false;
     if (!ply_add_scalar_property(oply, "intensity", PLY_UINT8)) return false;
     if (!ply_add_element(oply, "face", num_faces)) return false;
     if (!ply_add_list_property(oply, "vertex_indices", PLY_INT32, PLY_INT32)) return false;
@@ -487,9 +505,9 @@ bool Write_LMK_PLY_Points(const char *filename, LMK *lmk, enum e_ply_storage_mod
     }
     
     if (!ply_add_element(oply, "vertex", numpts)) return false;
-    if (!ply_add_scalar_property(oply, "x", PLY_FLOAT)) return false;
-    if (!ply_add_scalar_property(oply, "y", PLY_FLOAT)) return false;
-    if (!ply_add_scalar_property(oply, "z", PLY_FLOAT)) return false;
+    if (!ply_add_scalar_property(oply, "x", PLY_DOUBLE)) return false;
+    if (!ply_add_scalar_property(oply, "y", PLY_DOUBLE)) return false;
+    if (!ply_add_scalar_property(oply, "z", PLY_DOUBLE)) return false;
     if (!ply_add_scalar_property(oply, "intensity", PLY_UINT8)) return false;
     if (!ply_write_header(oply)) return false;
     

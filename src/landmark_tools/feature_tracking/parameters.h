@@ -36,7 +36,16 @@
 #define DEFAULT_MIN_CORRELATION        0.3           /*!< \brief Default value for `Parameters.min_correlation`*/
 #define DEFAULT_NUM_FEATURES           600           /*!< \brief Default value for `Parameters.num_features`*/
 #define DEFAULT_MIN_DIST_FEATURE       5.0             /*!< \brief Default value for `Parameters.min_dist_feature`*/
+#define DEFAULT_BLOCK_SIZE             200            /*!< \brief Default value for `Parameters.block_size`*/
+#define DEFAULT_STEP_SIZE              4              /*!< \brief Default value for `Parameters.step_size`*/
+#define DEFAULT_MIN_N_FEATURES         20             /*!< \brief Default value for `Parameters.min_n_features`*/
+#define DEFAULT_FEATURE_INFLUENCE_WINDOW 7            /*!< \brief Default value for `Parameters.feature_influence_window`*/
+#define DEFAULT_REPROJECTION_THRESHOLD 5.0            /*!< \brief Default value for `Parameters.reprojection_threshold`*/
+#define DEFAULT_MAX_DELTA_MAP          500.0          /*!< \brief Default value for `Parameters.max_delta_map`*/
 
+/**
+ * \brief Parameters for correlation-based feature matching
+ */
 typedef struct {
     /**
      * \brief Size of the template used for correlation matching.
@@ -65,17 +74,99 @@ typedef struct {
     int32_t search_window_size;
     
     /**
+     * \brief Minimum normalized correlation score for selection
+     *
+     * @note Required value range from [0.0, 1.0]*/
+    float min_correlation;
+} MatchingParameters;
+
+/**
+ * \brief Parameters for sliding window processing
+ */
+typedef struct {
+    /**
+     * \brief Size of the sliding window block for processing
+     *
+     * This parameter defines the size of the window used when processing landmarks
+     * in a sliding window fashion. Larger blocks can capture more context but
+     * increase memory usage and computation time.
+     *
+     * @note Recommended value range from [100, 500] pixels */
+    int32_t block_size;
+    
+    /**
+     * \brief Step size for downsampling points within a block
+     *
+     * This parameter controls the sampling density of points processed within
+     * each block. Instead of processing every pixel in the block, points are
+     * sampled at regular intervals defined by this step size. For example, a
+     * step size of 4 means every 4th point in both row and column directions
+     * is processed. This downsampling reduces computation time while still
+     * maintaining sufficient coverage for feature matching.
+     *
+     * @note Must be at least 1 (no downsampling). Recommended value range from [1, 10] pixels.
+     *       Larger values reduce computation time but may miss important features. */
+    int32_t step_size;
+    
+    /**
+     * \brief Minimum number of features required for a valid match
+     *
+     * This parameter sets the minimum number of matched features required
+     * to consider a block match valid. Higher values increase robustness
+     * but may reject valid matches in areas with fewer features.
+     *
+     * @note Recommended value range from [5, 20] features */
+    int32_t min_n_features;
+    
+    /**
+     * \brief Size of the influence window around each matched feature point
+     *
+     * This parameter defines the radius of influence around each matched feature point.
+     * Within this window, the feature's delta values (x, y, z) and correlation values
+     * are distributed using a Gaussian weight function (exp(-distance)). The influence
+     * smoothly decreases with distance from the feature point, with values at the window
+     * boundary having minimal impact.
+     *
+     * @note Must be an odd number. Recommended value range from [3, 15] pixels.
+     *       Larger values create smoother transitions but increase computation time. */
+    int32_t feature_influence_window;
+    
+    /**
+     * \brief Maximum allowed reprojection error for a feature to be considered an inlier
+     *
+     * This parameter sets the threshold for reprojection error when determining
+     * if a feature match is valid. Higher values allow more matches but may
+     * include more outliers.
+     *
+     * @note Recommended value range from [1.0, 10.0] pixels */
+    float reprojection_threshold;
+    
+    /**
+     * \brief Maximum allowed delta values in map frame
+     *
+     * This parameter sets the maximum allowed delta values (x, y, z) in the
+     * map frame. Values exceeding this threshold are considered outliers and
+     * filtered out.
+     *
+     * @note Recommended value range from [100.0, 1000.0] meters */
+    float max_delta_map;
+} SlidingWindowParameters;
+
+/**
+ * \brief Parameters for Forstner feature detector
+ */
+typedef struct {
+    /**
      * \brief Neighborhood size for Foestner (1987) interest operator.
      *
      * Foestner interest is used to select features points for `landmark_registration`. This value is not too sensitive.
      *
      * @note Must be an odd number. Recommended value range from [5, 21] pixels  */
-    int32_t forstner_feature_window_size;
+    int32_t window_size;
     
     /**
      * \brief Distance between closest pair of feature points in meters.
      *
-     * //TODO (Cecilia) check that this is really meters.
      * This threshold forces the features to be distributed across image. A good distribution of feature points makes the homography estimate more accurate.
      *
      * @note Recommended value range from [0.0, 5.0] meters */
@@ -86,12 +177,15 @@ typedef struct {
      *
      * @note Recommended value range from [0, 600] features  */
     int32_t num_features;
-    
-    /**
-     * \brief Minimum normalized correlation score for selection for TODO
-     *
-     * @note Required value range from [0.0, 1.0]*/
-    float min_correlation;
+} FeatureDetectorParameters;
+
+/**
+ * \brief All parameters for feature tracking and matching
+ */
+typedef struct {
+    MatchingParameters matching;          /**< Parameters for correlation matching */
+    SlidingWindowParameters sliding;      /**< Parameters for sliding window processing */
+    FeatureDetectorParameters detector;   /**< Parameters for feature detection */
 } Parameters;
 
 #ifdef __cplusplus

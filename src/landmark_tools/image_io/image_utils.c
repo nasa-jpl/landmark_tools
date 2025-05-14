@@ -15,6 +15,7 @@
  */
 
 #include "landmark_tools/image_io/image_utils.h"
+#include "landmark_tools/utils/safe_string.h"
 
 #include <stdlib.h>               // for malloc, free, EXIT_FAILURE
 
@@ -47,7 +48,7 @@ uint8_t* load_channel_separated_image(const char* filename, int32_t *icols, int3
     int32_t ichannels;
     uint8_t *img_interleaved = stbi_load(filename, icols, irows, &ichannels, STBI_default);
     if (img_interleaved == NULL) {
-        printf("Failure to load surface reflectance map from %.256s\n", filename);
+        SAFE_FPRINTF(stderr, 512, "Failure to load surface reflectance map from %s\n", filename);
         return NULL;
     }
     
@@ -81,7 +82,7 @@ bool write_channel_separated_image(const char* filename, uint8_t *img, int32_t c
         tmpImgInterleaved = (uint8_t *)malloc(sizeof(uint8_t)*cols*rows*channels);
         if (tmpImgInterleaved == NULL)
         {
-            printf("write_channel_separated_image() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+            SAFE_FPRINTF(stderr, 512, "write_channel_separated_image() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
             return false;
         }
         
@@ -90,7 +91,7 @@ bool write_channel_separated_image(const char* filename, uint8_t *img, int32_t c
     }else if(channels == 1){
         tmpImgInterleaved = img;
     }else{
-        printf("write_channel_separated_image() not supported for %d channels: %.256s, %d\n", channels, __FILE__, __LINE__);
+        SAFE_FPRINTF(stderr, 512, "write_channel_separated_image() not supported for %d channels: %s, %d\n", channels, __FILE__, __LINE__);
         return false;
     }
 

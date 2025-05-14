@@ -29,7 +29,7 @@
 #include "landmark_tools/map_projection/datum_conversion.h"  // for Planet
 #include "landmark_tools/landmark_util/point_cloud2grid.h"
 #include "landmark_tools/utils/parse_args.h"                 // for m_getarg
-
+#include "landmark_tools/utils/safe_string.h"
 void show_usage_and_exit()
 {
     printf("Convert point cloud to landmark format.\n");
@@ -44,9 +44,10 @@ void show_usage_and_exit()
     printf("    -ele   <float> - elevation of center anchor point in meters\n");
     printf("    -s   <float> - map width in meters\n");
     printf("    -sy   <float> - map height in meters\n");
-    printf("    -planet <Moon|Earth|Mars> - (default Moon)\n");
-    printf("    -filetype <POINT|PLY> - file format of input file (default POINT)\n");
+    printf("    -planet <Moon|Earth|Mars> \n");
+    printf("    -filetype <POINT|PLY> - file format of input file. Use PLY if file was created by landmark_2_point. POINT is a legacy format.\n");
     printf("    -frame <WORLD|LOCAL|RASTER> - reference frame of the input pointcloud (default WORLD)\n");
+    printf("    -smooth <true|false> - if true, use inverse distance weighting to calculate elevations on a grid. if false, assign point to nearest raster neighbor. (default true)\n");
 	exit(EXIT_FAILURE);
 }
 
@@ -58,6 +59,7 @@ int32_t main(int32_t argc, char **argv)
     char *filetype_str = NULL;
     char *planet_str = NULL;
     char *frame_str = NULL;
+    char *smooth_str = NULL;
     float res;
     float lat;
     float lg;
@@ -84,7 +86,8 @@ int32_t main(int32_t argc, char **argv)
             (m_getarg(argv, "-sy",   &sizey,        CFO_FLOAT)!=1) &&
             (m_getarg(argv, "-planet",    &planet_str,        CFO_STRING)!=1) &&
             (m_getarg(argv, "-filetype",   &filetype_str,        CFO_STRING)!=1) &&
-            (m_getarg(argv, "-frame",   &frame_str,        CFO_STRING)!=1))
+            (m_getarg(argv, "-frame",   &frame_str,        CFO_STRING)!=1) &&
+            (m_getarg(argv, "-smooth",   &smooth_str,        CFO_STRING)!=1))
             show_usage_and_exit();
         
         argc-=2;
@@ -117,8 +120,13 @@ int32_t main(int32_t argc, char **argv)
     }
     
     if(!read_success){
-        printf("Unable to read %.256s\n", pointfile);
+        SAFE_PRINTF(256, "Unable to read %s\n", pointfile);
         return EXIT_FAILURE;
+    }
+
+    bool smooth = true;
+    if(smooth_str != NULL && strncmp(smooth_str, "false", 5) == 0){
+        smooth = false;
     }
     
     // Generate lmk header
@@ -149,7 +157,7 @@ int32_t main(int32_t argc, char **argv)
     calculateDerivedValuesVectors(&lmk);
     
     // Transform points to landmark coordinate frame
-    bool success = point2lmk(pts, bv, num_pts, &lmk, frame);
+    bool success = point2lmk(pts, bv, num_pts, &lmk, frame, smooth);
     free(pts);
     free(bv);
     if(!success){
@@ -161,10 +169,10 @@ int32_t main(int32_t argc, char **argv)
     success = Write_LMK(lmkfile, &lmk);
     free_lmk(&lmk);
     if(success){
-        printf("Landmark file saved at %.256s\n", lmkfile);
+        SAFE_PRINTF(256, "Landmark file saved at %s\n", lmkfile);
         return EXIT_SUCCESS;
     }else{
-        printf("Failed to save landmark file at %.256s\n", lmkfile);
+        SAFE_PRINTF(256, "Failed to save landmark file at %s\n", lmkfile);
         return EXIT_FAILURE;
     }
 }

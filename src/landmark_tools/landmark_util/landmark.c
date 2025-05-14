@@ -26,6 +26,7 @@
 #include "landmark_tools/math/point_line_plane_util.h"  // for normalpoint2plane, PointRayInters...
 #include "landmark_tools/utils/endian_read_write.h"
 #include "math/mat3/mat3.h"                                         // for dot3
+#include "landmark_tools/utils/safe_string.h"
 
 #define INTERSECTION_MAX_ITERATIONS 100
 
@@ -36,7 +37,7 @@ bool allocate_lmk_arrays(LMK* lmk, int32_t num_cols, int32_t num_rows) {
 
     if (lmk->srm == NULL)
     {
-        printf("allocate_lmk_arrays() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "allocate_lmk_arrays() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
         return false;
     }else{
         for(int32_t i = 0; i < lmk->num_cols*lmk->num_rows; ++i)
@@ -48,7 +49,7 @@ bool allocate_lmk_arrays(LMK* lmk, int32_t num_cols, int32_t num_rows) {
     lmk->ele = (float *)malloc(sizeof(float)*lmk->num_cols*lmk->num_rows);
     if (lmk->ele == NULL)
     {
-        printf("allocate_lmk_arrays() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
+        SAFE_PRINTF(512, "allocate_lmk_arrays() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
         free(lmk->srm);
         return false;
     }else{
@@ -115,7 +116,7 @@ void calculateDerivedValuesVectors(LMK* lmk){
     return;
 }
 
-bool Copy_LMK(LMK *from, LMK *to)
+bool Copy_LMK(const LMK *from, LMK *to)
 {
     Copy_LMK_Header(from, to);
     if(allocate_lmk_arrays(to, to->num_cols, to->num_rows)){
@@ -128,7 +129,7 @@ bool Copy_LMK(LMK *from, LMK *to)
     return false;
 }
 
-void Copy_LMK_Header(LMK *from, LMK *to){
+void Copy_LMK_Header(const LMK *from, LMK *to){
     to->BODY = from->BODY;
     strncpy(to->lmk_id, from->lmk_id, LMK_ID_SIZE);
     to->num_cols = from->num_cols;
@@ -152,20 +153,19 @@ void Copy_LMK_Header(LMK *from, LMK *to){
     
 }
 
-bool Write_LMK(const char *filename, LMK *lmk)
+bool Write_LMK(const char *filename, const LMK *lmk)
 {
-    // Write landmark file
     FILE *fp;
     fp = fopen(filename, "wb");
     if(fp == NULL)
     {
-        printf("Write_LMK() ==>> cannot open file %.256s to write\n", filename);
+        SAFE_PRINTF(512, "Write_LMK() ==>> cannot open file %s to write\n", filename);
         return false;
     }
 
     size_t version_size = 32;
     char version[version_size];
-    strncpy(version, "#! LVS Map v3.0", version_size);
+    strncpy(version, "#! LVS Map v3.0", 16);
     if(fwrite(version, sizeof(uint8_t), version_size, fp) != version_size) return false;
 
      if(fwrite(&lmk->lmk_id, sizeof(uint8_t), LMK_ID_SIZE, fp) != LMK_ID_SIZE) return false;
@@ -194,27 +194,23 @@ bool Write_LMK(const char *filename, LMK *lmk)
     //Write ascii header file
     size_t buf_size = 256;
     char buf[buf_size];
-    snprintf(buf, buf_size, "%.256s.txt", filename);
+    snprintf(buf, buf_size, "%s.txt", filename);
     fp = fopen(buf, "w");
     if(fp == NULL)
     {
-        printf("Write_LMK() ==>> cannot open the file %.256s to write\n", buf);
+        SAFE_PRINTF(512, "Write_LMK() ==>> cannot open file %s to write\n", buf);
         return false;
-        
     }
-    
-    fprintf(fp, "LMK_BODY %d \n", lmk->BODY );
-    fprintf(fp, "LMK_ID %.32s\n", lmk->lmk_id );
-    fprintf(fp, "LMK_SIZE %d %d\n",  lmk->num_cols, lmk->num_rows );
-    
-    fprintf(fp, "LMK_RESOLUTION %f \n", lmk->resolution );
-    
-    fprintf(fp, "LMK_ANCHOR_POINT %f %f %f \n", lmk->anchor_point[0],lmk->anchor_point[1],lmk->anchor_point[2]  );
-    fprintf(fp, "LMK_ANCHOR_PIXEL %f %f \n", lmk->anchor_col, lmk->anchor_row );
-    
-    fprintf(fp, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[0][0], lmk->mapRworld[0][1], lmk->mapRworld[0][2]  );
-    fprintf(fp, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[1][0], lmk->mapRworld[1][1], lmk->mapRworld[1][2]  );
-    fprintf(fp, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[2][0], lmk->mapRworld[2][1], lmk->mapRworld[2][2]  );
+
+    SAFE_FPRINTF(fp, 512, "LMK_BODY %d \n", lmk->BODY );
+    SAFE_FPRINTF(fp, 512, "LMK_ID %s\n", lmk->lmk_id );
+    SAFE_FPRINTF(fp, 512, "LMK_SIZE %d %d\n",  lmk->num_cols, lmk->num_rows );
+    SAFE_FPRINTF(fp, 512, "LMK_RESOLUTION %f \n", lmk->resolution );
+    SAFE_FPRINTF(fp, 512, "LMK_ANCHOR_POINT %f %f %f \n", lmk->anchor_point[0],lmk->anchor_point[1],lmk->anchor_point[2]  );
+    SAFE_FPRINTF(fp, 512, "LMK_ANCHOR_PIXEL %f %f \n", lmk->anchor_col, lmk->anchor_row );
+    SAFE_FPRINTF(fp, 512, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[0][0], lmk->mapRworld[0][1], lmk->mapRworld[0][2]  );
+    SAFE_FPRINTF(fp, 512, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[1][0], lmk->mapRworld[1][1], lmk->mapRworld[1][2]  );
+    SAFE_FPRINTF(fp, 512, "LMK_WORLD_2_MAP_ROT %f %f %f \n", lmk->mapRworld[2][0], lmk->mapRworld[2][1], lmk->mapRworld[2][2]  );
     
     fclose(fp);
     
@@ -227,7 +223,7 @@ bool Read_LMK(const char *filename, LMK *lmk)
     fp = fopen(filename, "rb");
     if(fp == NULL)
     {
-        printf("Read_LMK() ==>> cannot open file %.256s to read\n", filename);
+        SAFE_PRINTF(512, "Read_LMK() ==>> cannot open file %s to read\n", filename);
         return false;
     }
     
@@ -239,7 +235,7 @@ bool Read_LMK(const char *filename, LMK *lmk)
     size_t char_array_size = 32;
     char char_array[char_array_size];
     if(fread(char_array, sizeof(char), char_array_size, fp) != char_array_size) return false;
-    printf("%32s\n", char_array);
+    SAFE_PRINTF(char_array_size, "%s\n", char_array);
 
     if(fread(lmk->lmk_id, sizeof(char), LMK_ID_SIZE, fp) != LMK_ID_SIZE) return false;
 
@@ -274,8 +270,13 @@ bool Read_LMK(const char *filename, LMK *lmk)
     }
 }
 
-void LMK_Col_Row_Elevation2World(LMK *lmk,  double col, double row, double ele, double p[3])
+void LMK_Col_Row_Elevation2World(const LMK *lmk,  double col, double row, double ele, double p[3])
 {
+    if (lmk == NULL || p == NULL) {
+        ele = NAN;
+        return; // Invalid input parameters
+    }
+
     double pm[3];
     double pim[3];
     double p1[3];
@@ -292,39 +293,22 @@ void LMK_Col_Row_Elevation2World(LMK *lmk,  double col, double row, double ele, 
 }
 
 
-bool LMK_Col_Row2World(LMK *lmk,  double col, double row,  double p[3])
+bool LMK_Col_Row2World(const LMK *lmk,  double col, double row,  double p[3])
 {
-    double pm[3];
-    double pim[3];
-    pim[0] = col;
-    pim[1] = row;
-    pim[2] = 1;
-    
-    //mult331(lmk->col_row2mapxy, pim, pm);
-    pm[0] = dot3(lmk->col_row2mapxy[0], pim);
-    pm[1] = dot3(lmk->col_row2mapxy[1], pim);
-    pm[2] = Interpolate_LMK_ELE(lmk, col,  row);
-    
-    bool elevation_is_nan = isnan(pm[2]);
-    if(elevation_is_nan)
-    {
-       pm[2] = 0;
-    }
-    
-    //sub3(pm, lmk.v, pm);
-    mult331(lmk->worldRmap, pm, p);
-    add3(p, lmk->anchor_point, p);
+    double ele = Interpolate_LMK_ELE(lmk, col,  row);
+    bool elevation_is_nan = isnan(ele);
+    LMK_Col_Row_Elevation2World(lmk, col, row, ele, p);
     return !elevation_is_nan;
 }
 
 
-double  Interpolate_LMK_ELE(LMK *lmk,  double  col, double  row)
+double  Interpolate_LMK_ELE(const LMK *lmk,  double  col, double  row)
 {
     return inter_float_matrix(lmk->ele, lmk->num_cols , lmk->num_rows, col,   row);
 }
 
 
-double  Interpolate_LMK_SRM(LMK *lmk, double  col, double  row)
+double  Interpolate_LMK_SRM(const LMK *lmk, double  col, double  row)
 {
     uint8_t val = 0;
     if(inter_uint8_matrix(lmk->srm, lmk->num_cols, lmk->num_rows,  col, row, &val)){
@@ -335,7 +319,7 @@ double  Interpolate_LMK_SRM(LMK *lmk, double  col, double  row)
 }
 
 
-void World2LMK_Col_Row_Ele(LMK *lmk, double p[3], double *col, double *row, double *ele)
+void World2LMK_Col_Row_Ele(const LMK *lmk, double p[3], double *col, double *row, double *ele)
 {
     double pm[3];
     double pi[3];
@@ -351,7 +335,7 @@ void World2LMK_Col_Row_Ele(LMK *lmk, double p[3], double *col, double *row, doub
 }
 
 
-bool Intersect_LMK_map_plane_params_World(LMK *lmk, double c[3], double ray[3],  double point3d[3])
+bool Intersect_LMK_map_plane_params_World( const LMK *lmk, double c[3], double ray[3],  double point3d[3])
 {
     double r;
     double cp, rp;
@@ -368,7 +352,7 @@ bool Intersect_LMK_map_plane_params_World(LMK *lmk, double c[3], double ray[3], 
 }
 
 
-bool Intersect_LMK_ELE(LMK *lmk, double c[3], double ray[3],  double point3d[3], double tol)
+bool Intersect_LMK_ELE(const LMK *lmk, double c[3], double ray[3],  double point3d[3], double tol)
 {
     int32_t cols = lmk->num_cols;
     int32_t rows = lmk->num_rows;
@@ -415,7 +399,7 @@ bool Intersect_LMK_ELE(LMK *lmk, double c[3], double ray[3],  double point3d[3],
 }
 
 
-bool Intersect_LMK_ELE_low_slant_angle(LMK *lmk, double c[3], double ray[3], double max_range,  double point3d[3], double mine, double maxe)
+bool Intersect_LMK_ELE_low_slant_angle(const LMK *lmk, double c[3], double ray[3], double max_range,  double point3d[3], double mine, double maxe)
 {
 //    // Find plane which contains the ray. The intersection should be on this plane
 //    double crossv[3] = {0};
@@ -526,7 +510,7 @@ bool Intersect_LMK_ELE_low_slant_angle(LMK *lmk, double c[3], double ray[3], dou
 }
 
 
-bool SubsetLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top, int32_t ncols, int32_t nrows)
+bool SubsetLMK(const LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top, int32_t ncols, int32_t nrows)
 {
     Copy_LMK_Header(lmk, lmk_sub);
     lmk_sub->num_cols = ncols;
@@ -559,14 +543,14 @@ bool SubsetLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top, int32_t ncols,
 }
 
 
-bool RescaleLMK(LMK *lmk, LMK *lmk_out, double out_lmk_res)
+bool RescaleLMK(const LMK *lmk, LMK *lmk_out, double out_lmk_res)
 {
     double scale = out_lmk_res/lmk->resolution;
 	return ResampleLMK(lmk, lmk_out,  scale);
 }
 
 
-bool  ResampleLMK(LMK *lmk, LMK *lmk_sub,  double scale)
+bool  ResampleLMK(const LMK *lmk, LMK *lmk_sub,  double scale)
 {
 	Copy_LMK_Header( lmk, lmk_sub);
 	lmk_sub->num_cols = (int32_t)(lmk_sub->num_cols/scale);
@@ -608,7 +592,7 @@ bool  ResampleLMK(LMK *lmk, LMK *lmk_sub,  double scale)
 }
 
 
-bool Crop_IntepolateLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top, int32_t ncols, int32_t nrows)
+bool Crop_IntepolateLMK(const LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top, int32_t ncols, int32_t nrows)
 {
     Copy_LMK_Header(lmk, lmk_sub);
     lmk_sub->num_cols = ncols;
@@ -617,13 +601,15 @@ bool Crop_IntepolateLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top, int32
     lmk_sub->anchor_col = (double)ncols/2.0 ;
     lmk_sub->anchor_row = (double)nrows/2.0 ;
     lmk_sub->num_pixels = ncols*nrows;
-    
-    double center_ele = (float)Interpolate_LMK_ELE(lmk , left + lmk_sub->anchor_col, top + lmk_sub->anchor_row);
-    LMK_Col_Row_Elevation2World( lmk,  left + lmk_sub->anchor_col, top + lmk_sub->anchor_row, center_ele, lmk_sub->anchor_point);
-    double anchor_latitude_degrees, anchor_longitude_degrees;
-    ECEF_to_LatLongHeight(lmk_sub->anchor_point, &anchor_latitude_degrees, &anchor_longitude_degrees, &center_ele, lmk_sub->BODY);
-    calculateAnchorRotation(lmk, anchor_latitude_degrees, anchor_longitude_degrees, center_ele);
-    calculateDerivedValuesVectors(lmk);
+
+    int32_t crop_center_col_in_source = left + lmk_sub->anchor_col;
+    int32_t crop_center_row_in_source = top + lmk_sub->anchor_row;
+    double crop_center_point[3];
+    LMK_Col_Row2World(lmk, crop_center_col_in_source, crop_center_row_in_source, crop_center_point);
+    double center_ele, anchor_latitude_degrees, anchor_longitude_degrees;
+    ECEF_to_LatLongHeight(crop_center_point, &anchor_latitude_degrees, &anchor_longitude_degrees, &center_ele, lmk->BODY);
+    calculateAnchorRotation(lmk_sub, anchor_latitude_degrees, anchor_longitude_degrees, center_ele);
+    calculateDerivedValuesVectors(lmk_sub);
     
     uint8_t success = allocate_lmk_arrays(lmk_sub, lmk_sub->num_cols, lmk_sub->num_rows);
     if(!success){
@@ -634,10 +620,12 @@ bool Crop_IntepolateLMK(LMK *lmk, LMK *lmk_sub, int32_t left, int32_t top, int32
     {
         for(int32_t j =0 ; j <  lmk_sub->num_cols; ++j)
         {
-            double p[3], x, y, ele;
+            double p[3], x, y, temp_ele, temp_col, temp_row, ele_in_crop;
             LMK_Col_Row_Elevation2World(lmk_sub,  (double)j,  (double)i, 0.0,   p);
-            World2LMK_Col_Row_Ele(lmk, p, &x, &y, &ele);
-            lmk_sub->ele[k] = Interpolate_LMK_ELE(lmk , x, y);
+            World2LMK_Col_Row_Ele(lmk, p, &x, &y, &temp_ele);
+            LMK_Col_Row2World(lmk, x, y, p);
+            World2LMK_Col_Row_Ele(lmk_sub, p, &temp_col, &temp_row, &ele_in_crop);
+            lmk_sub->ele[k] = ele_in_crop;
             lmk_sub->srm[k] = Interpolate_LMK_SRM(lmk, x, y);
             k++;
         }

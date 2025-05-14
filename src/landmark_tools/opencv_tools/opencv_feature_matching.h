@@ -26,22 +26,7 @@
 extern "C" {
 #endif
 
-/**
- \brief Supported feature descriptors
-*/
-typedef enum {
-  SIFT,
-  ORB,
-  SURF
-} HomographyMatchMethod;
-
-/**
- \brief Convert HomographyMatchMethod to String
- 
- \param[in] method 
- \return char* 
-*/
-char* HomographyMatchMethodToStr(HomographyMatchMethod method);
+#include "landmark_tools/opencv_tools/homography_match_method.h"
 
 /**
  \brief TODO

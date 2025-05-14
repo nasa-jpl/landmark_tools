@@ -25,7 +25,6 @@ bool cubic_interpolation(uint16_t *img, int32_t cols, int32_t rows, double x, do
     double hy[4];
     if(x < 2 || x > cols - 3 || y < 2 || y > rows -2)
     {
-       // printf("x y %f %f is outside of image image %d %d\n", x, y, cols, rows);
         return false;
     }
     ix = (int32_t)x;

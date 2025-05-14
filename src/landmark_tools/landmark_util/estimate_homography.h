@@ -33,6 +33,6 @@
  \param[in] lmk_child
  \param[out] base2child homography matrix
  */
-void estimateHomographyUsingCorners(LMK* lmk_base, LMK* lmk_child, double base2child[3][3]);
+void estimateHomographyUsingCorners(const LMK* lmk_base, const LMK* lmk_child, double base2child[3][3]);
 
 #endif /* _LANDMARK_TOOLS_ESTIMATE_HOMOGRAPHY_H_ */

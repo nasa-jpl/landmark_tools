@@ -1,8 +1,13 @@
 README.md
 pyproject.toml
 landmark_tools/__init__.py
-landmark_tools/gray_pgm.py
+landmark_tools/batch_render.py
+landmark_tools/convert_endian.py
 landmark_tools/landmark.py
+landmark_tools/mask_by_intensity.py
+landmark_tools/quiver_plot.py
+landmark_tools/render_ply.py
+landmark_tools/simulate_pushbroom_jitter.py
 landmark_tools/visualize_corr.py
 landmark_tools.egg-info/PKG-INFO
 landmark_tools.egg-info/SOURCES.txt

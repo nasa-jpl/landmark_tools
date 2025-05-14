@@ -43,7 +43,6 @@ void normalizeRotation_quaternion_method(double R[3][3])
     double q[4];
     quatr(R, q);
     rotq(q, R);
-    // printf("detr %f\n", det33(R));
 }
 
  

@@ -1,17 +1,21 @@
 cmake_minimum_required(VERSION 3.16)
 project(landmark_tools)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message(STATUS "Configuring on/for Linux")
+# Enable testing
+enable_testing()
+include(CTest)
+
+if(UNIX AND NOT APPLE)
+    message(STATUS "Configuring for Linux-like system")
     add_definitions(-DLINUX_OS)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    message(STATUS "Configuring on/for Windows")
-    add_definitions(-DWINDOWS_OS)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    # Darwin is the system name for macOS
-    message(STATUS "Configuring on/for macOS")
+elseif(APPLE)
+    message(STATUS "Configuring for macOS")
     add_definitions(-DMAC_OS)
+elseif(WIN32)
+    message(STATUS "Configuring for Windows")
+    add_definitions(-DWINDOWS_OS)
 endif()
+
 
 # Add local CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
@@ -84,6 +88,7 @@ src/landmark_tools/math/point_line_plane_util.c
 src/landmark_tools/utils/parse_args.c
 src/landmark_tools/utils/endian_read_write.c
 src/math/mat3/mat3.c
+src/landmark_tools/utils/write_array.c
 )
 
 add_executable( create_landmark
@@ -123,6 +128,7 @@ src/landmark_tools/landmark_util/estimate_homography.c
 src/landmark_tools/feature_tracking/feature_match.c
 src/landmark_tools/feature_tracking/corr_image_long.c
 src/landmark_tools/feature_tracking/parameters.c
+src/landmark_tools/feature_tracking/correlation_results.c
 src/landmark_tools/math/homography_util.c
 src/landmark_tools/utils/two_level_yaml_parser.c
 )
@@ -131,6 +137,7 @@ add_dependencies(landmark_comparison link_public_headers)
 add_executable( landmark_registration
 src/main/landmark_registration_main.c
 ${common_sources}
+src/landmark_tools/landmark_registration/landmark_registration.c
 src/landmark_tools/landmark_util/estimate_homography.c
 src/landmark_tools/feature_selection/int_forstner_extended.c
 src/landmark_tools/feature_tracking/corr_image_long.c
@@ -204,6 +211,7 @@ if (WITH_OPENCV)
     add_library(landmark_tools_opencv_tools
        src/landmark_tools/opencv_tools/opencv_feature_matching.cpp
        src/landmark_tools/opencv_tools/opencv_image_io.cpp
+       src/landmark_tools/opencv_tools/homography_estimation.c
     )
     target_compile_features(landmark_tools_opencv_tools PUBLIC cxx_std_11)
     target_include_directories(landmark_tools_opencv_tools PRIVATE ${OpenCV_INCLUDE_DIRS})
@@ -213,9 +221,14 @@ if (WITH_OPENCV)
     add_executable(image_comparison
         src/main/image_comparison_main.c
         ${common_sources}
+        src/landmark_tools/landmark_util/estimate_homography.c
         src/landmark_tools/feature_tracking/feature_match.c
         src/landmark_tools/feature_tracking/corr_image_long.c
         src/landmark_tools/feature_tracking/parameters.c
+        src/landmark_tools/opencv_tools/opencv_feature_matching.cpp 
+        src/landmark_tools/opencv_tools/homography_estimation.c
+        src/landmark_tools/opencv_tools/feature_matching_2d.c
+        src/landmark_tools/feature_tracking/correlation_results.c
         src/landmark_tools/math/homography_util.c
         src/landmark_tools/utils/two_level_yaml_parser.c
     )
@@ -232,27 +245,34 @@ file(GLOB_RECURSE library_sources
  "${CMAKE_CURRENT_SOURCE_DIR}/src/math/*.c"
  "${CMAKE_CURRENT_SOURCE_DIR}/src/img/*.c")
 
-## Shared library
+# Remove cpp files
+list(REMOVE_ITEM library_sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools/opencv_tools/homography_estimation.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/landmark_tools/opencv_tools/feature_matching_2d.c"
+)
 
-add_library(landmark_tools
-SHARED
-${library_sources}
-${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/rply.c
+# Build the landmark_tools library first
+add_library(landmark_tools SHARED
+  ${library_sources}
+  ${CMAKE_CURRENT_SOURCE_DIR}/submodules/librply/src/lib/rply.c
 )
 
 target_include_directories(landmark_tools PUBLIC
     ${PNG_INCLUDE_DIRS})
 
 target_include_directories(landmark_tools INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # During build
-    $<INSTALL_INTERFACE:include>  # During installation
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 if(GDAL_FOUND)
-    target_link_libraries( landmark_tools PUBLIC GDAL::GDAL ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
+    target_link_libraries(landmark_tools PUBLIC GDAL::GDAL ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
 else()
-    target_link_libraries( landmark_tools PUBLIC ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
+    target_link_libraries(landmark_tools PUBLIC ${yaml_LIBRARIES} ${PNG_LIBRARIES} ${GSL_LIBRARIES} m -lz)
 endif()
+
+# Then add the tests
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp)
 
 install(TARGETS landmark_tools EXPORT LandmarkTools
         ARCHIVE DESTINATION lib

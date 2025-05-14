@@ -29,7 +29,7 @@
 #include "landmark_tools/landmark_util/point_cloud2grid.h"  // for PointStructure
 #include "landmark_tools/utils/parse_args.h"             // for m_getarg
 #include "rply.h"                                        // for e_ply_storag...
-
+#include "landmark_tools/utils/safe_string.h"
 void show_usage_and_exit()
 {
     printf("Write a landmark to a ply mesh or pointcloud.\n");
@@ -39,7 +39,7 @@ void show_usage_and_exit()
     printf("    -landmark   <filename> - input lmkfile\n");
     printf("    -ply  <filename> - output PLY filepath\n");
     printf("  Optional arguments:\n");
-    printf("    -filetype <PLY_ASCII|PLY_LITTLE_ENDIAN|PLY_BIG_ENDIAN> - (default arch endian)\n");
+    printf("    -filetype <PLY_ASCII|PLY_LITTLE_ENDIAN|PLY_BIG_ENDIAN> - (default arch endian) warning: ascii is lossy\n");
     printf("    -structure <POINTCLOUD|MESH> - (default MESH)\n");
     printf("    -frame <WORLD|LOCAL|RASTER> - (default WORLD)\n");
     exit(EXIT_FAILURE);
@@ -80,7 +80,7 @@ int32_t main(int32_t argc, char **argv)
     LMK lmk = {0};
     bool success = Read_LMK(lmkfile, &lmk);
     if(!success){
-        printf("Failed to read landmark file at %.256s\n", lmkfile);
+        SAFE_PRINTF(256, "Failed to read landmark file at %s\n", lmkfile);
         return EXIT_FAILURE;
     }
     
@@ -92,10 +92,10 @@ int32_t main(int32_t argc, char **argv)
  
     free_lmk(&lmk);
     if(success){
-        printf("Landmark file saved at %.256s\n", pointfile);
+        SAFE_PRINTF(256, "Landmark file saved at %s\n", pointfile);
         return EXIT_SUCCESS;
     }else{
-        printf("Failed to save landmark file at %.256s\n", pointfile);
+        SAFE_PRINTF(256, "Failed to save landmark file at %s\n", pointfile);
         return EXIT_FAILURE;
     }
 }

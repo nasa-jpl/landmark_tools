@@ -16,6 +16,7 @@
 
 #include "landmark_tools/utils/two_level_yaml_parser.h"
 #include <yaml.h>
+#include "landmark_tools/utils/safe_string.h"
 
 
 bool parseYaml(const char *yaml_filename,
@@ -32,11 +33,11 @@ bool parseYaml(const char *yaml_filename,
 
     /* Initialize parser */
     if(!yaml_parser_initialize(&parser)){
-        fprintf(stderr, "Failed to initialize parser: %.256s\n", yaml_filename);
+        SAFE_FPRINTF(stderr, 512, "Failed to initialize parser: %s\n", yaml_filename);
         return false;
     }
     if(fp == NULL){
-        fprintf(stderr, "Failed to open file: %.256s\n", yaml_filename);
+        SAFE_FPRINTF(stderr, 512, "Failed to open file: %s\n", yaml_filename);
         return false;
     }
 
@@ -87,7 +88,7 @@ bool parseYaml(const char *yaml_filename,
                     }
                     
                     if(!isValid){
-                        fprintf(stderr, "ERROR: Yaml contains unexpected key: %.256s.\n.", current_key);
+                        SAFE_FPRINTF(stderr, 512, "ERROR: Yaml contains unexpected key: %s.\n.", current_key);
                         yaml_parser_delete(&parser);
                         fclose(fp);
                         return false;
@@ -104,7 +105,7 @@ bool parseYaml(const char *yaml_filename,
                 for(size_t i=child_index_root; i<child_index_root+num_child; i++){
                     if (strncmp(current_key, child_keys[i], current_key_size) == 0){
                         if(child_observed[i]){
-                            fprintf(stderr, "WARNING: Yaml contains two of the same key: %.256s\n. Second instance will be used.", current_key);
+                            SAFE_FPRINTF(stderr, 512, "WARNING: Yaml contains two of the same key: %s\n. Second instance will be used.", current_key);
                         }
                         values[i] = current_value;
                         child_observed[i] = true;
@@ -114,7 +115,7 @@ bool parseYaml(const char *yaml_filename,
                 }
                     
                 if(!isValid){
-                    fprintf(stderr, "ERROR: Yaml contains unexpected key: %.256s.\n.", current_key);
+                    SAFE_FPRINTF(stderr, 512, "ERROR: Yaml contains unexpected key: %s.\n.", current_key);
                     yaml_parser_delete(&parser);
                     fclose(fp);
                     return false;
@@ -141,7 +142,7 @@ bool parseYaml(const char *yaml_filename,
     if(must_include_all){
         for(size_t i=0; i<total_child_keys; i++){
             if (!child_observed[i]) {
-                fprintf(stderr, "ERROR: Yaml file %.256s is missing required key: %.256s\n", yaml_filename, child_keys[i]);
+                SAFE_FPRINTF(stderr, 512, "ERROR: Yaml file %s is missing required key: %s\n", yaml_filename, child_keys[i]);
                 return false;
             }
         }

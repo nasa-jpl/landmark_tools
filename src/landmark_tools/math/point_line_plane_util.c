@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include "landmark_tools/utils/safe_string.h"
 
 #include "landmark_tools/math/math_constants.h"
 #include "landmark_tools/math/math_utils.h"
@@ -27,7 +28,7 @@
 #include "landmark_tools/math/math_utils.h"
 #include "math/mat3/mat3.h"
 
-double Point2PlaneDist(double P[3], double plane[4])
+double Point2PlaneDist(const double P[3], const double plane[4])
 {
     double d;
     d = dot3(P, plane) + plane[3];
@@ -86,7 +87,7 @@ int32_t PointRayIntersection2Plane(double p[3], double ray[3], double plane[4], 
 }
 
 
-int32_t normalpoint2plane(double vec[3], double p[3], double plane[4])
+int32_t normalpoint2plane(const double vec[3], const double p[3], double plane[4])
 {
     copy3(vec, plane);
     plane[3] = -dot3(vec, p);
@@ -149,18 +150,18 @@ int32_t  Point_Clouds_rot_T_RANSAC(double *ptsA, double *ptsB, int32_t num_pts, 
     double *ptsB_tmp;
     
     ptsA_tmp = (double *)malloc(sizeof(double)*num_pts*3);
-if (ptsA_tmp == NULL)
-	{
-		printf("Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
-		return 0;
-	}
+    if (ptsA_tmp == NULL)
+    {
+        SAFE_PRINTF(512, "Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
+        return 0;
+    }
 
     ptsB_tmp = (double *)malloc(sizeof(double)*num_pts*3);
-if (ptsB_tmp == NULL)
-	{
-		printf("Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %.256s, %d\n", __FILE__, __LINE__);
-		return 0;
-	}
+    if (ptsB_tmp == NULL)
+    {
+        SAFE_PRINTF(512, "Point_Clouds_rot_T_RANSAC() ==>> malloc() failed, %s, %d\n", __FILE__, __LINE__);
+        return 0;
+    }
     
     int32_t index[3], flag, bestk, nm ;
     int32_t i, j, p1;
@@ -171,7 +172,7 @@ if (ptsB_tmp == NULL)
     bestk = 0;
     for(int32_t iter = 0; iter <  PC_RANSAC_MAX_ITERATIONS; ++iter)
     {
-        printf("iter = %d\n", iter);
+        SAFE_PRINTF(128, "iter = %d\n", iter);
         nm = 0;
         while(nm < 3)
         {
@@ -188,7 +189,6 @@ if (ptsB_tmp == NULL)
                 
                 if(flag == 1)
                 {
-                    //printf("p1 = %d\n", p1);
                     copy3(&ptsA[3*p1], &Am[nm*3]);
                     copy3(&ptsB[3*p1], &Bm[nm*3]);
                     index[nm] = p1;
@@ -205,12 +205,9 @@ if (ptsB_tmp == NULL)
             mult331(bRa_tmp,&ptsA[3*i], p );
             add3(p, Ttmp, p);
             sub3(p, &ptsB[3*i], p);
-            // prt3(p);
-            // printf("tol %f mag3 %f\n", tol, mag3(p));
             if(mag3(p) < tol)
             {
                 k++;
-                // printf("hihihi tol %f mag3 %f k = %d\n", tol, mag3(p));
             }
         }
         if(k > bestk)
@@ -220,7 +217,7 @@ if (ptsB_tmp == NULL)
             copy3(Ttmp, bestT);
         }
     }
-    printf("bestk %d\n", bestk);
+    SAFE_PRINTF(128, "bestk %d\n", bestk);
     for(i = 0, k = 0; i < num_pts; ++i)
     {
         mult331(bestR,&ptsA[3*i], p );
@@ -236,7 +233,6 @@ if (ptsB_tmp == NULL)
     
     if(k > 6)
     {
-        // printf("k = %d\n", k);
         Point_Clouds_rot_T(ptsA_tmp, ptsB_tmp,k, bRa, T);
     }
     else

@@ -18,7 +18,7 @@
 #include "landmark_tools/math/homography_util.h"
 #include <assert.h>
 
-void estimateHomographyUsingCorners(LMK* lmk_base, LMK* lmk_child, double base2child[3][3]){
+void estimateHomographyUsingCorners(const LMK* lmk_base, const LMK* lmk_child, double base2child[3][3]){
     double pts1[8], pts2[8];
     
     //Put the row,col coordinates from lmk_child in pts1

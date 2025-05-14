@@ -1,4 +1,7 @@
 add_public_headers(
 opencv_feature_matching.h
 opencv_image_io.h
+homography_estimation.h
+homography_match_method.h
+feature_matching_2d.h
 )

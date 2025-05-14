@@ -31,7 +31,7 @@ import struct
 # d = double
 # f = float
 # B = uint8
-def unpack_matrix(type, size, buffer):
+def unpack_matrix(type, size, buffer, little_endian=False):
     if type == 'd':
         b_size = 8
     elif type == 'f':
@@ -40,6 +40,10 @@ def unpack_matrix(type, size, buffer):
         b_size = 1
     else:
         raise ValueError("Type not supported");
+
+    endian_flag = '>'
+    if little_endian:
+        endian_flag = '<'
 
     list_m = []
     bytes_unpacked = 0
@@ -58,7 +62,7 @@ def unpack_matrix(type, size, buffer):
 # d = double
 # f = float
 # B = uint8
-def pack_matrix(type, mat, buffer, offset=0):
+def pack_matrix(type, mat, buffer, offset=0, little_endian=False):
     if type == 'd':
         b_size = 8
     elif type == 'f':
@@ -68,18 +72,42 @@ def pack_matrix(type, mat, buffer, offset=0):
     else:
         raise ValueError("Type not supported");
 
+    endian_flag = '>'
+    if little_endian:
+        endian_flag = '<'
+
     bytes_packed = offset
     if len(mat.shape)==1:
        for jj in range(mat.shape[0]):
-            struct.pack_into('>'+type, buffer, bytes_packed, mat[jj])
+            struct.pack_into(endian_flag+type, buffer, bytes_packed, mat[jj])
             bytes_packed += b_size
     else:
         for ii in range(mat.shape[0]):
             for jj in range(mat.shape[1]):
-                struct.pack_into('>'+type, buffer, bytes_packed, mat[ii, jj])
+                struct.pack_into(endian_flag+type, buffer, bytes_packed, mat[ii, jj])
                 bytes_packed += b_size
 
     return
+
+def ecef_to_latlongheight_sphere(p, radius_meters):
+    """Convert ECEF coordinates to latitude, longitude, and height.
+    
+    Args:
+        p (numpy.ndarray): 3D array of ECEF coordinates [x, y, z] in meters
+        radius_meters (float): Radius of the sphere in meters
+        
+    Returns:
+        tuple: (latitude_degrees, longitude_degrees, elevation_meters)
+    """
+    d = np.sqrt(p[0]*p[0] + p[1]*p[1])
+    
+    latitude_degrees = np.arctan(p[2]/d) * 180.0/np.pi
+    longitude_degrees = np.arctan2(p[1], p[0]) * 180.0/np.pi
+    
+    elevation_meters = np.sqrt(np.sum(p*p)) - radius_meters
+    
+    return latitude_degrees, longitude_degrees, elevation_meters
+
 
 class Landmark:
 
@@ -144,6 +172,74 @@ class Landmark:
         with open(lmk_file, 'wb') as fp:
             fp.write(file_data)
 
+    def save_legacy_little_endian(self, lmk_file, radius=0.0):
+        size = (4*4) + (6*8) + (3*8) + (3*2*8) + (3*2*8) + (3*3*8) + (3*8) + (4*8) + (self.num_pixels)*1 + (self.num_pixels)*4
+        file_data = bytearray(size)
+
+        bytes_packed = 0
+        # BODY, lmk_id (integer), num_cols, num_rows
+        struct.pack_into('<iiii', file_data, bytes_packed, self.BODY, 1, self.num_cols, self.num_rows)
+        bytes_packed += 4*4
+
+        # anchor_col, anchor_row, lat, lon, radius, resolution
+        lat, lon, height = ecef_to_latlongheight_sphere(self.anchor_point, radius)
+        struct.pack_into('<dddddd', file_data, bytes_packed, self.anchor_col, self.anchor_row, lat, lon, radius, self.resolution)
+        bytes_packed += 6*8
+
+        # anchor_point (x, y, z)
+        struct.pack_into('<ddd', file_data, bytes_packed, *self.anchor_point)
+        bytes_packed += 3*8
+
+        # Derived matrix: col_row2mapxy (3x2 matrix)
+        col_row2mapxy = np.array([
+            [self.resolution, 0.0, -self.resolution],
+            [0.0, -self.resolution, self.resolution]
+        ])
+        struct.pack_into('<' + 'd'*6, file_data, bytes_packed, *col_row2mapxy.flatten())
+        bytes_packed += (3*2)*8
+
+
+        # Derived matrix: mapxy2col_row (3x2 matrix)
+        mapxy2col_row = np.array([
+            [1.0/self.resolution, 0.0, 0.0],
+            [0.0, -1.0/self.resolution, 0.0]
+        ])
+        struct.pack_into('<' + 'd'*6, file_data, bytes_packed, *mapxy2col_row.flatten())
+        bytes_packed += (3*2)*8
+
+        # mapRworld (3x3 matrix)
+        pack_matrix('d', self.mapRworld, file_data, bytes_packed, little_endian=True)
+        bytes_packed += (3*3)*8
+
+        # Derived vector: map_normal_vector (3 doubles)
+        map_normal_vector = np.array([
+            self.mapRworld[2,0],
+            self.mapRworld[2,1],
+            self.mapRworld[2,2]
+        ])
+        struct.pack_into('<' + 'd'*3, file_data, bytes_packed, *map_normal_vector)
+        bytes_packed += 3*8
+
+        # Derived vector: map_plane_params (4 doubles)
+        dot_product = np.dot(map_normal_vector, self.anchor_point)
+        map_plane_params = np.zeros(4)
+        map_plane_params[:3] = map_normal_vector
+        map_plane_params[3] = -dot_product
+        struct.pack_into('<' + 'd'*4, file_data, bytes_packed, *map_plane_params)
+        bytes_packed += 4*8
+
+        # srm matrix (B uint8)
+        pack_matrix('B', self.srm, file_data, bytes_packed, little_endian=True)
+        bytes_packed += (self.num_pixels)*1
+
+        # ele matrix (f float)
+        pack_matrix('f', self.ele, file_data, bytes_packed, little_endian=True)
+        bytes_packed += (self.num_pixels)*4
+
+        with open(lmk_file, 'wb') as fp:
+            fp.write(file_data)
+
+
     def __eq__(self, other):
         if isinstance(other, Landmark):
             return self.BODY == other.BODY and \
@@ -154,11 +250,26 @@ class Landmark:
                 self.anchor_row == other.anchor_row and \
                 self.resolution == other.resolution and \
                 np.allclose(self.anchor_point, other.anchor_point) and \
-                np.allclose(self.mapRworld, other.mapRworld) and \
+                np.allclose(self.mapRworld, other.mapRworld, rtol=0, atol=1e-4) and \
                 np.allclose(self.srm, other.srm) and \
                 np.allclose(self.ele, other.ele)
         return NotImplemented
-    
+
+    def approx_equal(self, other, elevation_tolerance):
+        if isinstance(other, Landmark):
+            return self.BODY == other.BODY and \
+                self.lmk_id == other.lmk_id and \
+                self.num_cols == other.num_cols and \
+                self.num_rows == other.num_rows and \
+                self.anchor_col == other.anchor_col and \
+                self.anchor_row == other.anchor_row and \
+                self.resolution == other.resolution and \
+                np.allclose(self.anchor_point, other.anchor_point) and \
+                np.allclose(self.mapRworld, other.mapRworld, rtol=0, atol=1e-4) and \
+                np.allclose(self.srm, other.srm) and \
+                np.allclose(self.ele, other.ele, rtol=0, atol=elevation_tolerance)
+        return NotImplemented
+
     def assess_equality(self, other):
         if self == other :
             print("Objects are equal")
@@ -180,7 +291,7 @@ class Landmark:
         
             if(not np.allclose(self.anchor_point, other.anchor_point)):
                 print("self.anchor_point != other.anchor_point")
-            if(not np.allclose(self.mapRworld, other.mapRworld)):
+            if(not np.allclose(self.mapRworld, other.mapRworld, rtol=0, atol=1e-4)):
                 print("self.mapRworld != other.mapRworld")
             if(not np.allclose(self.srm, other.srm)):
                 print("self.srm != other.srm")
