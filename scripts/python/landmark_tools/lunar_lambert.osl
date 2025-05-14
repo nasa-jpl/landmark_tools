@@ -1,0 +1,43 @@
+shader lunar_lambert(
+    vector sun_dir = vector(0, 0, 1),
+    output color Cout = color(0.0)
+)
+{
+    normal Nf = normalize(N);
+    vector V = normalize(-I);               // view direction
+    vector L = normalize(-sun_dir);         // sun direction (away from surface)
+
+    // Cast a shadow ray
+    float shadow = 1.0;
+    if (trace(P, L)) {
+        shadow = 0.0;  // Point is in shadow
+    }
+
+    float cos_emission = max(dot(V, Nf), 1e-4);      // cos(emergence)
+    float cos_incidence = dot(Nf, L);                // cos(incidence)
+    float cos_phase = clamp(dot(V, L), -1.0, 1.0);   // cos(phase angle), clamped to valid range
+    float phase = acos(cos_phase) * 180.0/M_PI;      // phase angle in degrees
+
+    // Phase angle correction coefficients
+    float A = -0.019;
+    float B = 0.000242;
+    float C = -0.00000146;
+    
+    // Calculate phase angle correction
+    float lambda = 1.0 + A*phase + B*phase*phase + C*phase*phase*phase;
+    
+    // Calculate reflectance using the full lunar Lambertian model
+    float R = 0.0;
+    if (cos_incidence > 0.0) {  // Only calculate reflectance if surface faces the light
+        float denominator = cos_incidence + cos_emission;
+        if (denominator > 1e-4) {  // Prevent division by zero
+            R = 2.0 * lambda * (cos_incidence/denominator) + (1.0 - lambda) * cos_incidence;
+        }
+    }
+    
+    // Clamp reflectance to [0,1] range
+    R = clamp(R, 0.0, 1.0);
+    R *= shadow;
+    
+    Cout = color(R);
+}
