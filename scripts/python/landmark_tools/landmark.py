@@ -89,6 +89,26 @@ def pack_matrix(type, mat, buffer, offset=0, little_endian=False):
 
     return
 
+def ecef_to_latlongheight_sphere(p, radius_meters):
+    """Convert ECEF coordinates to latitude, longitude, and height.
+    
+    Args:
+        p (numpy.ndarray): 3D array of ECEF coordinates [x, y, z] in meters
+        radius_meters (float): Radius of the sphere in meters
+        
+    Returns:
+        tuple: (latitude_degrees, longitude_degrees, elevation_meters)
+    """
+    d = np.sqrt(p[0]*p[0] + p[1]*p[1])
+    
+    latitude_degrees = np.arctan(p[2]/d) * 180.0/np.pi
+    longitude_degrees = np.arctan2(p[1], p[0]) * 180.0/np.pi
+    
+    elevation_meters = np.sqrt(np.sum(p*p)) - radius_meters
+    
+    return latitude_degrees, longitude_degrees, elevation_meters
+
+
 class Landmark:
 
     def __init__(self, lmk_file):
@@ -152,7 +172,7 @@ class Landmark:
         with open(lmk_file, 'wb') as fp:
             fp.write(file_data)
 
-    def save_legacy_little_endian(self, lmk_file, lat=0.0, lon=0.0, radius=0.0):
+    def save_legacy_little_endian(self, lmk_file, radius=0.0):
         size = (4*4) + (6*8) + (3*8) + (3*2*8) + (3*2*8) + (3*3*8) + (3*8) + (4*8) + (self.num_pixels)*1 + (self.num_pixels)*4
         file_data = bytearray(size)
 
@@ -162,6 +182,7 @@ class Landmark:
         bytes_packed += 4*4
 
         # anchor_col, anchor_row, lat, lon, radius, resolution
+        lat, lon, height = ecef_to_latlongheight_sphere(self.anchor_point, radius)
         struct.pack_into('<dddddd', file_data, bytes_packed, self.anchor_col, self.anchor_row, lat, lon, radius, self.resolution)
         bytes_packed += 6*8
 
@@ -171,16 +192,17 @@ class Landmark:
 
         # Derived matrix: col_row2mapxy (3x2 matrix)
         col_row2mapxy = np.array([
-            [self.resolution, 0.0, -self.resolution * self.anchor_col],
-            [0.0, -self.resolution, self.resolution * self.anchor_row]
+            [self.resolution, 0.0, -self.resolution],
+            [0.0, -self.resolution, self.resolution]
         ])
         struct.pack_into('<' + 'd'*6, file_data, bytes_packed, *col_row2mapxy.flatten())
         bytes_packed += (3*2)*8
 
+
         # Derived matrix: mapxy2col_row (3x2 matrix)
         mapxy2col_row = np.array([
-            [1.0/self.resolution, 0.0, self.anchor_col],
-            [0.0, -1.0/self.resolution, self.anchor_row]
+            [1.0/self.resolution, 0.0, 0.0],
+            [0.0, -1.0/self.resolution, 0.0]
         ])
         struct.pack_into('<' + 'd'*6, file_data, bytes_packed, *mapxy2col_row.flatten())
         bytes_packed += (3*2)*8
@@ -191,8 +213,8 @@ class Landmark:
 
         # Derived vector: map_normal_vector (3 doubles)
         map_normal_vector = np.array([
-            self.mapRworld[0,2],
-            self.mapRworld[1,2],
+            self.mapRworld[2,0],
+            self.mapRworld[2,1],
             self.mapRworld[2,2]
         ])
         struct.pack_into('<' + 'd'*3, file_data, bytes_packed, *map_normal_vector)
